@@ -36,8 +36,8 @@ const OverviewPane = ({ className }: Props) => {
   ): React.ReactNode => {
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className="cursor-pointer"
-        style={{ marginLeft: `${12 * (nestingDepth || 1)}px` }}
+        className="cursor-pointer text-base"
+        style={{ marginLeft: `${2 * (nestingDepth || 1)}rem` }}
       >
         {item.title}
       </div>
@@ -61,7 +61,10 @@ const OverviewPane = ({ className }: Props) => {
           unreadCount += item.unreadCount;
         });
         return (
-          <div className="cursor-pointer" onClick={toggleCollapse}>
+          <div
+            className="cursor-pointer pl-2 border-l-4 border-blue-600 text-base flex items-center"
+            onClick={toggleCollapse}
+          >
             {props.group!.name} ({unreadCount})
           </div>
         );
