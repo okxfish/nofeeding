@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.0.0",
+    "@fluentui/example-data": "^8.0.0-beta.0",
     "@fluentui/react": "^7.155.2",
     "@tailwindcss/postcss7-compat": "^2.0.1",
     "@testing-library/jest-dom": "^5.11.4",
