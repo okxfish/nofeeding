@@ -4,9 +4,20 @@ import {
   IGroupRenderProps,
   IGroupHeaderProps,
 } from "office-ui-fabric-react/lib/GroupedList";
+import {
+  CommandBarButton,
+  IIconProps,
+  IContextualMenuProps,
+} from "office-ui-fabric-react";
 import { FontIcon } from "office-ui-fabric-react/lib/Icon";
+import { Separator } from "office-ui-fabric-react/lib/Separator";
+import {
+  CommandBar,
+  ICommandBarItemProps,
+} from "office-ui-fabric-react/lib/CommandBar";
 import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
-import { createListItems, createGroups } from "@fluentui/example-data";
+import { createGroups } from "@fluentui/example-data";
+import "./style.css";
 
 export interface Props {
   className?: string;
@@ -25,8 +36,68 @@ const createItems = (count: number): any[] => {
 };
 
 const items: any[] = createItems(Math.pow(groupCount, groupDepth + 1));
-
 const groups = createGroups(groupCount, groupDepth, 0, groupCount);
+const listItemClassName =
+  "cursor-pointer items-center h-10 text-base flex hover:bg-gray-200 select-none";
+
+const commandBarItems: ICommandBarItemProps[] = [
+  {
+    key: "newItem",
+    text: "New",
+    cacheKey: "myCacheKey", // changing this key will invalidate this item's cache
+    iconProps: { iconName: "Add" },
+    subMenuProps: {
+      items: [
+        {
+          key: "emailMessage",
+          text: "Email message",
+          iconProps: { iconName: "Mail" },
+          ["data-automation-id"]: "newEmailButton", // optional
+        },
+        {
+          key: "calendarEvent",
+          text: "Calendar event",
+          iconProps: { iconName: "Calendar" },
+        },
+      ],
+    },
+  },
+  {
+    key: "upload",
+    text: "Upload",
+    iconProps: { iconName: "Upload" },
+    href: "https://developer.microsoft.com/en-us/fluentui",
+  },
+  {
+    key: "share",
+    text: "Share",
+    iconProps: { iconName: "Share" },
+    onClick: () => console.log("Share"),
+  },
+  {
+    key: "download",
+    text: "Download",
+    iconProps: { iconName: "Download" },
+    onClick: () => console.log("Download"),
+  },
+];
+
+const moreIcon: IIconProps = { iconName: "More" };
+
+const menuProps: IContextualMenuProps = {
+  items: [
+    {
+      key: "emailMessage",
+      text: "rename",
+      iconProps: { iconName: "Edit" },
+    },
+    {
+      key: "calendarEvent",
+      text: "Calendar event",
+      iconProps: { iconName: "Calendar" },
+    },
+  ],
+};
 
 const OverviewPane = ({ className }: Props) => {
   const onRenderCell = (
@@ -36,9 +107,10 @@ const OverviewPane = ({ className }: Props) => {
   ): React.ReactNode => {
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className="cursor-pointer text-base"
-        style={{ marginLeft: `${2 * (nestingDepth || 1)}rem` }}
+        className={`${listItemClassName}`}
+        style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
       >
+        <FontIcon className="mr-2" iconName="Dictionary" />
         {item.title}
       </div>
     ) : null;
@@ -62,10 +134,24 @@ const OverviewPane = ({ className }: Props) => {
         });
         return (
           <div
-            className="cursor-pointer pl-2 border-l-4 border-blue-600 text-base flex items-center"
-            onClick={toggleCollapse}
+            className={`${listItemClassName} pl-2 border-l-4 border-blue-600`}
           >
-            {props.group!.name} ({unreadCount})
+            <FontIcon
+              className={`mr-2 transition-all transform ${
+                props.group!.isCollapsed ? "" : "rotate-90"
+              }`}
+              iconName="ChevronRight"
+              onClick={toggleCollapse}
+            />
+            <span className="flex-1" onClick={toggleCollapse}>
+              {props.group!.name} ({unreadCount})
+            </span>
+            <CommandBarButton
+              className="mr-4 bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus:outline-none"
+              menuProps={menuProps}
+              iconProps={moreIcon}
+              onRenderMenuIcon={()=>null}
+            />
           </div>
         );
       } else {
@@ -75,13 +161,19 @@ const OverviewPane = ({ className }: Props) => {
   };
 
   return (
-    <GroupedList
-      items={items}
-      onRenderCell={onRenderCell}
-      groupProps={groupProps}
-      selectionMode={SelectionMode.none}
-      groups={groups}
-    />
+    <div className="flex flex-col h-full">
+      <Separator alignContent="start">sources</Separator>
+      <GroupedList
+        className="flex-1"
+        items={items}
+        onRenderCell={onRenderCell}
+        groupProps={groupProps}
+        selectionMode={SelectionMode.none}
+        groups={groups}
+      />
+      <div></div>
+      <CommandBar items={commandBarItems} />
+    </div>
   );
 };
 
