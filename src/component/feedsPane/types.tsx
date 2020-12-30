@@ -5,7 +5,7 @@ export interface ObejectWithId {
 export interface Feed extends ObejectWithId {
   title: string;
   summary: string;
-  thumbnailSrc: string;
+  thumbnailSrc?: string;
   sourceName: string;
   sourceID: string;
   time: string;
@@ -25,6 +25,7 @@ export interface FeedProps {
   groupIndex: number;
   title: string;
   summary?: string;
+  thumbnailSrc?: string;
   sourceName: string;
   time?: string;
   isRead?: boolean;

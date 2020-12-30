@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import { default as FeedsPaneComponent } from "./component";
 import {
   FeedProps,
@@ -9,46 +9,7 @@ import {
 } from "./types";
 import { IGroup } from "office-ui-fabric-react";
 
-const fullSummary: string =
-  "this is rss summary at next but not last, you need to do a lot of things to make the world in better place. as people say, time is gold, nobody can reject the air.";
-
-const createItems = (count: number, idBase: number): Feed[] => {
-  return Array.from({
-    length: count,
-  }).map(
-    (item:any, index:number): Feed => {
-      const rdBase: number = 100;
-      const rdNumber: number = Math.floor(Math.random() * rdBase);
-      const rdBool: boolean = rdNumber / rdBase > 0.5;
-      return {
-        id: String(idBase + index),
-        title: `this is rss source: ${rdNumber}`,
-        summary: fullSummary.slice(rdNumber),
-        thumbnailSrc: "",
-        sourceName: "some news",
-        sourceID: "",
-        time: "3 days",
-        isRead: rdBool,
-        isStar: rdBool,
-        isPin: rdBool,
-      };
-    }
-  );
-};
-
-const createGroupsData = (count: number, size: number): FeedGroup[] => {
-  return Array.from({
-    length: count,
-  }).map((): any => {
-    const rdBase: number = 1000;
-    const rdNumber: number = Math.floor(Math.random() * rdBase);
-    return {
-      id: rdNumber,
-      name: `Group (${rdNumber})`,
-      children: createItems(size, rdBase),
-    };
-  });
-};
+import feedsMockData from "../../mock/feed";
 
 function storeData<T extends ObejectWithId>(items: T[]): DataInStore<T> {
   const result = items.reduce(
@@ -63,7 +24,9 @@ function storeData<T extends ObejectWithId>(items: T[]): DataInStore<T> {
 }
 
 const initStore = (): any => {
-  const groupedfeedsEntities: FeedGroup[] = createGroupsData(3, 3);
+  const staticState: any = { isSidePaneOpen: false };
+  const groupedfeedsEntities: FeedGroup[] = feedsMockData;
+
   const groupsInStore: DataInStore<FeedGroup> = storeData<FeedGroup>(
     groupedfeedsEntities.map(
       (group: FeedGroup): FeedGroup => ({
@@ -72,14 +35,17 @@ const initStore = (): any => {
       })
     )
   );
+
   const feedsArray: Feed[] = groupedfeedsEntities.reduce(
     (previousValue: Feed[], currentValue: FeedGroup): Feed[] => {
       return previousValue.concat(currentValue.children);
     },
     []
   );
+
   const feedsInStore: DataInStore<Feed> = storeData<Feed>(feedsArray);
   return {
+    ...staticState,
     groups: groupsInStore,
     feeds: feedsInStore,
   };
@@ -145,32 +111,54 @@ const mapStoreToProps = (store): any => {
 const reducer = (state, action) => {
   const updateFeedById = (handleFeed): any => {
     let result = { ...state };
-    result.feeds.byId[action.payload] = handleFeed(result.feeds.byId[action.payload]);
+    result.feeds.byId[action.payload] = handleFeed(
+      result.feeds.byId[action.payload]
+    );
     return result;
   };
 
   switch (action.type) {
     case "feed/ById/toggleIsRead":
-      return updateFeedById((feed:Feed)=>({...feed, isRead: !feed.isRead}));
+      return updateFeedById((feed: Feed) => ({
+        ...feed,
+        isRead: !feed.isRead,
+      }));
     case "feed/ById/toggleIsStar":
-      return updateFeedById((feed:Feed)=>({...feed, isStar: !feed.isStar}));;
+      return updateFeedById((feed: Feed) => ({
+        ...feed,
+        isStar: !feed.isStar,
+      }));
     case "feed/ById/toggleIsPin":
-      return updateFeedById((feed:Feed)=>({...feed, isPin: !feed.isPin}));;
+      return updateFeedById((feed: Feed) => ({ ...feed, isPin: !feed.isPin }));
+    case "sidePane/open":
+      return { ...state, isSidePaneOpen: true };
     default:
       throw new Error();
   }
 };
 
-const store = initStore()
-const FeedsPaneContainer = () => {
+const store = initStore();
+
+export interface Props {
+  className?: string;
+  onClickFeed?(): any;
+}
+
+const FeedsPaneContainer = ({ className, ...rest }: Props) => {
   const [state, dispatch] = useReducer(reducer, store);
-  const { feeds: itemsProps, groups: groupProps } = mapStoreToProps(state);
-  console.log(1);
+  const {
+    feeds: itemsProps,
+    groups: groupProps,
+    isSidePaneOpen,
+  } = mapStoreToProps(state);
   return (
     <FeedsPaneComponent
+      className={className}
+      isSidePaneOpen={isSidePaneOpen}
       items={itemsProps}
       groups={groupProps}
       dispatch={dispatch}
+      {...rest}
     />
   );
 };

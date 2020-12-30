@@ -5,6 +5,8 @@ import {
   ImageFit,
   IconButton,
   IIconProps,
+  Panel,
+  PanelType,
   IContextualMenuProps,
   FontIcon,
   IGroup,
@@ -14,15 +16,12 @@ import {
   IGroupHeaderProps,
 } from "office-ui-fabric-react";
 import { FeedProps } from "./types";
-
 export interface Props {
   className?: string;
-}
-
-export interface Props {
-  className?: string;
+  onClickFeed?(): any;
   items: FeedProps[];
   groups: IGroup[];
+  isSidePaneOpen: boolean;
   dispatch: Dispatch<any>;
 }
 
@@ -49,39 +48,37 @@ const menuProps: IContextualMenuProps = {
   directionalHintFixed: true,
 };
 
-const FeedsPane = ({ className, items, groups, dispatch }: Props) => {
+const FeedsPane = ({
+  className,
+  items,
+  groups,
+  onClickFeed,
+  isSidePaneOpen,
+  dispatch,
+}: Props) => {
   const onRenderCell = (
     nestingDepth?: number,
     item?: FeedProps,
     itemIndex?: number
   ): React.ReactNode => {
     const imageProps: IImageProps = {
-      src: "http://placehold.it/100x75",
+      src: item?.thumbnailSrc ,
       width: 100,
       height: 100,
       imageFit: ImageFit.cover,
     };
-
-    const updateFieldInItem = (field: string): void => {
-      if (!item || typeof item === "undefined") {
-        return;
-      } else {
-      }
-    };
-
-    const handleMarkAsReadClick = (field: string): void => {
-      updateFieldInItem(field);
-    };
-
+    
     const toggleIsReadById = (id: string): void =>
       dispatch({ type: "feed/ById/toggleIsRead", payload: id });
+
     const toggleIsStarById = (id: string): void =>
       dispatch({ type: "feed/ById/toggleIsStar", payload: id });
+
     const toggleIsPinById = (id: string): void =>
       dispatch({ type: "feed/ById/toggleIsPin", payload: id });
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
-      <div className="flex border-b border-gray-300 mb-4 pb-4 cursor-pointer group">
+      <div className="flex border-b border-gray-300 pt-4 pb-4 cursor-pointer group hover:bg-gray-200" onClick={onClickFeed}>
         <Image className="flex-shrink-0 mr-3" {...imageProps} />
         <div className="flex-1">
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
@@ -137,7 +134,7 @@ const FeedsPane = ({ className, items, groups, dispatch }: Props) => {
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
       return (
-        <div className="cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-600 mb-4">
+        <div className="cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-600">
           {props.group!.name}
         </div>
       );
@@ -151,13 +148,15 @@ const FeedsPane = ({ className, items, groups, dispatch }: Props) => {
   };
 
   return (
-    <GroupedList
-      className="mx-6"
-      items={items}
-      onRenderCell={onRenderCell}
-      groupProps={groupProps}
-      groups={groups}
-    />
+    <>
+      <GroupedList
+        className={`${className} px-6`}
+        items={items}
+        onRenderCell={onRenderCell}
+        groupProps={groupProps}
+        groups={groups}
+      />
+    </>
   );
 };
 

@@ -1,6 +1,9 @@
 import React from "react";
 export interface Props {
   className?: string;
+  style?: {
+    [prop:string]: string;
+  };
 }
 
 const title: string = "The Declaration of Independence";
@@ -22,7 +25,7 @@ const sections: string[] = [
   "He has combined with others to subject us to a jurisdiction foreign to our constitution, and unacknowledged by our laws; giving his assent to their acts of pretended legislation.For quartering large bodies of armed troops among us;",
 ];
 
-const ArticlePane = ({ className }: Props) => {
+const ArticlePane = ({ className, style }: Props) => {
   const sectionsRender = () => {
     return sections.map((section: string): JSX.Element | null => (
       <section className="mb-4 text-base">
@@ -45,7 +48,7 @@ const ArticlePane = ({ className }: Props) => {
     );
   };
 
-  return <div className="h-full overflow-auto scrollbar">{contentRender()}</div>;
+  return <div className={`${className}`} style={style}>{contentRender()}</div>;
 };
 
 export default ArticlePane;
