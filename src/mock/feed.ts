@@ -7,7 +7,7 @@ export default Mock.mock(():any=>{
     (item, index):any=>({
       id: index,
       name: Random.title(1),
-      children: Array.from({length: Random.integer(1, 10)}).map(
+      children: Array.from({length: Random.integer(3, 10)}).map(
         ():any=>{
           feedCount = feedCount + 1;
           return ({
