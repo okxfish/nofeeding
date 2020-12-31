@@ -68,14 +68,20 @@ const FeedsPane = ({
       imageFit: ImageFit.cover,
     };
     
-    const toggleIsReadById = (id: string): void =>
+    const toggleIsReadById = (id: string, e:any): void => {
+      e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsRead", payload: id });
+    }
 
-    const toggleIsStarById = (id: string): void =>
+    const toggleIsStarById = (id: string, e:any): void => {
+      e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsStar", payload: id });
+    }
 
-    const toggleIsPinById = (id: string): void =>
+    const toggleIsPinById = (id: string, e:any): void => {
+      e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsPin", payload: id });
+    }
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div className="flex border-b border-gray-300 pt-4 pb-4 cursor-pointer group hover:bg-gray-200" onClick={onClickFeed}>
