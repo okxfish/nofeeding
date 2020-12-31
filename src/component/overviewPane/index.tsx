@@ -129,7 +129,7 @@ const OverviewPane = ({ className }: Props) => {
         });
         return (
           <div
-            className={`${listItemClassName} pl-2 border-l-4 border-blue-600`}
+            className={`${listItemClassName} pl-2`}
           >
             <FontIcon
               className={`mr-2 transition-all transform ${
