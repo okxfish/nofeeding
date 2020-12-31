@@ -42,7 +42,6 @@ const ArticlePane = ({ className, style }: Props) => {
         </header>
         {sectionsRender()}
         <footer>
-          from <a href="https://baidu.com">https://baidu.com</a>
         </footer>
       </article>
     );

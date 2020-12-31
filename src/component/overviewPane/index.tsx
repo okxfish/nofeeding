@@ -10,11 +10,7 @@ import {
   IContextualMenuProps,
 } from "office-ui-fabric-react";
 import { FontIcon } from "office-ui-fabric-react/lib/Icon";
-import { Separator } from "office-ui-fabric-react/lib/Separator";
-import {
-  CommandBar,
-  ICommandBarItemProps,
-} from "office-ui-fabric-react/lib/CommandBar";
+import { ICommandBarItemProps } from "office-ui-fabric-react/lib/CommandBar";
 import { SelectionMode } from "office-ui-fabric-react/lib/Selection";
 import { createGroups } from "@fluentui/example-data";
 import "./style.css";
@@ -161,7 +157,6 @@ const OverviewPane = ({ className }: Props) => {
 
   return (
     <div className="flex flex-col h-full">
-      <Separator alignContent="start">sources</Separator>
       <GroupedList
         className="flex-1"
         items={items}
@@ -170,8 +165,6 @@ const OverviewPane = ({ className }: Props) => {
         selectionMode={SelectionMode.none}
         groups={groups}
       />
-      <div></div>
-      <CommandBar items={commandBarItems} />
     </div>
   );
 };
