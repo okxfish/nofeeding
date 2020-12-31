@@ -118,7 +118,6 @@ const OverviewPane = ({ className }: Props) => {
 
   const groupProps: IGroupRenderProps = {
     onRenderHeader: (props?: IGroupHeaderProps): JSX.Element | null => {
-      console.log(props);
       if (props && props.group) {
         const toggleCollapse = (): void => {
           props.onToggleCollapse!(props.group!);
