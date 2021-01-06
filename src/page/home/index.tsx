@@ -83,24 +83,22 @@ const Home = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="grid grid-cols-24 w-screen h-screen">
       <div
-        className={`w-${
-          isSidePaneOpen ? "48" : "16"
-        } flex flex-col items-center bg-gray-300 transition-all`}
+        className={`hidden sm:flex flex-col items-center bg-gray-300 transition-all col-start-1 col-span-2`}
       >
         {sidePeneRender()}
       </div>
-      <div className="w-80 bg-gray-200">
+      <div className="hidden sm:block bg-gray-200 col-span-4">
         <OverviewPane />
       </div>
-      <div className="bg-white">
+      <div className="bg-white col-span-6 row-span-1 overflow-y-auto scrollbar">
         <FeedsPane
-          className="scrollbar h-full overflow-y-auto bg-gray-50 lg:w-auto xl:w-112 2xl:w-128 transition-all"
+          className="h-full bg-gray-50 transition-all"
           onClickFeed={openModal}
         />
       </div>
-      <div className="lg:hidden xl:block flex-1 h-full scrollbar overflow-y-auto">
+      <div className="lg:hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-span-12">
         <ArticlePane className="px-6" />
       </div>
       <Modal

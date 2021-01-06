@@ -9,6 +9,11 @@ module.exports = {
         '160': '40rem',
         '176': '48rem',
         '192': '56rem',
+      },
+      gridTemplateColumns: {
+       '16': 'repeat(16, minmax(0, 1fr))',
+       '18': 'repeat(18, minmax(0, 1fr))',
+       '24': 'repeat(24, minmax(0, 1fr))',
       }
     },
   },
