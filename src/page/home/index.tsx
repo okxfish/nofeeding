@@ -3,6 +3,7 @@ import { default as OverviewPane } from "../../component/overviewPane";
 import { default as FeedsPane } from "../../component/feedsPane";
 import { default as ArticlePane } from "../../component/articlePane";
 import { Modal, IconButton, IIconProps, Text } from "office-ui-fabric-react";
+import './style.css';
 import feedsMockData from "../../mock/feed";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
@@ -24,7 +25,7 @@ interface SidePaneItemProps {
 
 const Home = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
-  const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(true);
+  const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const hideModal = (): void => setIsArticleModalOpen(false);
   const openModal = (): void => setIsArticleModalOpen(true);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
@@ -33,6 +34,7 @@ const Home = () => {
     {
       icon: globalNavButtonIcon,
       text: "menu",
+      className: "hidden sm:block",
       onClick: toggleSidePane,
     },
     {
@@ -72,9 +74,7 @@ const Home = () => {
               iconProps={item?.icon}
               onClick={item?.onClick}
             >
-              {isSidePaneOpen && (
-                <Text className="flex-1 text-left ml-2">{item?.text}</Text>
-              )}
+              <Text className={`hidden ${isSidePaneOpen ? 'sm:block' : ''}   flex-1 text-left ml-2`}>{item?.text}</Text>
             </IconButton>
           </div>
         );
@@ -83,22 +83,22 @@ const Home = () => {
   };
 
   return (
-    <div className="grid grid-cols-24 w-screen h-screen">
+    <div className="home__layout w-screen h-screen">
       <div
-        className={`hidden sm:flex flex-col items-center bg-gray-300 transition-all col-start-1 col-span-2`}
+        className={`col-span-4 sm:col-span-1 sm:${isSidePaneOpen ? 'w-48' : 'w-12'} flex flex-row sm:flex-col items-center justify-between bg-gray-300 transition-all col-start-1 row-start-2 sm:row-start-1 row-span-1 sm:row-span-2`}
       >
         {sidePeneRender()}
       </div>
-      <div className="hidden sm:block bg-gray-200 col-span-4">
+      <div className="hidden sm:block bg-gray-200 col-start-2 col-span-1 row-span-2 sm:w-64">
         <OverviewPane />
       </div>
-      <div className="bg-white col-span-6 row-span-1 overflow-y-auto scrollbar">
+      <div className="col-start-1 col-span-4 row-start-1 row-span-1 sm:row-span-2 sm:col-start-3 sm:col-span-2 xl:col-span-1 bg-white overflow-y-auto scrollbar">
         <FeedsPane
           className="h-full bg-gray-50 transition-all"
           onClickFeed={openModal}
         />
       </div>
-      <div className="lg:hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-span-12">
+      <div className="hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-start-4 col-span-1 row-span-2">
         <ArticlePane className="px-6" />
       </div>
       <Modal
