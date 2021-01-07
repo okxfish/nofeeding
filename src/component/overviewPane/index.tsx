@@ -156,7 +156,7 @@ const OverviewPane = ({ className }: Props) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className={`${className} flex flex-col`}>
       <GroupedList
         className="flex-1"
         items={items}

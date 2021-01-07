@@ -62,30 +62,34 @@ const FeedsPane = ({
     itemIndex?: number
   ): React.ReactNode => {
     const imageProps: IImageProps = {
-      src: item?.thumbnailSrc ,
-      width: 100,
-      height: 100,
+      src: item?.thumbnailSrc,
+      maximizeFrame: true,
       imageFit: ImageFit.cover,
     };
-    
-    const toggleIsReadById = (id: string, e:any): void => {
+
+    const toggleIsReadById = (id: string, e: any): void => {
       e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsRead", payload: id });
-    }
+    };
 
-    const toggleIsStarById = (id: string, e:any): void => {
+    const toggleIsStarById = (id: string, e: any): void => {
       e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsStar", payload: id });
-    }
+    };
 
-    const toggleIsPinById = (id: string, e:any): void => {
+    const toggleIsPinById = (id: string, e: any): void => {
       e.stopPropagation();
       dispatch({ type: "feed/ById/toggleIsPin", payload: id });
-    }
+    };
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
-      <div className="flex border-b border-gray-300 pt-4 pb-4 cursor-pointer group hover:bg-gray-200" onClick={onClickFeed}>
-        <Image className="flex-shrink-0 mr-3" {...imageProps} />
+      <div
+        className="flex-wrap md:flex md:flex-nowrap border-b border-gray-300 pt-4 pb-4 cursor-pointer group hover:bg-gray-200"
+        onClick={onClickFeed}
+      >
+        <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-32 mb-4 md:mr-4">
+          <Image className="mr-3 rounded-md" {...imageProps} />
+        </div>
         <div className="flex-1">
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
             <span className="flex-1">{item.title}</span>

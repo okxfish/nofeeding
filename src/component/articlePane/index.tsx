@@ -1,8 +1,10 @@
 import React from "react";
+import { IconButton, IIconProps } from "office-ui-fabric-react";
 export interface Props {
   className?: string;
+  closeModal?(): any, 
   style?: {
-    [prop:string]: string;
+    [prop: string]: string;
   };
 }
 
@@ -25,7 +27,9 @@ const sections: string[] = [
   "He has combined with others to subject us to a jurisdiction foreign to our constitution, and unacknowledged by our laws; giving his assent to their acts of pretended legislation.For quartering large bodies of armed troops among us;",
 ];
 
-const ArticlePane = ({ className, style }: Props) => {
+const backIcon: IIconProps = { iconName: "Back" };
+
+const ArticlePane = ({ className, style, closeModal }: Props) => {
   const sectionsRender = () => {
     return sections.map((section: string): JSX.Element | null => (
       <section className="mb-4 text-base">
@@ -36,18 +40,30 @@ const ArticlePane = ({ className, style }: Props) => {
 
   const contentRender = () => {
     return (
-      <article className="max-w-3xl mx-auto py-4">
-        <header>
-          <h2 className="font-bold text-3xl mb-6">{title}</h2>
-        </header>
-        {sectionsRender()}
-        <footer>
-        </footer>
-      </article>
+      <div className="flex flex-col">
+        <div className="flex items-center h-12 border-b">
+          <IconButton
+            className="block lg:hidden"
+            iconProps={backIcon}
+            onClick={closeModal}
+          />
+        </div>
+        <article className="max-w-3xl mx-auto py-4">
+          <header>
+            <h2 className="font-bold text-3xl mb-6">{title}</h2>
+          </header>
+          {sectionsRender()}
+          <footer></footer>
+        </article>
+      </div>
     );
   };
 
-  return <div className={`${className}`} style={style}>{contentRender()}</div>;
+  return (
+    <div className={`${className}`} style={style}>
+      {contentRender()}
+    </div>
+  );
 };
 
 export default ArticlePane;
