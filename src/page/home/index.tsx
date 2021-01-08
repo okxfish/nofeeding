@@ -92,15 +92,18 @@ const Home = () => {
   return (
     <div className="home__layout w-screen h-screen">
       <div className="row-start-1 row-span-1 col-start-1 col-span-4 bg-gray-300 bg-opacity-70 sm:hidden">
-        <IconButton className="" iconProps={globalNavButtonIcon} onClick={()=>setIsOverViewPaneOpen(!isOverViewPaneOpen)} />
+        <IconButton
+          className=""
+          iconProps={globalNavButtonIcon}
+          onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
+        />
       </div>
       <div
         className={`
-        col-start-1 z-50 flex items-center justify-between bg-gray-300 bg-opacity-70 transition-all
-        flex-row col-span-4 row-start-3 row-span-1
-        sm:flex-col  sm:col-span-1 sm:row-start-1  sm:row-span-3 ${
-          isSidePaneOpen ? "sm:w-48 col-span-2" : "sm:w-full"
-        }
+          col-start-1 z-50 flex items-center justify-between bg-gray-300 bg-opacity-70 transition-all
+          flex-row col-span-4 row-start-3 row-span-1
+          sm:flex-col  sm:col-span-1 sm:row-start-1  sm:row-span-3 
+          ${isSidePaneOpen ? "sm:w-48 col-span-2" : "sm:w-full"}
         `}
         style={{ backdropFilter: "blur(16px)" }}
       >
@@ -108,24 +111,29 @@ const Home = () => {
       </div>
       <div
         className={`
-        ${isOverViewPaneOpen ? "translate-x-0" : "-translate-x-full"}
-       transform transition-all
-      bg-gray-200 row-start-1 row-span-3 w-64
-        col-start-1 z-50 shadow-lg
-        sm:block sm:col-span-1 sm:col-start-2 sm:translate-x-0 sm:z-10 sm:shadow-none`}
+          ${isOverViewPaneOpen ? "translate-x-0" : "-translate-x-full"}
+          transform transition-all
+          row-start-1 row-span-3 w-64 bg-gray-200
+          col-start-1 z-50 shadow-lg
+          sm:block sm:col-span-1 sm:col-start-2 sm:translate-x-0 sm:z-10 sm:shadow-none
+        `}
       >
-        <IconButton className="sm:hidden" iconProps={globalNavButtonIcon} onClick={()=>setIsOverViewPaneOpen(!isOverViewPaneOpen)} />
+        <IconButton
+          className="sm:hidden"
+          iconProps={globalNavButtonIcon}
+          onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
+        />
         <OverviewPane />
       </div>
       <div
         className="
-      bg-white overflow-y-auto scrollbar
-      col-start-1 col-span-4 row-start-2 row-span-1 
-      sm:row-span-3 sm:col-start-3 sm:col-span-2 
-      xl:col-span-1"
+          overflow-y-auto scrollbar bg-gray-50 h-full
+          col-start-1 col-span-4 row-start-2 row-span-1 
+          sm:row-span-3 sm:col-start-3 sm:col-span-2 
+          xl:col-span-1"
       >
         <FeedsPane
-          className="h-full bg-gray-50 transition-all"
+          className="h-full transition-all"
           onClickFeed={openModal}
         />
       </div>

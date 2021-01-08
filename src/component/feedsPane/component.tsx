@@ -4,6 +4,7 @@ import {
   Image,
   ImageFit,
   IconButton,
+  ActionButton,
   IIconProps,
   Panel,
   PanelType,
@@ -16,7 +17,8 @@ import {
   IGroupHeaderProps,
 } from "office-ui-fabric-react";
 import { FeedProps } from "./types";
-import './style.css';
+import { TooltipHost, ITooltipHostStyles } from "office-ui-fabric-react";
+import "./style.css";
 export interface Props {
   className?: string;
   onClickFeed?(): any;
@@ -33,6 +35,8 @@ const pinSolid12Icon: IIconProps = { iconName: "PinSolid12" };
 const pinSolidOff12Icon: IIconProps = { iconName: "PinSolidOff12" };
 const readingModeIcon: IIconProps = { iconName: "ReadingMode" };
 const readingModeSolidIcon: IIconProps = { iconName: "ReadingModeSolid" };
+const multiSelectMirroredIcon: IIconProps = { iconName: "MultiSelectMirrored" };
+
 const menuProps: IContextualMenuProps = {
   items: [
     {
@@ -86,23 +90,34 @@ const FeedsPane = ({
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className="feed-item flex-wrap md:flex md:flex-nowrap p-4 cursor-pointer group transition hover:bg-gray-100"
+        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 cursor-pointer group transition hover:bg-gray-100"
         onClick={onClickFeed}
       >
-        <div className="flex-shrink-0 w-full h-48 md:w-28 md:h-28 mb-4 md:mr-4">
+        <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-32 mb-4 md:mr-4 md:mb-0">
           <Image className="mr-3 rounded-md" {...imageProps} />
         </div>
-        <div className="flex-1">
+        <div className="flex flex-col flex-1">
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
             <span className="flex-1">{item.title}</span>
           </div>
-          <div className="text-base text-gray-600">{item.summary}</div>
+          <div className="flex-1 text-base text-gray-600 w-full">
+            {item.summary}
+          </div>
           <div className="flex items-center justify-end w-full">
-            <div className="flex-1 text-sm text-gray-400">
-              <span className="pr-1">{item.sourceName}</span>
-              <span>/</span>
-              <span className="pl-1">{item.time}</span>
-            </div>
+            <TooltipHost content={item.sourceName} closeDelay={500}>
+              <Text
+                className="text-sm text-gray-400"
+                block
+                nowrap
+                style={{ maxWidth: "5rem" }}
+              >
+                {item.sourceName}
+              </Text>
+            </TooltipHost>
+            <Text className="text-sm text-gray-400" nowrap>
+              /{item.time}
+            </Text>
+            <div className="flex-1" />
             <IconButton
               className="focus:outline-none"
               iconProps={item.isPin ? pinSolid12Icon : pinSolidOff12Icon}
@@ -146,8 +161,9 @@ const FeedsPane = ({
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
       return (
-        <div className="cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-400">
-          {props.group!.name}
+        <div className="flex items-center h-12 px-4 cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-400 sticky top-0 z-30 bg-gray-50">
+          <div className="flex-1">{props.group!.name}</div>
+          <span className="font-normal">{props.group.count}</span>
         </div>
       );
     } else {
@@ -162,10 +178,10 @@ const FeedsPane = ({
   return (
     <>
       <GroupedList
-        className={`${className} px-6`}
+        className={`${className}`}
         items={items}
         onRenderCell={onRenderCell}
-        onShouldVirtualize={()=>false}
+        onShouldVirtualize={() => false}
         groupProps={groupProps}
         groups={groups}
       />
