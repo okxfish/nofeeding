@@ -1,13 +1,13 @@
 import { default as Mock, Random}  from 'mockjs';
 
 export default Mock.mock(():any=>{
-  const groupCount:number= Random.integer(2, 2);
+  const groupCount:number= Random.integer(4, 8);
   let feedCount = 0;
   return Array.from({length: groupCount}).map(
     (item, index):any=>({
       id: index,
       name: Random.title(1),
-      children: Array.from({length: Random.integer(3, 10)}).map(
+      children: Array.from({length: Random.integer(4, 10)}).map(
         ():any=>{
           feedCount = feedCount + 1;
           return ({

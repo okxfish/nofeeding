@@ -103,7 +103,7 @@ const OverviewPane = ({ className }: Props) => {
   ): React.ReactNode => {
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className={`${listItemClassName}`}
+        className={`${listItemClassName} hover:bg-gray-300`}
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
       >
         <FontIcon className="mr-2" iconName="Dictionary" />
@@ -129,7 +129,7 @@ const OverviewPane = ({ className }: Props) => {
         });
         return (
           <div
-            className={`${listItemClassName} pl-2`}
+            className={`${listItemClassName} pl-2 hover:bg-gray-300`}
           >
             <FontIcon
               className={`mr-2 transition-all transform ${

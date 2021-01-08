@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react';
 import "./App.css";
 import "./style/utils.css";
 
@@ -8,7 +9,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <Suspense fallback={<div>loading</div>}>
+        <Suspense fallback={<Spinner className="m-auto mt-72" size={SpinnerSize.large} label="loading..."/>}>
           <Switch>
             <Route path="/" component={Home} />
           </Switch>

@@ -16,6 +16,7 @@ import {
   IGroupHeaderProps,
 } from "office-ui-fabric-react";
 import { FeedProps } from "./types";
+import './style.css';
 export interface Props {
   className?: string;
   onClickFeed?(): any;
@@ -63,6 +64,7 @@ const FeedsPane = ({
   ): React.ReactNode => {
     const imageProps: IImageProps = {
       src: item?.thumbnailSrc,
+      shouldStartVisible: true,
       maximizeFrame: true,
       imageFit: ImageFit.cover,
     };
@@ -84,10 +86,10 @@ const FeedsPane = ({
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className="flex-wrap md:flex md:flex-nowrap border-b border-gray-300 pt-4 pb-4 cursor-pointer group hover:bg-gray-200"
+        className="feed-item flex-wrap md:flex md:flex-nowrap p-4 cursor-pointer group transition hover:bg-gray-100"
         onClick={onClickFeed}
       >
-        <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-32 mb-4 md:mr-4">
+        <div className="flex-shrink-0 w-full h-48 md:w-28 md:h-28 mb-4 md:mr-4">
           <Image className="mr-3 rounded-md" {...imageProps} />
         </div>
         <div className="flex-1">
@@ -144,7 +146,7 @@ const FeedsPane = ({
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
       return (
-        <div className="cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-600">
+        <div className="cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-400">
           {props.group!.name}
         </div>
       );
@@ -163,6 +165,7 @@ const FeedsPane = ({
         className={`${className} px-6`}
         items={items}
         onRenderCell={onRenderCell}
+        onShouldVirtualize={()=>false}
         groupProps={groupProps}
         groups={groups}
       />
