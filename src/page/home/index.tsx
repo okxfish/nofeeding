@@ -4,10 +4,11 @@ import { default as FeedsPane } from "../../component/feedsPane";
 import { default as ArticlePane } from "../../component/articlePane";
 import { Modal, IconButton, IIconProps, Text } from "office-ui-fabric-react";
 import { useWindowSize } from "react-use";
-import feedsMockData from "../../mock/feed";
 import "./style.css";
+import { useHistory, Route, Switch } from "react-router-dom";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
+const homeIcon: IIconProps = { iconName: "Home" };
 const addIcon: IIconProps = { iconName: "Add" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const syncIcon: IIconProps = {
@@ -28,10 +29,11 @@ const Home = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
+  const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
   const hideModal = (): void => setIsArticleModalOpen(false);
   const openModal = (): void => setIsArticleModalOpen(true);
-  const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
-  const {width: windowSize} = useWindowSize();
+  const { width: windowSize } = useWindowSize();
+  const history = useHistory();
 
   const sidePaneItems: SidePaneItemProps[] = [
     {
@@ -41,14 +43,19 @@ const Home = () => {
       onClick: toggleSidePane,
     },
     {
+      icon: homeIcon,
+      text: "all feeds",
+      onClick: () => history.replace("/all"),
+    },
+    {
       icon: searchIcon,
       text: "search",
-      onClick: () => console.log("search"),
+      onClick: () => history.replace("/search"),
     },
     {
       icon: addIcon,
       text: "add",
-      onClick: () => console.log("add"),
+      onClick: () => history.replace("/add"),
     },
     {
       isGap: true,
@@ -61,7 +68,7 @@ const Home = () => {
     {
       icon: settingsIcon,
       text: "settings",
-      onClick: () => console.log("settings"),
+      onClick: () => history.replace("/setting"),
     },
   ];
 
@@ -91,21 +98,73 @@ const Home = () => {
     });
   };
 
-  const onClickFeed = ():void => {
-    if (windowSize < 1280) {
-      openModal();
-    }
-  }
+  const homeRender = (): React.ReactFragment => {
+    const onClickFeed = (): void => {
+      if (windowSize < 1280) {
+        openModal();
+      }
+    };
+
+    return (
+      <>
+        <div className="row-start-1 row-span-1 col-start-1 col-span-4 bg-gray-300 bg-opacity-70 sm:hidden">
+          <IconButton
+            className=""
+            iconProps={globalNavButtonIcon}
+            onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
+          />
+        </div>
+        <div
+          className={`
+          ${isOverViewPaneOpen ? "translate-x-0" : "-translate-x-full"}
+          transform transition-all
+          row-start-1 row-span-3 w-64 bg-gray-200
+          col-start-1 z-50 shadow-lg
+          sm:block sm:col-span-1 sm:col-start-2 sm:translate-x-0 sm:z-10 sm:shadow-none
+        `}
+        >
+          <IconButton
+            className="sm:hidden"
+            iconProps={globalNavButtonIcon}
+            onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
+          />
+          <OverviewPane />
+        </div>
+        <div
+          className="
+          overflow-y-auto scrollbar bg-gray-50 h-full
+          col-start-1 col-span-4 row-start-2 row-span-1 
+          sm:row-span-3 sm:col-start-3 sm:col-span-2 
+          xl:col-span-1 xl:max-w-md"
+        >
+          <FeedsPane
+            className="h-full transition-all"
+            onClickFeed={onClickFeed}
+          />
+        </div>
+        <div className="hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-start-4 col-span-1 row-span-3">
+          <ArticlePane className="px-6" />
+        </div>
+        <Modal
+          isOpen={isArticleModalOpen}
+          onDismiss={hideModal}
+          overlay={{ style: { backdropFilter: "blur(42px)" } }}
+          isBlocking={false}
+          styles={{ main: { maxHeight: "100%", maxWidth: "100%" } }}
+        >
+          <ArticlePane
+            className="px-6 max-h-screen md:max-h-modal"
+            closeModal={() => setIsArticleModalOpen(false)}
+          />
+        </Modal>
+      </>
+    );
+  };
+
+  const emptyRender = (): React.ReactElement | null => null;
 
   return (
     <div className="home__layout w-screen h-screen">
-      <div className="row-start-1 row-span-1 col-start-1 col-span-4 bg-gray-300 bg-opacity-70 sm:hidden">
-        <IconButton
-          className=""
-          iconProps={globalNavButtonIcon}
-          onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
-        />
-      </div>
       <div
         className={`
           col-start-1 z-50 flex items-center justify-between bg-gray-300 bg-opacity-70 transition-all
@@ -117,49 +176,13 @@ const Home = () => {
       >
         {sidePeneRender()}
       </div>
-      <div
-        className={`
-          ${isOverViewPaneOpen ? "translate-x-0" : "-translate-x-full"}
-          transform transition-all
-          row-start-1 row-span-3 w-64 bg-gray-200
-          col-start-1 z-50 shadow-lg
-          sm:block sm:col-span-1 sm:col-start-2 sm:translate-x-0 sm:z-10 sm:shadow-none
-        `}
-      >
-        <IconButton
-          className="sm:hidden"
-          iconProps={globalNavButtonIcon}
-          onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
-        />
-        <OverviewPane />
-      </div>
-      <div
-        className="
-          overflow-y-auto scrollbar bg-gray-50 h-full
-          col-start-1 col-span-4 row-start-2 row-span-1 
-          sm:row-span-3 sm:col-start-3 sm:col-span-2 
-          xl:col-span-1 xl:max-w-md"
-      >
-        <FeedsPane
-          className="h-full transition-all"
-          onClickFeed={onClickFeed}
-        />
-      </div>
-      <div className="hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-start-4 col-span-1 row-span-3">
-        <ArticlePane className="px-6" />
-      </div>
-      <Modal
-        isOpen={isArticleModalOpen}
-        onDismiss={hideModal}
-        overlay={{ style: { backdropFilter: "blur(42px)" } }}
-        isBlocking={false}
-        styles={{ main: { maxHeight: "100%", maxWidth: "100%" } }}
-      >
-        <ArticlePane
-          className="px-6 max-h-screen md:max-h-modal"
-          closeModal={() => setIsArticleModalOpen(false)}
-        />
-      </Modal>
+      <Switch>
+        <Route path="/all" render={homeRender} />
+        <Route path="/add" render={emptyRender} />
+        <Route path="/search" render={emptyRender} />
+        <Route path="/setting" render={emptyRender} />
+        <Route path="/" render={homeRender} exact />
+      </Switch>
     </div>
   );
 };
