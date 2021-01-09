@@ -140,8 +140,7 @@ const Home = () => {
           <FeedsPane
             className="h-full transition-all"
             onClickFeed={onClickFeed}
-          />
-        </div>
+          /></div>
         <div className="hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-start-4 col-span-1 row-span-3">
           <ArticlePane className="px-6" />
         </div>

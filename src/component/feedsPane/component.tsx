@@ -158,7 +158,7 @@ const FeedsPane = ({
 
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 cursor-pointer group transition hover:bg-gray-100"
+        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 cursor-pointer group transition select-none hover:bg-gray-100"
         onClick={onClickFeed}
       >
         <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-32 mb-4 md:mr-4 md:mb-0">
