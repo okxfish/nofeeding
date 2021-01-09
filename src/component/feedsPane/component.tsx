@@ -88,6 +88,74 @@ const FeedsPane = ({
       dispatch({ type: "feed/ById/toggleIsPin", payload: id });
     };
 
+    if (!item || typeof itemIndex !== "number" || itemIndex < 0 ) {
+      return null;
+    }
+
+    const feedFooterElem: React.ReactElement = (
+      <div className="flex items-center w-full flex-wrap">
+        <div className="flex items-center flex-1">
+          <TooltipHost content={item.sourceName} closeDelay={500}>
+            <Text
+              className="
+              text-sm text-gray-400 max-w-xs
+              md:max-w-5xs
+              lg:max-w-xs
+              xl:max-w-5xs"
+              block
+              nowrap
+            >
+              {item.sourceName}
+            </Text>
+          </TooltipHost>
+          <Text className="text-sm text-gray-400" nowrap>
+            /{item.time}
+          </Text>
+        </div>
+        <div className="
+        flex items-center justify-end 
+        sm:justify-between sm:w-full
+        md:justify-end md:w-auto
+        xl:justify-between xl:w-full
+        ">
+          <IconButton
+            className="focus:outline-none"
+            iconProps={item.isPin ? pinSolid12Icon : pinSolidOff12Icon}
+            title="pin as unread"
+            ariaLabel="Pin as unread"
+            disabled={false}
+            onClick={toggleIsPinById.bind(null, item.key)}
+          />
+          <IconButton
+            className="focus:outline-none"
+            iconProps={item.isStar ? favoriteStarFillIcon : favoriteStarIcon}
+            title="favorite"
+            ariaLabel="Favorite"
+            disabled={false}
+            onClick={toggleIsStarById.bind(null, item.key)}
+          />
+          <IconButton
+            className="focus:outline-none"
+            iconProps={item.isRead ? readingModeSolidIcon : readingModeIcon}
+            title="mark as read"
+            ariaLabel="Mark as read"
+            disabled={false}
+            onClick={toggleIsReadById.bind(null, item.key)}
+          />
+          <IconButton
+            className="focus:outline-none"
+            menuProps={menuProps}
+            iconProps={moreIcon}
+            onRenderMenuIcon={() => null}
+            title="more"
+            ariaLabel="More"
+            disabled={false}
+            checked={false}
+          />
+        </div>
+      </div>
+    );
+
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
         className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 cursor-pointer group transition hover:bg-gray-100"
@@ -103,56 +171,7 @@ const FeedsPane = ({
           <div className="flex-1 text-base text-gray-600 w-full">
             {item.summary}
           </div>
-          <div className="flex items-center justify-end w-full">
-            <TooltipHost content={item.sourceName} closeDelay={500}>
-              <Text
-                className="text-sm text-gray-400"
-                block
-                nowrap
-                style={{ maxWidth: "5rem" }}
-              >
-                {item.sourceName}
-              </Text>
-            </TooltipHost>
-            <Text className="text-sm text-gray-400" nowrap>
-              /{item.time}
-            </Text>
-            <div className="flex-1" />
-            <IconButton
-              className="focus:outline-none"
-              iconProps={item.isPin ? pinSolid12Icon : pinSolidOff12Icon}
-              title="pin as unread"
-              ariaLabel="Pin as unread"
-              disabled={false}
-              onClick={toggleIsPinById.bind(null, item.key)}
-            />
-            <IconButton
-              className="focus:outline-none"
-              iconProps={item.isStar ? favoriteStarFillIcon : favoriteStarIcon}
-              title="favorite"
-              ariaLabel="Favorite"
-              disabled={false}
-              onClick={toggleIsStarById.bind(null, item.key)}
-            />
-            <IconButton
-              className="focus:outline-none"
-              iconProps={item.isRead ? readingModeSolidIcon : readingModeIcon}
-              title="mark as read"
-              ariaLabel="Mark as read"
-              disabled={false}
-              onClick={toggleIsReadById.bind(null, item.key)}
-            />
-            <IconButton
-              className="focus:outline-none"
-              menuProps={menuProps}
-              iconProps={moreIcon}
-              onRenderMenuIcon={() => null}
-              title="more"
-              ariaLabel="More"
-              disabled={false}
-              checked={false}
-            />
-          </div>
+          {feedFooterElem}
         </div>
       </div>
     ) : null;

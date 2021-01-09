@@ -22,6 +22,7 @@
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-use": "^15.3.8",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.1",
     "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
@@ -30,6 +31,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "dp": "craco build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

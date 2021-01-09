@@ -1,7 +1,7 @@
 import { default as Mock, Random}  from 'mockjs';
 
 export default Mock.mock(():any=>{
-  const groupCount:number= Random.integer(4, 8);
+  const groupCount:number= Random.integer(3, 2);
   let feedCount = 0;
   return Array.from({length: groupCount}).map(
     (item, index):any=>({

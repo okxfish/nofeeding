@@ -3,8 +3,9 @@ import { default as OverviewPane } from "../../component/overviewPane";
 import { default as FeedsPane } from "../../component/feedsPane";
 import { default as ArticlePane } from "../../component/articlePane";
 import { Modal, IconButton, IIconProps, Text } from "office-ui-fabric-react";
-import "./style.css";
+import { useWindowSize } from "react-use";
 import feedsMockData from "../../mock/feed";
+import "./style.css";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const addIcon: IIconProps = { iconName: "Add" };
@@ -30,6 +31,7 @@ const Home = () => {
   const hideModal = (): void => setIsArticleModalOpen(false);
   const openModal = (): void => setIsArticleModalOpen(true);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
+  const {width: windowSize} = useWindowSize();
 
   const sidePaneItems: SidePaneItemProps[] = [
     {
@@ -89,6 +91,12 @@ const Home = () => {
     });
   };
 
+  const onClickFeed = ():void => {
+    if (windowSize < 1280) {
+      openModal();
+    }
+  }
+
   return (
     <div className="home__layout w-screen h-screen">
       <div className="row-start-1 row-span-1 col-start-1 col-span-4 bg-gray-300 bg-opacity-70 sm:hidden">
@@ -130,11 +138,11 @@ const Home = () => {
           overflow-y-auto scrollbar bg-gray-50 h-full
           col-start-1 col-span-4 row-start-2 row-span-1 
           sm:row-span-3 sm:col-start-3 sm:col-span-2 
-          xl:col-span-1"
+          xl:col-span-1 xl:max-w-md"
       >
         <FeedsPane
           className="h-full transition-all"
-          onClickFeed={openModal}
+          onClickFeed={onClickFeed}
         />
       </div>
       <div className="hidden xl:block grid-flow-row h-full scrollbar overflow-y-auto col-start-4 col-span-1 row-span-3">
