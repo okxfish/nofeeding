@@ -3,21 +3,18 @@ import {
   Text,
   Image,
   ImageFit,
-  IconButton,
   ActionButton,
+  IconButton,
   IIconProps,
-  Panel,
-  PanelType,
   IContextualMenuProps,
-  FontIcon,
-  IGroup,
   IImageProps,
   GroupedList,
+  IGroup,
   IGroupRenderProps,
   IGroupHeaderProps,
 } from "office-ui-fabric-react";
 import { FeedProps } from "./types";
-import { TooltipHost, ITooltipHostStyles } from "office-ui-fabric-react";
+import { TooltipHost } from "office-ui-fabric-react";
 import "./style.css";
 export interface Props {
   className?: string;
@@ -28,14 +25,13 @@ export interface Props {
   dispatch: Dispatch<any>;
 }
 
-const moreIcon: IIconProps = { iconName: "More" };
+const moreIcon: IIconProps = { iconName: "More"};
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
 const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const pinSolid12Icon: IIconProps = { iconName: "PinSolid12" };
 const pinSolidOff12Icon: IIconProps = { iconName: "PinSolidOff12" };
 const readingModeIcon: IIconProps = { iconName: "ReadingMode" };
 const readingModeSolidIcon: IIconProps = { iconName: "ReadingModeSolid" };
-const multiSelectMirroredIcon: IIconProps = { iconName: "MultiSelectMirrored" };
 
 const menuProps: IContextualMenuProps = {
   items: [
@@ -68,7 +64,6 @@ const FeedsPane = ({
   ): React.ReactNode => {
     const imageProps: IImageProps = {
       src: item?.thumbnailSrc,
-      shouldStartVisible: true,
       maximizeFrame: true,
       imageFit: ImageFit.cover,
     };
@@ -88,7 +83,7 @@ const FeedsPane = ({
       dispatch({ type: "feed/ById/toggleIsPin", payload: id });
     };
 
-    if (!item || typeof itemIndex !== "number" || itemIndex < 0 ) {
+    if (!item || typeof itemIndex !== "number" || itemIndex < 0) {
       return null;
     }
 
@@ -112,12 +107,14 @@ const FeedsPane = ({
             /{item.time}
           </Text>
         </div>
-        <div className="
+        <div
+          className="
         flex items-center justify-end 
         sm:justify-between sm:w-full
         md:justify-end md:w-auto
         xl:justify-between xl:w-full
-        ">
+        "
+        >
           <IconButton
             className="focus:outline-none"
             iconProps={item.isPin ? pinSolid12Icon : pinSolidOff12Icon}
@@ -156,13 +153,13 @@ const FeedsPane = ({
       </div>
     );
 
-    return item && typeof itemIndex === "number" && itemIndex > -1 ? (
+    return (
       <div
-        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 cursor-pointer group transition select-none hover:bg-gray-100"
+        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 group transition cursor-pointer hover:bg-gray-100"
         onClick={onClickFeed}
       >
-        <div className="flex-shrink-0 w-full h-48 md:w-32 md:h-32 mb-4 md:mr-4 md:mb-0">
-          <Image className="mr-3 rounded-md" {...imageProps} />
+        <div className="flex-shrink-0 w-full h-48 md:w-28 md:h-28 mb-4 md:mr-4 md:mb-0">
+          <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
         <div className="flex flex-col flex-1">
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
@@ -174,7 +171,7 @@ const FeedsPane = ({
           {feedFooterElem}
         </div>
       </div>
-    ) : null;
+    );
   };
 
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
@@ -190,8 +187,19 @@ const FeedsPane = ({
     }
   };
 
+  const onRenderFooter = (): React.ReactElement | null => {
+    return (
+      <div className="flex justify-end px-4 pt-4 pb-6 border-t border-gray-400">
+        <ActionButton className="text-blue-500 text-base mr-0 px-0">
+          mark this group as read
+        </ActionButton>
+      </div>
+    );
+  };
+
   const groupProps: IGroupRenderProps = {
     onRenderHeader: onRenderHeader,
+    onRenderFooter: onRenderFooter,
   };
 
   return (

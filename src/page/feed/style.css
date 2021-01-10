@@ -1,6 +1,6 @@
 .home__layout {
   --header-h: 2.5rem;
-  --footer-h: 4rem;
+  --footer-h: 6rem;
   display: grid;
   grid-template-columns: 3rem 16rem 2fr 3fr;
   grid-template-rows: var(--header-h) 1fr var(--footer-h);
