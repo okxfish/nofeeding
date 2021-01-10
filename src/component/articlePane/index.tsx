@@ -41,7 +41,7 @@ const ArticlePane = ({ className, style, closeModal }: Props) => {
   const contentRender = () => {
     return (
       <div className="flex flex-col">
-        <div className="flex items-center h-12 border-b">
+        <div className="flex items-center h-10 border-b">
           <IconButton
             className="block lg:hidden"
             iconProps={backIcon}

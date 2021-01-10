@@ -109,10 +109,10 @@ const FeedsPane = ({
         </div>
         <div
           className="
-        flex items-center justify-end 
-        sm:justify-between sm:w-full
-        md:justify-end md:w-auto
-        xl:justify-between xl:w-full
+            flex items-center justify-end 
+            sm:justify-between sm:w-full
+            md:justify-end md:w-auto
+            xl:justify-between xl:w-full
         "
         >
           <IconButton
@@ -158,7 +158,10 @@ const FeedsPane = ({
         className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 group transition cursor-pointer hover:bg-gray-100"
         onClick={onClickFeed}
       >
-        <div className="flex-shrink-0 w-full h-48 md:w-28 md:h-28 mb-4 md:mr-4 md:mb-0">
+        <div className="
+          flex-shrink-0 w-full h-48 mb-4
+          md:w-28 md:h-28 md:mr-4 md:mb-0
+        ">
           <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
         <div className="flex flex-col flex-1">
@@ -177,7 +180,7 @@ const FeedsPane = ({
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
       return (
-        <div className="flex items-center h-12 px-4 cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-400 sticky top-0 z-30 bg-gray-50">
+        <div className="flex items-center h-10 px-4 cursor-pointer text-gray-600 text-lg font-bold leading-loose border-b border-gray-400">
           <div className="flex-1">{props.group!.name}</div>
           <span className="font-normal">{props.group.count}</span>
         </div>
