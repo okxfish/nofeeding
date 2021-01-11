@@ -1,6 +1,10 @@
 import React, { ReactFragment, useState } from "react";
-import { default as FeedPage } from '../feed';
-import { IconButton, IIconProps, Text } from "office-ui-fabric-react";
+import { default as FeedPage } from "../feed";
+import {
+  IconButton,
+  IIconProps,
+  Text,
+} from "office-ui-fabric-react";
 import "./style.css";
 import { Redirect, useHistory, Route, Switch } from "react-router-dom";
 
@@ -50,6 +54,11 @@ const Home = () => {
       onClick: () => history.replace("/add"),
     },
     {
+      icon: syncIcon,
+      text: "sync",
+      onClick: () => {},
+    },
+    {
       isGap: true,
     },
     {
@@ -85,6 +94,32 @@ const Home = () => {
     });
   };
 
+const   sidePaneitemsRender = (items):React.ReactFragment => {
+  return sidePaneItems.map((item: SidePaneItemProps) => {
+    if (item.isGap) {
+      return <div className="flex-1"></div>;
+    } else {
+      return (
+        <div className={`w-full h-10 flex items-center ${item?.className}`}>
+          <IconButton
+            className="w-full h-full text-gray-300"
+            iconProps={item?.icon}
+            onClick={item?.onClick}
+          >
+            <Text
+              className={`hidden ${
+                isSidePaneOpen ? "sm:block" : ""
+              }   flex-1 text-left ml-2`}
+            >
+              {item?.text}
+            </Text>
+          </IconButton>
+        </div>
+      );
+    }
+  });
+}
+
   const emptyRender = (): React.ReactElement | null => null;
 
   return (
@@ -100,11 +135,11 @@ const Home = () => {
         {sidePeneRender()}
       </div>
       <Switch>
-        <Route path={['/feed/:options', '/feed']} component={FeedPage} />
+        <Route path={["/feed/:options", "/feed"]} component={FeedPage} />
         <Route path="/add" render={emptyRender} />
         <Route path="/search" render={emptyRender} />
         <Route path="/setting" render={emptyRender} />
-        <Redirect path="/" to="/feed" exact/>
+        <Redirect path="/" to="/feed" exact />
       </Switch>
     </div>
   );

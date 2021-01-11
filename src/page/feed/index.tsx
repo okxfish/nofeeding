@@ -49,27 +49,13 @@ const FeedPage = () => {
       <div
         className="
         flex items-center justify-between row-start-1 row-span-1 bg-gray-100 border-b border-gray-200 col-start-1 col-span-4 z-30
-        sm:col-start-3 sm:col-span-2 sm:px-4
-        xl:col-span-1
+        sm:hidden
       "
       >
         <IconButton
-          className="text-gray-600 sm:text-gray-300 sm:hidden"
+          className="text-gray-600 sm:text-gray-300"
           iconProps={globalNavButtonIcon}
           onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
-        />
-        <IconButton className="" iconProps={syncIcon} />
-        <DefaultButton
-          text="View"
-          split
-          splitButtonAriaLabel="See 2 options"
-          aria-roledescription="split button"
-          styles={{rootHasMenu: {
-            background: 'none'
-          }}}
-          iconProps={viewIcon}
-          menuProps={menuProps}
-          onClick={() => {}}
         />
       </div>
       <div
@@ -92,7 +78,7 @@ const FeedPage = () => {
         className="
         overflow-y-auto scrollbar bg-gray-50 h-full
         col-start-1 col-span-4 row-start-2 row-span-2 
-        sm:col-start-3 sm:col-span-2 
+        sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3 
         xl:col-start-3 xl:col-span-1"
       >
         <FeedsPane
