@@ -1,12 +1,9 @@
-import React, { ReactFragment, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { default as FeedPage } from "../feed";
-import {
-  IconButton,
-  IIconProps,
-  Text,
-} from "office-ui-fabric-react";
+import { IContextualMenuProps, IIconProps } from "office-ui-fabric-react";
 import "./style.css";
 import { Redirect, useHistory, Route, Switch } from "react-router-dom";
+import SideBarItem from "./sideBarItem";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const homeIcon: IIconProps = { iconName: "Home" };
@@ -17,108 +14,46 @@ const syncIcon: IIconProps = {
   style: { transform: "rolate" },
 };
 const settingsIcon: IIconProps = { iconName: "Settings" };
+const viewIcon: IIconProps = { iconName: "View" };
 
-interface SidePaneItemProps {
-  icon?: IIconProps;
-  text?: string;
-  className?: string;
-  isGap?: boolean;
-  onClick?(e: any): void;
-}
+const menuProps: IContextualMenuProps = {
+  items: [
+    {
+      key: "cardView",
+      text: "card view",
+      iconProps: { iconName: "GridViewMedium" },
+    },
+    {
+      key: "listView",
+      text: "list view",
+      iconProps: { iconName: "GroupedList" },
+    },
+    {
+      key: "splitView",
+      text: "split view",
+      iconProps: { iconName: "ColumnRightTwoThirds" },
+    },
+    {
+      key: "articleView",
+      text: "article view",
+      iconProps: { iconName: "ReadingMode" },
+    },
+  ],
+};
 
 const Home = () => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
+  const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
   const history = useHistory();
 
-  const sidePaneItems: SidePaneItemProps[] = [
-    {
-      icon: globalNavButtonIcon,
-      text: "menu",
-      className: "hidden sm:block",
-      onClick: toggleSidePane,
-    },
-    {
-      icon: homeIcon,
-      text: "all feeds",
-      onClick: () => history.replace("/feed"),
-    },
-    {
-      icon: searchIcon,
-      text: "search",
-      onClick: () => history.replace("/search"),
-    },
-    {
-      icon: addIcon,
-      text: "add",
-      onClick: () => history.replace("/add"),
-    },
-    {
-      icon: syncIcon,
-      text: "sync",
-      onClick: () => {},
-    },
-    {
-      isGap: true,
-    },
-    {
-      icon: settingsIcon,
-      text: "settings",
-      onClick: () => history.replace("/setting"),
-    },
-  ];
-
-  const sidePeneRender = (): ReactFragment => {
-    return sidePaneItems.map((item: SidePaneItemProps) => {
-      if (item.isGap) {
-        return <div className="flex-1"></div>;
-      } else {
-        return (
-          <div className={`w-full h-10 flex items-center ${item?.className}`}>
-            <IconButton
-              className="w-full h-full text-gray-300"
-              iconProps={item?.icon}
-              onClick={item?.onClick}
-            >
-              <Text
-                className={`hidden ${
-                  isSidePaneOpen ? "sm:block" : ""
-                }   flex-1 text-left ml-2`}
-              >
-                {item?.text}
-              </Text>
-            </IconButton>
-          </div>
-        );
-      }
-    });
-  };
-
-const   sidePaneitemsRender = (items):React.ReactFragment => {
-  return sidePaneItems.map((item: SidePaneItemProps) => {
-    if (item.isGap) {
-      return <div className="flex-1"></div>;
-    } else {
-      return (
-        <div className={`w-full h-10 flex items-center ${item?.className}`}>
-          <IconButton
-            className="w-full h-full text-gray-300"
-            iconProps={item?.icon}
-            onClick={item?.onClick}
-          >
-            <Text
-              className={`hidden ${
-                isSidePaneOpen ? "sm:block" : ""
-              }   flex-1 text-left ml-2`}
-            >
-              {item?.text}
-            </Text>
-          </IconButton>
-        </div>
-      );
+  useEffect(() => {
+    let timeout;
+    if (isLoaddingFeeds) {
+      timeout = setTimeout(() => setIsLoaddingFeeds(false), 2000);
     }
-  });
-}
+    return () => clearTimeout(timeout);
+  }, [isLoaddingFeeds]);
 
   const emptyRender = (): React.ReactElement | null => null;
 
@@ -128,11 +63,78 @@ const   sidePaneitemsRender = (items):React.ReactFragment => {
         className={`
           col-start-1 z-50 flex items-center justify-between bg-gray-600 transition-all
           flex-row col-span-4 row-start-3 row-span-1
-          sm:flex-col  sm:col-span-1 sm:row-start-1  sm:row-span-3 
+          sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1  sm:row-span-3 
           ${isSidePaneOpen ? "sm:w-48 col-span-2" : "sm:w-full"}
         `}
       >
-        {sidePeneRender()}
+        <SideBarItem
+          className="hidden sm:block"
+          iconProps={globalNavButtonIcon}
+          isIconOnly={!isSidePaneOpen}
+          content=""
+          onClick={toggleSidePane}
+        >
+          menu
+        </SideBarItem>
+        <SideBarItem
+          iconProps={homeIcon}
+          isIconOnly={!isSidePaneOpen}
+          onClick={() => history.replace("/feed")}
+        >
+          feed
+        </SideBarItem>
+        <SideBarItem
+          iconProps={searchIcon}
+          isIconOnly={!isSidePaneOpen}
+          onClick={() => history.replace("/search")}
+        >
+          search
+        </SideBarItem>
+        <SideBarItem
+          iconProps={addIcon}
+          isIconOnly={!isSidePaneOpen}
+          onClick={() => history.replace("/add")}
+        >
+          add
+        </SideBarItem>
+        <Switch>
+          <Route
+            path={["/feed/:options", "/feed"]}
+            render={() => (
+              <>
+                <SideBarItem
+                  className=" border-t border-gray-200"
+                  iconProps={syncIcon}
+                  isIconOnly={!isSidePaneOpen}
+                  content=""
+                  styles={{
+                    icon: isLoaddingFeeds ? "fr-spin" : "",
+                  }}
+                  onClick={() => setIsLoaddingFeeds(true)}
+                >
+                  sync
+                </SideBarItem>
+                <SideBarItem
+                  iconProps={viewIcon}
+                  menuProps={menuProps}
+                  isIconOnly={!isSidePaneOpen}
+                >
+                  view
+                </SideBarItem>
+              </>
+            )}
+          />
+        </Switch>
+        <div className="hide sm:block flex-1"></div>
+        <SideBarItem
+          className=" border-t border-gray-200"
+          iconProps={settingsIcon}
+          isIconOnly={!isSidePaneOpen}
+          content=""
+          onClick={() => history.replace("/setting")}
+        >
+          settings
+        </SideBarItem>
       </div>
       <Switch>
         <Route path={["/feed/:options", "/feed"]} component={FeedPage} />

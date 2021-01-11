@@ -13,8 +13,6 @@ import { useWindowSize } from "react-use";
 import "./style.css";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
-const syncIcon: IIconProps = { iconName: "Sync" };
-const viewIcon: IIconProps = { iconName: "View" };
 
 const menuProps: IContextualMenuProps = {
   items: [
