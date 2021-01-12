@@ -18,14 +18,14 @@ import { TooltipHost } from "office-ui-fabric-react";
 import "./style.css";
 export interface Props {
   className?: string;
-  onClickFeed?(): any;
+  onClickFeed?(e:any): any;
   items: FeedProps[];
   groups: IGroup[];
   isSidePaneOpen: boolean;
   dispatch: Dispatch<any>;
 }
 
-const moreIcon: IIconProps = { iconName: "More"};
+const moreIcon: IIconProps = { iconName: "More" };
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
 const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const pinSolid12Icon: IIconProps = { iconName: "PinSolid12" };
@@ -155,13 +155,19 @@ const FeedsPane = ({
 
     return (
       <div
-        className="feed-item flex-wrap rounded-md md:flex md:flex-nowrap p-4 group transition cursor-pointer hover:bg-gray-100"
+        className="
+          feed-item flex-wrap rounded-md transition cursor-pointer p-4 group
+        hover:bg-gray-100
+          md:flex md:flex-nowrap 
+        "
         onClick={onClickFeed}
       >
-        <div className="
-          flex-shrink-0 w-full h-48 mb-4
-          md:w-28 md:h-28 md:mr-4 md:mb-0
-        ">
+        <div
+          className="
+            flex-shrink-0 w-full h-48 mb-4
+            md:w-28 md:h-28 md:mr-4 md:mb-0
+          "
+        >
           <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
         <div className="flex flex-col flex-1">

@@ -36,7 +36,8 @@ const FeedPage = () => {
   const openModal = (): void => setIsArticleModalOpen(true);
   const { width: windowSize } = useWindowSize();
 
-  const onClickFeed = (): void => {
+  const onClickFeed = (e:any):any => {
+    e.preventDefault()
     if (windowSize < 1280) {
       openModal();
     }

@@ -57,6 +57,26 @@ const Home = () => {
 
   const emptyRender = (): React.ReactElement | null => null;
 
+  const handleFeedClick = () => {
+    history.replace("/feed")
+  };
+
+  const handleSearchClick = () => {
+    history.replace("/search")
+  };
+
+  const handleAddClick = () => {
+    history.replace("/add")
+  };
+
+  const handleSyncClick = () => {
+    setIsLoaddingFeeds(true)
+  };
+
+  const handleHamburgerMenuBtnClick = () => {
+    toggleSidePane()
+  };
+
   return (
     <div className="home__layout w-screen h-screen">
       <div
@@ -72,62 +92,61 @@ const Home = () => {
           iconProps={globalNavButtonIcon}
           isIconOnly={!isSidePaneOpen}
           content=""
-          onClick={toggleSidePane}
+          onClick={handleHamburgerMenuBtnClick}
         >
           menu
         </SideBarItem>
         <SideBarItem
           iconProps={homeIcon}
           isIconOnly={!isSidePaneOpen}
-          onClick={() => history.replace("/feed")}
+          onClick={handleFeedClick}
         >
           feed
         </SideBarItem>
         <SideBarItem
           iconProps={searchIcon}
           isIconOnly={!isSidePaneOpen}
-          onClick={() => history.replace("/search")}
+          onClick={handleSearchClick}
         >
           search
         </SideBarItem>
         <SideBarItem
           iconProps={addIcon}
           isIconOnly={!isSidePaneOpen}
-          onClick={() => history.replace("/add")}
+          onClick={handleAddClick}
         >
           add
         </SideBarItem>
-        <Switch>
-          <Route
-            path={["/feed/:options", "/feed"]}
-            render={() => (
-              <>
-                <SideBarItem
-                  className=" border-t border-gray-200"
-                  iconProps={syncIcon}
-                  isIconOnly={!isSidePaneOpen}
-                  content=""
-                  styles={{
-                    icon: isLoaddingFeeds ? "fr-spin" : "",
-                  }}
-                  onClick={() => setIsLoaddingFeeds(true)}
-                >
-                  sync
-                </SideBarItem>
-                <SideBarItem
-                  iconProps={viewIcon}
-                  menuProps={menuProps}
-                  isIconOnly={!isSidePaneOpen}
-                >
-                  view
-                </SideBarItem>
-              </>
-            )}
-          />
-        </Switch>
-        <div className="hide sm:block flex-1"></div>
+        <div className="hidden sm:block flex-1 flex-col w-full my-8">
+          <Switch>
+            <Route
+              path={["/feed/:options", "/feed"]}
+              render={() => (
+                <>
+                  <SideBarItem
+                    iconProps={syncIcon}
+                    isIconOnly={!isSidePaneOpen}
+                    content=""
+                    styles={{
+                      icon: isLoaddingFeeds ? "fr-spin" : "",
+                    }}
+                    onClick={handleSyncClick}
+                  >
+                    sync
+                  </SideBarItem>
+                  <SideBarItem
+                    iconProps={viewIcon}
+                    menuProps={menuProps}
+                    isIconOnly={!isSidePaneOpen}
+                  >
+                    view
+                  </SideBarItem>
+                </>
+              )}
+            />
+          </Switch>
+        </div>
         <SideBarItem
-          className=" border-t border-gray-200"
           iconProps={settingsIcon}
           isIconOnly={!isSidePaneOpen}
           content=""

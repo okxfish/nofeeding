@@ -141,7 +141,7 @@ const store = initStore();
 
 export interface Props {
   className?: string;
-  onClickFeed?(): any;
+  onClickFeed?(e: any): any;
 }
 
 const FeedsPaneContainer = ({ className, ...rest }: Props) => {
