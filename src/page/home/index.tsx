@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { default as FeedPage } from "../feed";
 import { IContextualMenuProps, IIconProps } from "office-ui-fabric-react";
-import Parser from "rss-parser";
-import { Parser as HtmlToReactParser } from "html-to-react";
 import { Redirect, useHistory, Route, Switch } from "react-router-dom";
 import SideBarItem from "./sideBarItem";
 import "./style.css";
@@ -14,12 +12,6 @@ const searchIcon: IIconProps = { iconName: "Search" };
 const syncIcon: IIconProps = { iconName: "Sync" };
 const settingsIcon: IIconProps = { iconName: "Settings" };
 const viewIcon: IIconProps = { iconName: "View" };
-
-const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
-
-const parser: Parser<any, any> = new Parser({
-  // customFields: { feed: null, item: null },
-});
 
 const menuProps: IContextualMenuProps = {
   items: [
@@ -47,34 +39,11 @@ const menuProps: IContextualMenuProps = {
 };
 
 const Home = () => {
-  const htmlToReactParserRef = useRef({ parse: (a) => <div></div> });
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
-  const [feedsData, setFeedsData] = useState([{ content: '', title: '' }]);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
   const history = useHistory();
-
-  useEffect(() => {
-    htmlToReactParserRef.current = new HtmlToReactParser();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const feed = await parser.parseURL(
-          CORS_PROXY + "http://feeds.feedburner.com/ruanyifeng"
-        );
-        console.log(feed.title); // feed will have a `foo` property, type as a string
-        feed.items.forEach((item) => {
-          console.log(item.title + ":" + item.link); // item will have a `bar` property type as a number
-        });
-        setFeedsData(feed.items);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
-
+  
   useEffect(() => {
     let timeout;
     if (isLoaddingFeeds) {
@@ -188,25 +157,6 @@ const Home = () => {
         <Route path="/add" render={emptyRender} />
         <Route path="/search" render={emptyRender} />
         <Route path="/setting" render={emptyRender} />
-        <Route
-          path="/article"
-          render={() => {
-            if (
-              !htmlToReactParserRef ||
-              !htmlToReactParserRef.current ||
-              typeof htmlToReactParserRef.current.parse === "undefined"
-            ) {
-              return null;
-            } else {
-              return (
-                <div className="w-176 mx-auto scrollbar h-full overflow-y-auto p-10 col-start-2 col-span-3 row-start-1 row-span-3">
-                  <h1>{feedsData[0].title}</h1>
-                  {htmlToReactParserRef.current.parse(feedsData[0].content)}
-                </div>
-              );
-            }
-          }}
-        />
         <Redirect path="/" to="/feed" exact />
       </Switch>
     </div>

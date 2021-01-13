@@ -1,43 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { default as OverviewPane } from "../../component/overviewPane";
 import { default as FeedsPane } from "../../component/feedsPane";
 import { default as ArticlePane } from "../../component/articlePane";
-import {
-  Modal,
-  IconButton,
-  DefaultButton,
-  IContextualMenuProps,
-  IIconProps,
-} from "office-ui-fabric-react";
+import { Modal, IconButton, IIconProps } from "office-ui-fabric-react";
+
 import { useWindowSize } from "react-use";
+import { useSearchParam } from "../../utils/useSearchParma";
 import "./style.css";
+import Parser from "rss-parser";
+import { useLocation } from "react-router-dom";
+
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 
-const menuProps: IContextualMenuProps = {
-  items: [
-    {
-      key: "emailMessage",
-      text: "Email message",
-      iconProps: { iconName: "Mail" },
-    },
-    {
-      key: "calendarEvent",
-      text: "Calendar event",
-      iconProps: { iconName: "Calendar" },
-    },
-  ],
-};
+const parser: Parser<any, any> = new Parser();
 
 const FeedPage = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
+  const [feedsData, setFeedsData] = useState([{ content: "", title: "" }]);
   const hideModal = (): void => setIsArticleModalOpen(false);
   const openModal = (): void => setIsArticleModalOpen(true);
   const { width: windowSize } = useWindowSize();
+  const location = useLocation();
+  
+  const articleIndex = parseInt(
+    useSearchParam("articleIndex", location) || "0",
+    10
+  );
 
-  const onClickFeed = (e:any):any => {
-    e.preventDefault()
+  useEffect(() => {
+    (async () => {
+      try {
+        const feed = await parser.parseURL(
+          CORS_PROXY + "http://feeds.feedburner.com/ruanyifeng"
+        );
+        setFeedsData(feed.items);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+
+  const onClickFeed = (e: any): any => {
+    e.preventDefault();
     if (windowSize < 1280) {
       openModal();
     }
@@ -92,7 +99,7 @@ const FeedPage = () => {
           xl:block xl:col-start-4 xl:col-span-1
       "
       >
-        <ArticlePane className="px-6" />
+        <ArticlePane className="px-6" article={feedsData[articleIndex]} />
       </div>
       <Modal
         isOpen={isArticleModalOpen}
