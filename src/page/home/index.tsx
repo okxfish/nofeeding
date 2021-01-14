@@ -75,7 +75,7 @@ const Home = () => {
   };
 
   return (
-    <div className="home__layout w-screen h-screen">
+    <div className="home__layout w-screen h-screen overflow-hidden">
       <div
         className={`
           col-start-1 z-50 flex items-center justify-between bg-gray-600 transition-all
