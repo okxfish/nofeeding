@@ -16,6 +16,7 @@ const parser: Parser<any, any> = new Parser();
 const OverviewPane = lazy(() => import("../../component/overviewPane"));
 const FeedsPane = lazy(() => import("../../component/feedsPane"));
 const ArticlePane = lazy(() => import("../../component/articlePane"));
+const AnimationPane = lazy(() => import("../../component/animationPane"));
 
 const FeedPage = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
@@ -25,6 +26,9 @@ const FeedPage = () => {
   const openModal = (): void => setIsArticleModalOpen(true);
   const { width: windowSize } = useWindowSize();
   const location = useLocation();
+
+  const openOverviewPane = () => setIsOverViewPaneOpen(true);
+  const closeOverviewPane = () => setIsOverViewPaneOpen(false);
 
   const articleIndex = parseInt(
     useSearchParam("articleIndex", location) || "0",
@@ -64,38 +68,38 @@ const FeedPage = () => {
       >
         <div
           className="
-        flex items-center justify-between row-start-1 row-span-1 bg-gray-100 border-b border-gray-200 col-start-1 col-span-4 z-30
-        sm:hidden
-      "
+            flex items-center justify-between z-30
+            row-start-1 row-span-1 col-start-1 col-span-4
+            border-b border-gray-200 bg-gray-100   
+            sm:hidden
+          "
         >
           <IconButton
             className="text-gray-600 sm:text-gray-300"
             iconProps={globalNavButtonIcon}
-            onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
+            onClick={openOverviewPane}
           />
         </div>
-        <div
-          className={`
-        ${isOverViewPaneOpen ? "translate-y-0" : "translate-y-full"}
-        flex flex-col transform transition-all h-2/3 self-end
-        row-start-1 row-span-3 bg-gray-200
-        col-start-1 col-span-4 z-50 shadow-lg
-        sm:col-span-1 sm:col-start-2 sm:z-10 sm:shadow-none sm:h-full sm:translate-x-0 sm:translate-y-0
-      `}
+        <AnimationPane
+          rootClassName="
+              row-start-1 row-span-3
+              col-start-1 col-span-4
+              sm:col-span-1 sm:col-start-2
+            "
+          isOpend={isOverViewPaneOpen}
+          onClose={closeOverviewPane}
+          canMaskClose
         >
-          <IconButton
-            className="sm:hidden"
-            iconProps={globalNavButtonIcon}
-            onClick={() => setIsOverViewPaneOpen(!isOverViewPaneOpen)}
-          />
           <OverviewPane className="" />
-        </div>
+        </AnimationPane>
         <div
           className="
-        overflow-y-auto scrollbar bg-gray-50 h-full
-        col-start-1 col-span-4 row-start-2 row-span-2 
-        sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3 
-        xl:col-start-3 xl:col-span-1"
+          overflow-auto scrollbar
+          bg-gray-50 h-full
+          col-start-1 col-span-4 row-start-2 row-span-2
+          sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3
+          xl:col-start-3 xl:col-span-1"
+          data-is-scrollable
         >
           <FeedsPane
             className="h-full transition-all"
@@ -121,6 +125,7 @@ const FeedPage = () => {
           <ArticlePane
             className="px-6 max-h-screen md:max-h-modal"
             closeModal={() => setIsArticleModalOpen(false)}
+            article={feedsData[articleIndex]}
           />
         </Modal>
       </Suspense>
