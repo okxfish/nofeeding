@@ -59,11 +59,13 @@ const FeedPage = () => {
     <>
       <Suspense
         fallback={
-          <Spinner
-            className="m-auto mt-72"
-            size={SpinnerSize.large}
-            label="loading..."
-          />
+          <div className="h-full w-full flex items-center justify-center col-start-1 col-span-4">
+            <Spinner
+              className="m-auto mt-72"
+              size={SpinnerSize.large}
+              label="loading..."
+            />
+          </div>
         }
       >
         <div

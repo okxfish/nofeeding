@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { default as FeedPage } from "../feed";
+import { useWindowSize } from "react-use";
 import { IContextualMenuProps, IIconProps } from "office-ui-fabric-react";
 import { Redirect, useHistory, Route, Switch } from "react-router-dom";
 import SideBarItem from "./sideBarItem";
@@ -42,8 +43,9 @@ const Home = () => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
+  const { height: windowHeight } = useWindowSize();
   const history = useHistory();
-  
+
   useEffect(() => {
     let timeout;
     if (isLoaddingFeeds) {
@@ -75,7 +77,10 @@ const Home = () => {
   };
 
   return (
-    <div className="home__layout w-screen h-screen overflow-hidden">
+    <div
+      className="home__layout w-screen overflow-hidden"
+      style={{ height: windowHeight }}
+    >
       <div
         className={`
           col-start-1 z-50 flex items-center justify-between bg-gray-600 transition-all
