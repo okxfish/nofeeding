@@ -60,7 +60,7 @@ const AnimationPane = ({
     >
       <div
         className="bg-gray-600 absolute h-full w-full bg-opacity-50 transition-all"
-        style={{ backdropFilter: isContentOpen ? "blur(10px)" : "none" }}
+        style={{ backdropFilter: "blur(10px)" }}
         onClick={handleClickMask}
       />
       <div
