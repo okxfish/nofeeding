@@ -26,7 +26,7 @@ export interface FeedProps {
   title: string;
   summary?: string;
   thumbnailSrc?: string;
-  sourceName: string;
+  sourceName?: string;
   time?: string;
   isRead?: boolean;
   isStar?: boolean;

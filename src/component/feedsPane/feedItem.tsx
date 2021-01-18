@@ -8,16 +8,18 @@ import {
   IContextualMenuProps,
   Image,
 } from "@fluentui/react";
-import React, { useState, useRef, useEffect, Dispatch } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FeedProps } from "./types";
 import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
-
+import throttle from "lodash.throttle";
 export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
   itemIndex?: number;
-  onClickFeed?(e: any): void;
-  dispatch: Dispatch<any>;
+  onClickFeed?(e?: any): void;
+  onPinClick?(e?: any): void;
+  onStarClick?(e?: any): void;
+  onReadClick?(e?: any): void;
 }
 
 const moreIcon: IIconProps = { iconName: "More" };
@@ -57,7 +59,9 @@ const FeedItem = ({
   item,
   itemIndex,
   onClickFeed,
-  dispatch,
+  onPinClick,
+  onStarClick,
+  onReadClick,
 }: Props) => {
   const [xOffset, setXOffset] = useState<number>(initXOffset);
   const [stayPosition, setStayPosition] = useState<StayPosition>(
@@ -67,72 +71,72 @@ const FeedItem = ({
   const hammerInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    const thresholdMax = 80;
+    const thresholdMax = 200;
     const thresholdMin = 10;
-    if (hammerInstanceRef && feedItemRef && feedItemRef.current) {
-      hammerInstanceRef.current = new Hammer(feedItemRef.current);
-      hammerInstanceRef.current.on("pan", function (ev) {
+
+    const handleOnPan = throttle((ev: any) => {
+      if (
+        ev.offsetDirection === DIRECTION_LEFT ||
+        ev.offsetDirection === DIRECTION_RIGHT
+      ) {
+        console.log(
+          `x: ${ev.deltaX}, y: ${ev.deltaY}, offsetD: ${ev.offsetDirection}, direction: ${ev.direction}`
+        );
+
+        const xOffsetAbs = Math.abs(ev.deltaX);
+        if (xOffsetAbs > thresholdMin && xOffsetAbs < thresholdMax) {
+          setXOffset(initXOffset + ev.deltaX);
+          return;
+        }
+      }
+    }, 90);
+
+    const handleOnPanEnd = (ev: any) => {
+      let endXOffset;
+      if (Math.abs(ev.deltaX) > thresholdMin) {
         if (
-          ev.offsetDirection === DIRECTION_LEFT ||
-          ev.offsetDirection === DIRECTION_RIGHT
+          (stayPosition === StayPosition.left && ev.deltaX > 0) ||
+          (stayPosition === StayPosition.right && ev.deltaX < 0)
         ) {
-          console.log(
-            `x: ${ev.deltaX}, y: ${ev.deltaY}, offsetD: ${ev.offsetDirection}, direction: ${ev.direction}`
-          );
-          const xOffsetAbs = Math.abs(ev.deltaX);
-          if (xOffsetAbs > thresholdMin && xOffsetAbs < thresholdMax) {
-            setXOffset(initXOffset + ev.deltaX);
-            return;
+          endXOffset = 0;
+          setStayPosition(StayPosition.mid);
+        } else if (stayPosition === StayPosition.mid) {
+          if (ev.deltaX > 0) {
+            endXOffset = thresholdMax;
+            setStayPosition(StayPosition.right);
+          } else {
+            endXOffset = -thresholdMax;
+            setStayPosition(StayPosition.left);
           }
         }
-      });
+      }
 
-      hammerInstanceRef.current.on("panend", function (ev) {
-        let endXOffset;
-        if (Math.abs(ev.deltaX) > thresholdMin) {
-          if (
-            (stayPosition === StayPosition.left && ev.deltaX > 0) ||
-            (stayPosition === StayPosition.right && ev.deltaX < 0)
-          ) {
-            endXOffset = 0;
-            setStayPosition(StayPosition.mid);
-          } else if (stayPosition === StayPosition.mid) {
-            if (ev.deltaX > 0) {
-              endXOffset = thresholdMax;
-              setStayPosition(StayPosition.right);
-            } else {
-              endXOffset = -thresholdMax;
-              setStayPosition(StayPosition.left);
-            }
-          }
-        }
+      if (typeof endXOffset !== "undefined") {
+        console.log(endXOffset);
+        setXOffset(endXOffset);
+      }
+    };
 
-        if (typeof endXOffset !== 'undefined') {
-          setXOffset(endXOffset);
-        }
-      });
+    const feedItemNode = feedItemRef.current;
+
+    if (hammerInstanceRef && feedItemNode) {
+      hammerInstanceRef.current = new Hammer(feedItemNode);
+      hammerInstanceRef.current.on("pan", handleOnPan);
+      hammerInstanceRef.current.on("panend", handleOnPanEnd);
     }
-  }, []);
+
+    return () => {
+      if (hammerInstanceRef && feedItemRef && feedItemNode) {
+        hammerInstanceRef.current.off("pan", handleOnPan);
+        hammerInstanceRef.current.off("panend", handleOnPanEnd);
+      }
+    };
+  }, [stayPosition]);
 
   const imageProps: IImageProps = {
     src: item?.thumbnailSrc,
     maximizeFrame: true,
     imageFit: ImageFit.cover,
-  };
-
-  const toggleIsReadById = (id: string, e: any): void => {
-    e.stopPropagation();
-    dispatch({ type: "feed/ById/toggleIsRead", payload: id });
-  };
-
-  const toggleIsStarById = (id: string, e: any): void => {
-    e.stopPropagation();
-    dispatch({ type: "feed/ById/toggleIsStar", payload: id });
-  };
-
-  const toggleIsPinById = (id: string, e: any): void => {
-    e.stopPropagation();
-    dispatch({ type: "feed/ById/toggleIsPin", payload: id });
   };
 
   if (!item || typeof itemIndex !== "number" || itemIndex < 0) {
@@ -174,7 +178,7 @@ const FeedItem = ({
           title="pin as unread"
           ariaLabel="Pin as unread"
           disabled={false}
-          onClick={toggleIsPinById.bind(null, item.key)}
+          onClick={onPinClick}
         />
         <IconButton
           className="focus:outline-none"
@@ -182,7 +186,7 @@ const FeedItem = ({
           title="favorite"
           ariaLabel="Favorite"
           disabled={false}
-          onClick={toggleIsStarById.bind(null, item.key)}
+          onClick={onStarClick}
         />
         <IconButton
           className="focus:outline-none"
@@ -190,7 +194,7 @@ const FeedItem = ({
           title="mark as read"
           ariaLabel="Mark as read"
           disabled={false}
-          onClick={toggleIsReadById.bind(null, item.key)}
+          onClick={onReadClick}
         />
         <IconButton
           className="focus:outline-none"
@@ -209,31 +213,35 @@ const FeedItem = ({
   return (
     <div
       className="
-        feed-item flex-wrap rounded-md  p-4 group
-        transition cursor-pointer select-none
-      hover:bg-gray-100 
-        md:flex md:flex-nowrap 
+      bg-gray-500
       "
-      ref={feedItemRef}
       onClick={onClickFeed}
-      style={{ transform: `translateX(${xOffset}px)` }}
     >
       <div
-        className="
+        ref={feedItemRef}
+        style={{ transform: `translateX(${xOffset}px)` }}
+        className="bg-gray-50 p-4 feed-item flex-wrap group
+      transition cursor-pointer select-none
+    hover:bg-gray-100 
+      md:flex md:flex-nowrap "
+      >
+        <div
+          className="
           flex-shrink-0 w-full h-48 mb-4
           md:w-28 md:h-28 md:mr-4 md:mb-0
         "
-      >
-        <Image className="mr-3 rounded-md select-none" {...imageProps} />
-      </div>
-      <div className="flex flex-col flex-1">
-        <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
-          <span className="flex-1">{item.title}</span>
+        >
+          <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
-        <div className="flex-1 text-base text-gray-600 w-full">
-          {item.summary}
+        <div className="flex flex-col flex-1">
+          <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
+            <span className="flex-1">{item.title}{stayPosition}</span>
+          </div>
+          <div className="flex-1 text-base text-gray-600 w-full">
+            {item.summary}
+          </div>
+          {feedFooterElem}
         </div>
-        {feedFooterElem}
       </div>
     </div>
   );

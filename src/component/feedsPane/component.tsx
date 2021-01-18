@@ -28,12 +28,14 @@ const FeedsPane = ({
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
       return (
-        <div className="
+        <div
+          className="
            flex items-center 
            h-10 px-4 border-b border-gray-400
            cursor-pointer 
            text-lg text-gray-600 font-bold leading-loose
-         ">
+         "
+        >
           <div className="flex-1">{props.group!.name}</div>
           <span className="font-normal">{props.group.count}</span>
         </div>
@@ -62,14 +64,34 @@ const FeedsPane = ({
     nestingDepth?: number | undefined,
     item?: any,
     index?: number | undefined
-  ): React.ReactNode => (
-    <FeedItem
-      item={item}
-      itemIndex={index}
-      onClickFeed={onClickFeed}
-      dispatch={dispatch}
-    />
-  );
+  ): React.ReactNode => {
+    
+    const toggleIsReadById = (e: any): void => {
+      e.stopPropagation();
+      dispatch({ type: "feed/ById/toggleIsRead", payload: item.key });
+    };
+
+    const toggleIsStarById = (e: any): void => {
+      e.stopPropagation();
+      dispatch({ type: "feed/ById/toggleIsStar", payload: item.key });
+    };
+
+    const toggleIsPinById = (e: any): void => {
+      e.stopPropagation();
+      dispatch({ type: "feed/ById/toggleIsPin", payload: item.key });
+    };
+
+    return (
+      <FeedItem
+        item={item}
+        itemIndex={index}
+        onClickFeed={onClickFeed}
+        onPinClick={toggleIsPinById}
+        onStarClick={toggleIsStarById}
+        onReadClick={toggleIsReadById}  
+      />
+    );
+  };
 
   return (
     <>
