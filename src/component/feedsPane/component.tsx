@@ -67,17 +67,23 @@ const FeedsPane = ({
   ): React.ReactNode => {
     
     const toggleIsReadById = (e: any): void => {
-      e.stopPropagation();
+      if(e && typeof e.stopPropagation === 'function'){
+        e.stopPropagation();
+      } 
       dispatch({ type: "feed/ById/toggleIsRead", payload: item.key });
     };
 
     const toggleIsStarById = (e: any): void => {
-      e.stopPropagation();
+      if(e && typeof e.stopPropagation === 'function'){
+        e.stopPropagation();
+      } 
       dispatch({ type: "feed/ById/toggleIsStar", payload: item.key });
     };
 
     const toggleIsPinById = (e: any): void => {
-      e.stopPropagation();
+      if(e && typeof e.stopPropagation === 'function'){
+        e.stopPropagation();
+      } 
       dispatch({ type: "feed/ById/toggleIsPin", payload: item.key });
     };
 
@@ -88,7 +94,9 @@ const FeedsPane = ({
         onClickFeed={onClickFeed}
         onPinClick={toggleIsPinById}
         onStarClick={toggleIsStarById}
-        onReadClick={toggleIsReadById}  
+        onReadClick={toggleIsReadById}
+        onLeftSlide={toggleIsReadById}
+        onRightSlide={toggleIsStarById}
       />
     );
   };

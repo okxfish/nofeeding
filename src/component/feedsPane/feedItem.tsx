@@ -8,10 +8,9 @@ import {
   IContextualMenuProps,
   Image,
 } from "@fluentui/react";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FeedProps } from "./types";
 import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
-import throttle from "lodash.throttle";
 export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
@@ -20,6 +19,8 @@ export interface Props {
   onPinClick?(e?: any): void;
   onStarClick?(e?: any): void;
   onReadClick?(e?: any): void;
+  onLeftSlide?(e?: any): void;
+  onRightSlide?(e?: any): void;
 }
 
 const moreIcon: IIconProps = { iconName: "More" };
@@ -47,12 +48,9 @@ const menuProps: IContextualMenuProps = {
 };
 
 const initXOffset = 0;
-
-enum StayPosition {
-  left = 1,
-  mid,
-  right,
-}
+const thresholdMax = 160;
+const thresholdMin = 10;
+const slideBackAnimationDuration = 130;
 
 const FeedItem = ({
   nestingDepth,
@@ -62,61 +60,46 @@ const FeedItem = ({
   onPinClick,
   onStarClick,
   onReadClick,
+  onLeftSlide,
+  onRightSlide,
 }: Props) => {
   const [xOffset, setXOffset] = useState<number>(initXOffset);
-  const [stayPosition, setStayPosition] = useState<StayPosition>(
-    StayPosition.mid
-  );
+  const [slideBackAnimation, setSlideBackAnimation] = useState<boolean>(false);
+
   const feedItemRef = useRef<any>(null);
   const hammerInstanceRef = useRef<any>(null);
 
+  // 处理滑动事件
+  const handleOnPan = useCallback((ev: any) => {
+    if (
+      ev.offsetDirection === DIRECTION_LEFT ||
+      ev.offsetDirection === DIRECTION_RIGHT
+    ) {
+      const xOffsetAbs = Math.abs(ev.deltaX);
+      if (xOffsetAbs > thresholdMin && xOffsetAbs < thresholdMax) {
+        setXOffset(initXOffset + ev.deltaX);
+      }
+    }
+  }, []);
+
+  const handleOnPanEnd = useCallback((ev: any) => {
+    if (ev.offsetDirection === DIRECTION_LEFT) {
+      if (onLeftSlide) {
+        onLeftSlide();  
+      } 
+    } else if(ev.offsetDirection === DIRECTION_RIGHT) {
+      if (onRightSlide) {
+        onRightSlide();  
+      } 
+    }
+    
+    setSlideBackAnimation(true);
+    setXOffset(0);
+    setTimeout(() => setSlideBackAnimation(false), slideBackAnimationDuration);
+  }, [onLeftSlide, onRightSlide]);
+
+  // 订阅左右滑动的触摸事件
   useEffect(() => {
-    const thresholdMax = 200;
-    const thresholdMin = 10;
-
-    const handleOnPan = throttle((ev: any) => {
-      if (
-        ev.offsetDirection === DIRECTION_LEFT ||
-        ev.offsetDirection === DIRECTION_RIGHT
-      ) {
-        console.log(
-          `x: ${ev.deltaX}, y: ${ev.deltaY}, offsetD: ${ev.offsetDirection}, direction: ${ev.direction}`
-        );
-
-        const xOffsetAbs = Math.abs(ev.deltaX);
-        if (xOffsetAbs > thresholdMin && xOffsetAbs < thresholdMax) {
-          setXOffset(initXOffset + ev.deltaX);
-          return;
-        }
-      }
-    }, 90);
-
-    const handleOnPanEnd = (ev: any) => {
-      let endXOffset;
-      if (Math.abs(ev.deltaX) > thresholdMin) {
-        if (
-          (stayPosition === StayPosition.left && ev.deltaX > 0) ||
-          (stayPosition === StayPosition.right && ev.deltaX < 0)
-        ) {
-          endXOffset = 0;
-          setStayPosition(StayPosition.mid);
-        } else if (stayPosition === StayPosition.mid) {
-          if (ev.deltaX > 0) {
-            endXOffset = thresholdMax;
-            setStayPosition(StayPosition.right);
-          } else {
-            endXOffset = -thresholdMax;
-            setStayPosition(StayPosition.left);
-          }
-        }
-      }
-
-      if (typeof endXOffset !== "undefined") {
-        console.log(endXOffset);
-        setXOffset(endXOffset);
-      }
-    };
-
     const feedItemNode = feedItemRef.current;
 
     if (hammerInstanceRef && feedItemNode) {
@@ -131,7 +114,7 @@ const FeedItem = ({
         hammerInstanceRef.current.off("panend", handleOnPanEnd);
       }
     };
-  }, [stayPosition]);
+  }, [handleOnPan, handleOnPanEnd]);
 
   const imageProps: IImageProps = {
     src: item?.thumbnailSrc,
@@ -212,30 +195,41 @@ const FeedItem = ({
 
   return (
     <div
-      className="
-      bg-gray-500
-      "
+      className="overflow-x-hidden bg-gray-500 relative"
       onClick={onClickFeed}
     >
       <div
-        ref={feedItemRef}
-        style={{ transform: `translateX(${xOffset}px)` }}
-        className="bg-gray-50 p-4 feed-item flex-wrap group
-      transition cursor-pointer select-none
-    hover:bg-gray-100 
-      md:flex md:flex-nowrap "
+        className="h-full flex items-center justify-center bg-red-400 absolute left-0 top-0"
+        style={{ width: thresholdMax }}
       >
-        <div
-          className="
-          flex-shrink-0 w-full h-48 mb-4
-          md:w-28 md:h-28 md:mr-4 md:mb-0
-        "
-        >
+        <span className="text-2xl text-white">star</span>
+      </div>
+      <div
+        className="h-full flex items-center justify-center bg-blue-400 absolute right-0 top-0"
+        style={{ width: thresholdMax }}
+      >
+        <span className="text-2xl text-white">read</span>
+      </div>
+      <div
+        ref={feedItemRef}
+        style={{
+          transform: `translateX(${xOffset}px)`,
+          transition: slideBackAnimation
+            ? `transform ${slideBackAnimationDuration}ms ease-out`
+            : "none",
+        }}
+        className={`
+        feed-item flex relative z-10 p-4  group bg-gray-50 cursor-pointer select-none hover:bg-gray-100 
+        flex-wrap
+        md:flex-nowrap
+        `}
+      >
+        <div className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${item.isRead ? 'opacity-40' : ''}`}>
           <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
-        <div className="flex flex-col flex-1">
+        <div className={`flex flex-col flex-1 ${item.isRead ? 'opacity-40' : ''}`}>
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
-            <span className="flex-1">{item.title}{stayPosition}</span>
+            <span className="flex-1">{item.title}</span>
           </div>
           <div className="flex-1 text-base text-gray-600 w-full">
             {item.summary}
