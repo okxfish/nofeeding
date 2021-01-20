@@ -11,6 +11,7 @@ import {
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FeedProps } from "./types";
 import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
+import { useUpdateEffect } from "react-use";
 export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
@@ -82,21 +83,27 @@ const FeedItem = ({
     }
   }, []);
 
-  const handleOnPanEnd = useCallback((ev: any) => {
-    if (ev.offsetDirection === DIRECTION_LEFT) {
-      if (onLeftSlide) {
-        onLeftSlide();  
-      } 
-    } else if(ev.offsetDirection === DIRECTION_RIGHT) {
-      if (onRightSlide) {
-        onRightSlide();  
-      } 
-    }
-    
-    setSlideBackAnimation(true);
-    setXOffset(0);
-    setTimeout(() => setSlideBackAnimation(false), slideBackAnimationDuration);
-  }, [onLeftSlide, onRightSlide]);
+  const handleOnPanEnd = useCallback(
+    (ev: any) => {
+      if (ev.offsetDirection === DIRECTION_LEFT) {
+        if (onLeftSlide) {
+          onLeftSlide();
+        }
+      } else if (ev.offsetDirection === DIRECTION_RIGHT) {
+        if (onRightSlide) {
+          onRightSlide();
+        }
+      }
+
+      setSlideBackAnimation(true);
+      setXOffset(0);
+      setTimeout(
+        () => setSlideBackAnimation(false),
+        slideBackAnimationDuration
+      );
+    },
+    [onLeftSlide, onRightSlide]
+  );
 
   // 订阅左右滑动的触摸事件
   useEffect(() => {
@@ -115,6 +122,20 @@ const FeedItem = ({
       }
     };
   }, [handleOnPan, handleOnPanEnd]);
+
+  // 实现拖动动画
+  useUpdateEffect(() => {
+    window.requestAnimationFrame =
+      requestAnimationFrame || window.requestAnimationFrame;
+    const setNextTranslateX = () => {
+      if (feedItemRef && feedItemRef.current) {
+        feedItemRef.current.style.transform = `translateX(${xOffset}px)`;
+      }
+    };
+
+    window.requestAnimationFrame(setNextTranslateX);
+    setNextTranslateX();
+  }, [xOffset]);
 
   const imageProps: IImageProps = {
     src: item?.thumbnailSrc,
@@ -213,7 +234,6 @@ const FeedItem = ({
       <div
         ref={feedItemRef}
         style={{
-          transform: `translateX(${xOffset}px)`,
           transition: slideBackAnimation
             ? `transform ${slideBackAnimationDuration}ms ease-out`
             : "none",
@@ -224,10 +244,16 @@ const FeedItem = ({
         md:flex-nowrap
         `}
       >
-        <div className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${item.isRead ? 'opacity-40' : ''}`}>
+        <div
+          className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${
+            item.isRead ? "opacity-40" : ""
+          }`}
+        >
           <Image className="mr-3 rounded-md select-none" {...imageProps} />
         </div>
-        <div className={`flex flex-col flex-1 ${item.isRead ? 'opacity-40' : ''}`}>
+        <div
+          className={`flex flex-col flex-1 ${item.isRead ? "opacity-40" : ""}`}
+        >
           <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
             <span className="flex-1">{item.title}</span>
           </div>
