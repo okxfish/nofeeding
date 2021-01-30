@@ -63,7 +63,7 @@ const OverviewPane = ({ className }: Props) => {
     item?: any,
     itemIndex?: number
   ): React.ReactNode => {
-    const onClick = () => history.push(`/feed/source?sourceName=${item.title}`);
+    const onClick = () => history.push(`/feed?type=source&sourceId=${item.key}`);
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
         className={`${listItemClassName} hover:bg-gray-200 rounded-sm`}
@@ -91,6 +91,7 @@ const OverviewPane = ({ className }: Props) => {
         children.forEach((item) => {
           unreadCount += item.unreadCount;
         });
+
         return (
           <div className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}>
             <FontIcon
@@ -123,19 +124,19 @@ const OverviewPane = ({ className }: Props) => {
         className={`${commonPx}`}
         iconProps={{ iconName: "PreviewLink" }}
         content="all"
-        onClick={()=>history.push('/feed/all')}
+        onClick={()=>history.push('/feed')}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "FavoriteStar" }}
         content="star"
-        onClick={()=>history.push('/feed/star')}
+        onClick={()=>history.push('/feed?type=star')}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "Archive" }}
         content="archive"
-        onClick={()=>history.push('/feed/archive')}
+        onClick={()=>history.push('/feed?type=archive')}
       />
       <OverviewCell
         className={`${commonPx} bg-gray-50 rounded-t-lg rounded-b-none sm:bg-transparent sm:rounded-b-sm sm:rounded-t-sm`}

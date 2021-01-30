@@ -54,6 +54,10 @@ const FeedPage = () => {
     })();
   }, []);
 
+  useEffect(()=>{
+    closeOverviewPane();
+  },[location.search]);
+
   const onClickFeed = (e: any): any => {
     e.preventDefault();
     if (windowSize < 1280) {
