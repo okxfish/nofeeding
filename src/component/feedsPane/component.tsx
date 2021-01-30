@@ -23,7 +23,7 @@ const FeedsPane = ({
   items,
   groups,
   onClickFeed,
-  dispatch,
+  dispatch
 }: Props) => {
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {

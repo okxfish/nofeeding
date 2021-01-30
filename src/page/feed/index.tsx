@@ -2,7 +2,6 @@ import React, { useEffect, useState, Suspense, lazy, useContext } from "react";
 import classnames from "classnames";
 import Parser from "rss-parser";
 
-import { useWindowSize } from "react-use";
 import { useSearchParam } from "../../utils/useSearchParma";
 import { useLocation } from "react-router-dom";
 
@@ -27,10 +26,9 @@ const FeedPage = () => {
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const [feedsData, setFeedsData] = useState([{ content: "", title: "" }]);
-  const { viewType, setViewType } = useContext(ViewTypeContext);
+  const { viewType } = useContext(ViewTypeContext);
   const hideModal = (): void => setIsArticleModalOpen(false);
   const openModal = (): void => setIsArticleModalOpen(true);
-  const { width: windowSize } = useWindowSize();
   const location = useLocation();
 
   const openOverviewPane = () => setIsOverViewPaneOpen(true);
@@ -60,7 +58,7 @@ const FeedPage = () => {
 
   const onClickFeed = (e: any): any => {
     e.preventDefault();
-    if (windowSize < 1280) {
+    if (viewType !==  ViewType.threeway) {
       openModal();
     }
   };

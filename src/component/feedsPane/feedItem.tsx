@@ -8,10 +8,18 @@ import {
   IContextualMenuProps,
   Image,
 } from "@fluentui/react";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from "react";
+import classnames from "classnames";
 import { FeedProps } from "./types";
 import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
 import { useUpdateEffect } from "react-use";
+import { ViewType, ViewTypeContext } from "../../App";
 export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
@@ -27,8 +35,6 @@ export interface Props {
 const moreIcon: IIconProps = { iconName: "More" };
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
 const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
-const pinSolid12Icon: IIconProps = { iconName: "PinSolid12" };
-const pinSolidOff12Icon: IIconProps = { iconName: "PinSolidOff12" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
 const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 
@@ -65,6 +71,7 @@ const FeedItem = ({
   onRightSlide = () => {},
 }: Props) => {
   const [xOffset, setXOffset] = useState<number>(initXOffset);
+  const { viewType } = useContext(ViewTypeContext);
   const [slideBackAnimation, setSlideBackAnimation] = useState<boolean>(false);
 
   const feedItemRef = useRef<any>(null);
@@ -136,7 +143,6 @@ const FeedItem = ({
 
       const next =
         easeInCirc(xOffsetAbs / window.innerWidth) * window.innerWidth;
-      // console.log(next);
       window.requestAnimationFrame(
         () =>
           (feedItemRef.current.style.transform = `translateX(${xOffsetSign}${next}px)`)
@@ -212,12 +218,15 @@ const FeedItem = ({
 
   const feedFooterElem: React.ReactElement = (
     <div
-      className="
-          hidden flex-col items-center justify-end 
-          sm:justify-between sm:flex
-          md:justify-end
-          xl:justify-between
-      "
+      className={classnames(
+        "hidden items-center justify-end",
+        "sm:justify-between sm:flex",
+        "md:justify-end",
+        "xl:justify-between",
+        {
+          "flex-col": viewType !== ViewType.list,
+        }
+      )}
     >
       <IconButton
         className="focus:outline-none"
@@ -227,14 +236,6 @@ const FeedItem = ({
         disabled={false}
         onClick={onReadClick}
       />
-      {/* <IconButton
-        className="focus:outline-none"
-        iconProps={item.isPin ? pinSolid12Icon : pinSolidOff12Icon}
-        title="pin as unread"
-        ariaLabel="Pin as unread"
-        disabled={false}
-        onClick={onPinClick}
-      /> */}
       <IconButton
         className="focus:outline-none"
         iconProps={item.isStar ? favoriteStarFillIcon : favoriteStarIcon}
@@ -275,29 +276,51 @@ const FeedItem = ({
         style={{
           transition: `transform ${slideBackAnimationDuration}ms ease-out`,
         }}
-        className={`
-        feed-item flex relative z-10 p-4  group bg-white cursor-pointer select-none hover:bg-gray-50 
-        flex-wrap
-        md:flex-nowrap
-        `}
+        className={classnames(
+          "feed-item flex relative z-10 p-4 group bg-white cursor-pointer select-none flex-wrap",
+          "md:flex-nowrap hover:bg-gray-50",
+          {
+            "border-b": viewType === ViewType.list,
+            "py-2": viewType === ViewType.list,
+          }
+        )}
       >
-        <div
-          className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${
-            item.isRead ? "opacity-40" : ""
-          }`}
-        >
-          <Image className="mr-3 rounded-md select-none" {...imageProps} />
-        </div>
-        <div
-          className={`flex flex-col flex-1 ${item.isRead ? "opacity-40" : ""}`}
-        >
-          <div className="relative flex items-start mb-2 text-lg text-gray-800 leading-none font-medium">
-            <span className="flex-1">{item.title}</span>
+        {viewType === 1 ? null : (
+          <div
+            className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${
+              item.isRead ? "opacity-40" : ""
+            }`}
+          >
+            <Image className="mr-3 rounded-md select-none" {...imageProps} />
           </div>
-          <div className="flex-1 text-base text-gray-600 w-full">
+        )}
+        <div
+          className={classnames("flex flex-1", {
+            "opacity-40": item.isRead,
+            "flex-col": viewType !== ViewType.list,
+            "items-center": viewType === ViewType.list,
+          })}
+        >
+          <div
+            className={classnames(
+              "relative flex items-start text-lg text-gray-800 font-medium",
+              {
+                "text-base": viewType === ViewType.list,
+                "mr-2": viewType === ViewType.list,
+                "mb-2": viewType !== ViewType.list,
+              }
+            )}
+          >
+            {item.title}
+          </div>
+          <div
+            className={classnames("flex-1 text-base text-gray-600 w-full", {
+              truncate: viewType === ViewType.list,
+            })}
+          >
             {item.summary}
           </div>
-          <div className="flex items-center flex-1">
+          <div className="flex items-center">
             <TooltipHost content={item.sourceName} closeDelay={500}>
               <Text
                 className="

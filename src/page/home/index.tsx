@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { default as FeedPage } from "../feed";
 import { useWindowSize } from "react-use";
 import { IContextualMenuProps, IIconProps } from "office-ui-fabric-react";
 import { Redirect, useHistory, Route, Switch } from "react-router-dom";
 import SideBarItem from "./sideBarItem";
 import "./style.css";
+import { ViewType, ViewTypeContext } from "../../App";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const homeIcon: IIconProps = { iconName: "Home" };
@@ -14,37 +15,42 @@ const syncIcon: IIconProps = { iconName: "Sync" };
 const settingsIcon: IIconProps = { iconName: "Settings" };
 const viewIcon: IIconProps = { iconName: "View" };
 
-const menuProps: IContextualMenuProps = {
-  items: [
-    {
-      key: "cardView",
-      text: "card view",
-      iconProps: { iconName: "GridViewMedium" },
-    },
-    {
-      key: "listView",
-      text: "list view",
-      iconProps: { iconName: "GroupedList" },
-    },
-    {
-      key: "splitView",
-      text: "split view",
-      iconProps: { iconName: "ColumnRightTwoThirds" },
-    },
-    {
-      key: "articleView",
-      text: "article view",
-      iconProps: { iconName: "ReadingMode" },
-    },
-  ],
-};
-
 const Home = () => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
+  const { viewType, setViewType } = useContext(ViewTypeContext);
   const { height: windowHeight } = useWindowSize();
   const history = useHistory();
+
+  const menuProps: IContextualMenuProps = {
+    items: [
+      {
+        key: "cardView",
+        text: "card view",
+        iconProps: { iconName: "GridViewMedium" },
+        onClick: ()=> setViewType(ViewType.card)
+      },
+      {
+        key: "listView",
+        text: "list view",
+        iconProps: { iconName: "GroupedList" },
+        onClick: ()=> setViewType(ViewType.list)
+      },
+      {
+        key: "splitView",
+        text: "split view",
+        iconProps: { iconName: "ColumnRightTwoThirds" },
+        onClick: ()=> setViewType(ViewType.threeway)
+      },
+      {
+        key: "articleView",
+        text: "article view",
+        iconProps: { iconName: "ReadingMode" },
+        onClick: ()=> setViewType(ViewType.magazine)
+      },
+    ],
+  };
 
   useEffect(() => {
     let timeout;
@@ -83,7 +89,7 @@ const Home = () => {
     >
       <div
         className={`
-          col-start-1 z-50 flex items-center justify-between bg-gray-600 transition-all
+          col-start-1 z-50 flex items-center justify-between bg-gray-700 transition-all
           flex-row col-span-4 row-start-3 row-span-1
           sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1  sm:row-span-3 
           ${isSidePaneOpen ? "sm:w-48 col-span-2" : "sm:w-full"}
