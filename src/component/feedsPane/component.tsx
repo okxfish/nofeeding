@@ -31,7 +31,7 @@ const FeedsPane = ({
         <div
           className="
            flex items-center 
-           h-10 px-4 border-b border-gray-400
+           h-10 px-4 border-b
            cursor-pointer 
            text-lg text-gray-600 font-bold leading-loose
          "
@@ -47,7 +47,7 @@ const FeedsPane = ({
 
   const onRenderFooter = (): React.ReactElement | null => {
     return (
-      <div className="flex justify-end px-4 pt-4 pb-6 border-t border-gray-400">
+      <div className="flex justify-end px-4 pt-4 pb-6 border-t">
         <ActionButton className="text-blue-500 text-base mr-0 px-0">
           mark this group as read
         </ActionButton>

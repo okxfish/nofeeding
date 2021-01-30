@@ -8,7 +8,6 @@ module.exports = {
       '1/2': '50%',
       '3/4': '75%',
       'full': '100%',
-      'modal': '95vh',
     },
     maxWidth: {
       '5xs': '4rem',

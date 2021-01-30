@@ -19,7 +19,7 @@ onClick=()=>{},
 onFooterRender=defaultFooterRender
 }:Props) => {
   return (
-    <div className={`${className} flex items-center h-10 hover:bg-gray-300`} onClick={onClick}>
+    <div className={`${className} flex items-center h-10 rounded-sm hover:bg-gray-200`} onClick={onClick}>
       <Icon className="mr-2" {...iconProps} />
       <div className="flex-1">{content}</div>
       {onFooterRender()}

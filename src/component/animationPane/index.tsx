@@ -58,7 +58,7 @@ const AnimationPane = ({
       `}
     >
       <div
-        className="bg-gray-600 absolute h-full w-full bg-opacity-50 transition-all"
+        className="absolute h-full w-full bg-opacity-50 transition-all bg-gray-500"
         style={{ backdropFilter: "blur(10px)" }}
         onClick={handleClickMask}
       />
@@ -66,7 +66,7 @@ const AnimationPane = ({
         className={`
         ${isContentOpen ? "translate-y-0" : "translate-y-full"}
         flex flex-col h-2/3 
-        shadow-lg bg-gray-200 transition-all transform
+        shadow-lg transition-all transform
         sm:h-full sm:shadow-none sm:translate-y-0
         `}
         style={{ transitionDuration: `${animationDuration}ms` }}

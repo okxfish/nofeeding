@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IconButton, IIconProps } from "office-ui-fabric-react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 export interface article {
@@ -23,10 +23,16 @@ const ArticlePane = ({
   closeModal,
 }: Props) => {
   const htmlToReactParserRef = useRef({ parse: (a) => <div></div> });
+  const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
 
   useEffect(() => {
     htmlToReactParserRef.current = new HtmlToReactParser();
   }, []);
+
+  useEffect(()=>{
+    const parse = htmlToReactParserRef.current.parse;
+    setContentJSX(parse(article.content));
+  },[article.content]);
 
   const contentRender = () => {
     return (
@@ -42,7 +48,7 @@ const ArticlePane = ({
           <header>
             <h2 className="font-bold text-3xl mb-6">{article.title}</h2>
           </header>
-          {htmlToReactParserRef.current.parse(article.content)}
+          {contentJSX}
           <footer></footer>
         </article>
       </div>

@@ -33,7 +33,7 @@ const createItems = (count: number): any[] => {
 const items: any[] = createItems(Math.pow(groupCount, groupDepth + 1));
 const groups = createGroups(groupCount, groupDepth, 0, groupCount);
 const listItemClassName =
-  "cursor-pointer items-center h-10 text-base flex hover:bg-gray-200 select-none";
+  "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
 
 const moreIcon: IIconProps = { iconName: "More" };
 
@@ -66,7 +66,7 @@ const OverviewPane = ({ className }: Props) => {
     const onClick = () => history.push(`/feed/source?sourceName=${item.title}`);
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className={`${listItemClassName} hover:bg-gray-300`}
+        className={`${listItemClassName} hover:bg-gray-200 rounded-sm`}
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
         onClick={onClick}
       >
@@ -92,7 +92,7 @@ const OverviewPane = ({ className }: Props) => {
           unreadCount += item.unreadCount;
         });
         return (
-          <div className={`${listItemClassName} ${commonPx} hover:bg-gray-300`}>
+          <div className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}>
             <FontIcon
               className={`mr-2 transition-all transform ${
                 props.group!.isCollapsed ? "" : "rotate-90"
@@ -122,25 +122,25 @@ const OverviewPane = ({ className }: Props) => {
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "PreviewLink" }}
-        content="All"
+        content="all"
         onClick={()=>history.push('/feed/all')}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "FavoriteStar" }}
-        content="Star"
+        content="star"
         onClick={()=>history.push('/feed/star')}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "Archive" }}
-        content="Archive"
+        content="archive"
         onClick={()=>history.push('/feed/archive')}
       />
       <OverviewCell
-        className={`${commonPx}`}
+        className={`${commonPx} bg-gray-50 rounded-t-lg rounded-b-none sm:bg-transparent sm:rounded-b-sm sm:rounded-t-sm`}
         iconProps={{ iconName: "Source" }}
-        content="Source"
+        content="source"
         onFooterRender={() => (
           <CommandBarButton
             className="bg-transparent hover:bg-transparent focus:bg-transparent focus:outline-none min-w-0"
@@ -151,7 +151,7 @@ const OverviewPane = ({ className }: Props) => {
         )}
       />
       <GroupedList
-        className="flex-1 border-b border-t border-gray-400 overflow-y-auto scrollbar"
+        className="flex-1 border-b border-t overflow-y-auto scrollbar-none bg-gray-50 sm:bg-transparent"
         items={items}
         onRenderCell={onRenderCell}
         groupProps={groupProps}

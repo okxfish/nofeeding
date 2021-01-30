@@ -5,3 +5,10 @@
   grid-template-columns: 3rem 16rem 2fr 3fr;
   grid-template-rows: var(--header-h) 1fr var(--footer-h);
 }
+
+@media(min-width: 768px) {
+  .article-modal {
+    width: 768px;
+    height: 95vh;
+  }
+}

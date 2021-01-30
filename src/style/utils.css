@@ -4,6 +4,16 @@
   --background-color: #e5e7eb7a;
 }
 
+.scrollbar-none {
+  --width: 0;
+  --foreground-color: #c2c3c7;
+  --background-color: #e5e7eb7a;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  width:  var(--width);
+}
+
 .scrollbar::-webkit-scrollbar {
   width:  var(--width);
 }
