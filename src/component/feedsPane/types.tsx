@@ -30,7 +30,7 @@ export interface FeedProps {
   time?: string;
   isRead?: boolean;
   isStar?: boolean;
-  isPin?: boolean;
+  isInnerArticleShow?: boolean;
 }
 
 export interface ById<T> {

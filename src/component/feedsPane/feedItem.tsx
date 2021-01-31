@@ -18,13 +18,16 @@ import React, {
 import classnames from "classnames";
 import { FeedProps } from "./types";
 import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
+import ArticlePane from "./../articlePane/index";
 import { useUpdateEffect } from "react-use";
-import { ViewType, ViewTypeContext } from "../../App";
+import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { ArticleContext } from "./../../context/article";
+
 export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
   itemIndex?: number;
-  onClickFeed?(e?: any): void;
+  onClickFeed?(e?: FeedProps): void;
   onPinClick?(e?: any): void;
   onStarClick?(e?: any): void;
   onReadClick?(e?: any): void;
@@ -71,8 +74,9 @@ const FeedItem = ({
   onRightSlide = () => {},
 }: Props) => {
   const [xOffset, setXOffset] = useState<number>(initXOffset);
-  const { viewType } = useContext(ViewTypeContext);
   const [slideBackAnimation, setSlideBackAnimation] = useState<boolean>(false);
+  const { viewType } = useContext(ViewTypeContext);
+  const article = useContext(ArticleContext);
 
   const feedItemRef = useRef<any>(null);
   const hammerInstanceRef = useRef<any>(null);
@@ -258,7 +262,7 @@ const FeedItem = ({
   );
 
   return (
-    <div className="overflow-x-hidden relative" onClick={onClickFeed}>
+    <div className="overflow-x-hidden relative" >
       <div
         className="h-full flex items-center justify-center bg-red-400 absolute left-0 top-0"
         style={{ width: thresholdMax }}
@@ -273,6 +277,7 @@ const FeedItem = ({
       </div>
       <div
         ref={feedItemRef}
+        onClick={onClickFeed?.bind(null, item)}
         style={{
           transition: `transform ${slideBackAnimationDuration}ms ease-out`,
         }}
@@ -324,11 +329,11 @@ const FeedItem = ({
             <TooltipHost content={item.sourceName} closeDelay={500}>
               <Text
                 className="
-              text-sm text-gray-400 max-w-xs
-              md:max-w-5xs
-              lg:max-w-xs
-              xl:max-w-5xs
-            "
+                  text-sm text-gray-400 max-w-xs
+                  md:max-w-5xs
+                  lg:max-w-xs
+                  xl:max-w-5xs
+                "
                 block
                 nowrap
               >
@@ -342,6 +347,9 @@ const FeedItem = ({
         </div>
         {feedFooterElem}
       </div>
+      {item.isInnerArticleShow ? (
+        <ArticlePane className="bg-white relative z-10 border-b" article={article} />
+      ) : null}
     </div>
   );
 };

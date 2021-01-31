@@ -1,2 +1,2 @@
-import { default as FeedsPane} from './container';
+import FeedsPane from './container';
 export default FeedsPane;
