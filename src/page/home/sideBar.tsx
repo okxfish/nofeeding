@@ -1,11 +1,12 @@
 import { IContextualMenuProps, IIconProps } from "@fluentui/react";
-import React, { useContext, useEffect, useState } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import React, { SetStateAction, useContext, useEffect, useState } from "react";
+import { Route, Switch, useHistory, useParams } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
+const filterIcon: IIconProps = { iconName: "Filter" };
 const homeIcon: IIconProps = { iconName: "Home" };
 const addIcon: IIconProps = { iconName: "Add" };
 const searchIcon: IIconProps = { iconName: "Search" };
@@ -15,11 +16,13 @@ const viewIcon: IIconProps = { iconName: "View" };
 
 export interface Props {
   className?: string;
+  setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SideBar = ({ className }: Props) => {
+const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
+  const { pageName } = useParams<{ pageName: string }>();
 
   useEffect(() => {
     let timeout;
@@ -37,6 +40,10 @@ const SideBar = ({ className }: Props) => {
 
   const handleFeedClick = () => {
     history.replace("/feed");
+  };
+
+  const handleFilterClick = () => {
+    setIsOverViewPaneOpen(true);
   };
 
   const handleSearchClick = () => {
@@ -75,12 +82,6 @@ const SideBar = ({ className }: Props) => {
         iconProps: { iconName: "ColumnRightTwoThirds" },
         onClick: () => setViewType(ViewType.threeway),
       },
-      {
-        key: "articleView",
-        text: "article view",
-        iconProps: { iconName: "ReadingMode" },
-        onClick: () => setViewType(ViewType.magazine),
-      },
     ],
   };
 
@@ -107,11 +108,20 @@ const SideBar = ({ className }: Props) => {
         menu
       </SideBarItem>
       <SideBarItem
+        className={pageName === "feed" ? "hidden sm:block" : ""}
         iconProps={homeIcon}
         isIconOnly={!isSidePaneOpen}
         onClick={handleFeedClick}
       >
         feed
+      </SideBarItem>
+      <SideBarItem
+        className={pageName === "feed" ? "block sm:hidden" : "hidden"}
+        iconProps={filterIcon}
+        isIconOnly={true}
+        onClick={handleFilterClick}
+      >
+        filter
       </SideBarItem>
       <SideBarItem
         iconProps={searchIcon}

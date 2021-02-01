@@ -41,7 +41,7 @@ function App() {
             }
           >
             <Switch>
-              <Route path="/" component={Home} />
+              <Route path="/:pageName" component={Home} />
             </Switch>
           </Suspense>
         </Router>

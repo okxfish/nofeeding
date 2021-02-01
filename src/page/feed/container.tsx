@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { SetStateAction, useContext, useEffect, useReducer, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useSearchParam } from "../../utils/useSearchParma";
 
@@ -15,7 +15,8 @@ import { initState, reducer } from "./reducer";
 
 export interface Props {
   className?: string;
-  onClickFeed(e: FeedProps): any;
+  isOverViewPaneOpen: boolean;
+  setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
@@ -24,10 +25,9 @@ const _RSS_SRC = "http://feeds.feedburner.com/ruanyifeng";
 
 const parser: Parser<any, any> = new Parser();
 
-const FeedContainer = ({ className, ...rest }: Props) => {
+const FeedContainer = ({ className, isOverViewPaneOpen, setIsOverViewPaneOpen, ...rest }: Props) => {
   const [state, dispatch] = useReducer(reducer, initState);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
-  const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const [feedsData, setFeedsData] = useState([{ content: "", title: "" }]);
   const { viewType } = useContext(ViewTypeContext);
 

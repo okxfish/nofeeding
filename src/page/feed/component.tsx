@@ -23,8 +23,6 @@ export interface Props {
   openArticleModal(): any;
 }
 
-const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
-
 const FeedPageComponent = ({
   className,
   article,
@@ -47,11 +45,6 @@ const FeedPageComponent = ({
             sm:hidden
           "
       >
-        <IconButton
-          className="text-gray-600 sm:text-gray-300"
-          iconProps={globalNavButtonIcon}
-          onClick={openOverviewPane}
-        />
       </div>
       <AnimationPane
         rootClassName="

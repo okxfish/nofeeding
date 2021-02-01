@@ -7,17 +7,25 @@ import SideBar from "./sideBar";
 
 const Home = () => {
   const { height: windowHeight } = useWindowSize();
-
+  const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const emptyRender = (): React.ReactElement | null => null;
 
   return (
     <div
-      className="home__layout w-screen overflow-hidden"
+      className="home__layout overflow-hidden"
       style={{ height: windowHeight }}
     >
-      <SideBar />
+      <SideBar setIsOverViewPaneOpen={setIsOverViewPaneOpen}/>
       <Switch>
-        <Route path={["/feed/:options", "/feed"]} component={FeedPage} />
+        <Route
+          path={["/feed/:options", "/feed"]}
+          render={() => (
+            <FeedPage
+              isOverViewPaneOpen={isOverViewPaneOpen}
+              setIsOverViewPaneOpen={setIsOverViewPaneOpen}
+            />
+          )}
+        />
         <Route path="/add" render={emptyRender} />
         <Route path="/search" render={emptyRender} />
         <Route path="/setting" render={emptyRender} />
