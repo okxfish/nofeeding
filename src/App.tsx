@@ -1,24 +1,42 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import { Spinner, SpinnerSize } from "office-ui-fabric-react";
+import { CSSTransition } from "react-transition-group";
+import BookFilp from "./component/bookFilp/index";
 import "./App.css";
 import "./style/utils.css";
 import { ViewType, ViewTypeContext } from "./context/viewType";
 
+const CallBackOnUnmount = ({ cb }) => {
+  useEffect(() => () => cb(), [cb]);
+  return null;
+};
+
 const Home = lazy(() => import("./page/home"));
 function App() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewType, setViewType] = useState(ViewType.magazine);
 
   return (
     <div className="App">
       <ViewTypeContext.Provider value={{ viewType, setViewType }}>
         <Router>
+          <CSSTransition
+            in={isLoading}
+            timeout={{
+              exit: 400,
+            }}
+            unmountOnExit
+            className="fixed top-0 left-0 w-screen h-screen flex flex-col items-center pt-32 z-50 full-screen-loading__animation-wrapper"
+          >
+            <div className="full-screen-loading__wrapper">
+              <BookFilp />
+              {/* <div className="mt-4 text-sm">loading...</div> */}
+            </div>
+          </CSSTransition>
           <Suspense
             fallback={
-              <Spinner
-                className="m-auto mt-72"
-                size={SpinnerSize.large}
-                label="loading..."
+              <CallBackOnUnmount
+                cb={() => setIsLoading(false)}
               />
             }
           >

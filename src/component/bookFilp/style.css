@@ -1,0 +1,103 @@
+.book {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  position: relative;
+  margin: 0 auto;
+  height: 60px;
+  cursor: pointer;
+  backface-visibility: visible;
+}
+
+.book {
+  transition: all 0.5s ease-in-out;
+  --step: 167ms;
+  --duration: calc(6 * var(--step));
+  --closed-angle: -0.05turn;
+  --opened-angle: -0.45turn;
+}
+
+.front,
+.back,
+.page1,
+.page2,
+.page3,
+.page4,
+.page5,
+.page6 {
+  transform-style: preserve-3d;
+  position: absolute;
+  width: 40px;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform-origin: left center;
+  transition: transform var(--duration) ease-in-out,
+    box-shadow 0.35s ease-in-out;
+}
+
+.book {
+  transform: rotateX(7deg);
+  box-shadow: 0 1em 3em 0 rgba(0, 0, 0, 0.3);
+}
+
+.book:hover {
+  transform: rotateX(28deg);
+}
+
+
+.front {
+  transform: rotateY(var(--opened-angle));
+}
+
+.back {
+  transform: rotateY(var(--closed-angle));
+}
+
+.filp-end .book-page {
+  transform: rotateY(var(--opened-angle));
+}
+
+
+.front,
+.back {
+  height: 62px;
+  width: 42px;
+  margin-bottom: -2px;
+}
+
+.book-page {
+  transition-delay: var(--delay);
+  transition-duration: calc(var(--duration) - var(--delay));
+  transform: rotateY(var(--closed-angle));
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.page1 {
+  --delay: calc(0 * var(--step));
+  background: #efefef;
+}
+
+.page2 {
+  --delay: calc(1 * var(--step));
+  background: #f5f5f5;
+}
+
+.page3 {
+  --delay: calc(2 * var(--step));
+  background: #ffffff;
+}
+
+.page4 {
+  --delay: calc(3 * var(--step));
+  background: #ffffff;
+}
+
+.page5 {
+  --delay: calc(4 * var(--step));
+  background: #f5f5f5;
+}
+
+.page6 {
+  --delay: calc(5 * var(--step));
+  background: #efefef;
+}
