@@ -189,7 +189,6 @@ const FeedItem = ({
 
     return () => {
       if (hammerInstanceRef && feedItemRef && feedItemNode) {
-        console.log(feedItemNode);
         hammerInstanceRef.current.off("pan", handleOnPan);
         hammerInstanceRef.current.off("panend", handleOnPanEnd);
       }
@@ -292,7 +291,7 @@ const FeedItem = ({
       >
         {viewType === 1 ? null : (
           <div
-            className={`flex-shrink-0 w-28 h-28  mr-4 mb-0 ${
+            className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 ${
               item.isRead ? "opacity-40" : ""
             }`}
           >

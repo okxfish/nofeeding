@@ -48,6 +48,7 @@ const FeedContainer = ({ className, isOverViewPaneOpen, setIsOverViewPaneOpen, .
       try {
         const feed = await parser.parseURL(CORS_PROXY + RSS_SRC);
         setFeedsData(feed.items);
+        console.log(feed.items);
       } catch (error) {
         console.log(error);
       }
