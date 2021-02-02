@@ -2,13 +2,13 @@ import React from "react";
 import classnames from "classnames";
 import OverviewPane from "../../component/overviewPane";
 import FeedsPane from "../../component/feedsPane";
-import AnimationPane from "../../component/animationPane";
 import ArticlePane from "../../component/articlePane";
-import { Modal, IconButton, IIconProps } from "office-ui-fabric-react";
+import { Modal } from "office-ui-fabric-react";
 import { ViewType } from "../../context/viewType";
 
-import "./style.css";
 import { FeedProps } from "../../component/feedsPane/types";
+import { CSSTransition } from "react-transition-group";
+import "./style.css";
 
 export interface Props {
   className?: string;
@@ -44,20 +44,24 @@ const FeedPageComponent = ({
             border-b border-gray-200
             sm:hidden
           "
+      ></div>
+      <CSSTransition
+        classNames="block sm:hidden overview-pane-animate-wrapper overview-pane-animate-wrapper"
+        in={isOverViewPaneOpen}
+        timeout={{ exit: 400, enter: 0 }}
+        unmountOnExit
       >
+        <div className="z-50">
+          <div
+            className="overview-pane__mask h-full fixed top-0 left-0 w-screen h-screen"
+            onClick={closeOverviewPane}
+          />
+          <OverviewPane className="bg-white rounded-t-2xl shadow-lg pt-6 px-2 sm:rounded-none sm:pt-0 overview-pane overview-pane-modal" />
+        </div>
+      </CSSTransition>
+      <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r">
+        <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0" />
       </div>
-      <AnimationPane
-        rootClassName="
-              row-start-1 row-span-3
-              col-start-1 col-span-4
-              sm:col-span-1 sm:col-start-2
-            "
-        isOpend={isOverViewPaneOpen}
-        onClose={closeOverviewPane}
-        canMaskClose
-      >
-        <OverviewPane className="bg-white border-r rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0" />
-      </AnimationPane>
       <div
         className={classnames(
           "overflow-auto scrollbar h-full",
