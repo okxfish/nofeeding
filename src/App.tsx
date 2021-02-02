@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import "./App.css";
@@ -42,6 +42,7 @@ function App() {
           >
             <Switch>
               <Route path="/:pageName" component={Home} />
+              <Redirect path="/" to="/feed" exact />
             </Switch>
           </Suspense>
         </Router>
