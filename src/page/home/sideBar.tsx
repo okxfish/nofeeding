@@ -11,6 +11,7 @@ const homeIcon: IIconProps = { iconName: "Home" };
 const addIcon: IIconProps = { iconName: "Add" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const syncIcon: IIconProps = { iconName: "Sync" };
+const contactIcon: IIconProps = { iconName: "Contact" };
 const settingsIcon: IIconProps = { iconName: "Settings" };
 const viewIcon: IIconProps = { iconName: "View" };
 
@@ -56,6 +57,16 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
 
   const handleSyncClick = () => {
     setIsLoaddingFeeds(true);
+  };
+
+  const handleLoginClick = () => {
+    const CLIENT_ID = '999999350';
+    const REDIRECT_URI = 'http://localhost:3000/oauth';
+    const OPTIONAL_SCOPES = "read write";
+    const CSRF_PROTECTION_STRING = "111";
+
+    const targetUrl = `https://www.inoreader.com/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${OPTIONAL_SCOPES}&state=${CSRF_PROTECTION_STRING}`;
+    const authWindow = window.open(targetUrl);
   };
 
   const handleHamburgerMenuBtnClick = () => {
@@ -166,6 +177,15 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
           />
         </Switch>
       </div>
+      <SideBarItem
+        className="hidden sm:block"
+        iconProps={contactIcon}
+        isIconOnly={!isSidePaneOpen}
+        content=""
+        onClick={handleLoginClick}
+      >
+        登录
+      </SideBarItem>
       <SideBarItem
         iconProps={settingsIcon}
         isIconOnly={!isSidePaneOpen}
