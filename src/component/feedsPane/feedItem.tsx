@@ -219,6 +219,66 @@ const FeedItem = ({
     return null;
   }
 
+  const feedHeaderElem: React.ReactElement | null =
+    viewType === 1 ? null : (
+      <div
+        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 ${
+          item.isRead ? "opacity-40" : ""
+        }`}
+      >
+        <Image className="mr-3 rounded-md select-none" {...imageProps} />
+      </div>
+    );
+
+  const feedBodyElem: React.ReactElement | null = (
+    <div
+      className={classnames("flex flex-1", {
+        "opacity-40": item.isRead,
+        "flex-col": viewType !== ViewType.list,
+        "items-center": viewType === ViewType.list,
+      })}
+    >
+      <div
+        className={classnames(
+          "relative flex items-start text-lg text-gray-800 font-medium",
+          {
+            "text-base": viewType === ViewType.list,
+            "mr-2": viewType === ViewType.list,
+            "mb-2": viewType !== ViewType.list,
+          }
+        )}
+      >
+        {item.title}
+      </div>
+      <div
+        className={classnames("flex-1 text-base text-gray-600 w-full", {
+          truncate: viewType === ViewType.list,
+        })}
+      >
+        {item.summary}
+      </div>
+      <div className="flex items-center">
+        <TooltipHost content={item.sourceName} closeDelay={500}>
+          <Text
+            className="
+                  text-sm text-gray-400 max-w-xs
+                  md:max-w-5xs
+                  lg:max-w-xs
+                  xl:max-w-5xs
+                "
+            block
+            nowrap
+          >
+            {item.sourceName}
+          </Text>
+        </TooltipHost>
+        <Text className="text-sm text-gray-400" nowrap>
+          /{item.time}
+        </Text>
+      </div>
+    </div>
+  );
+
   const feedFooterElem: React.ReactElement = (
     <div
       className={classnames(
@@ -260,8 +320,8 @@ const FeedItem = ({
     </div>
   );
 
-  return (
-    <div className="overflow-x-hidden relative" >
+  const slideBtnsElem = (
+    <>
       <div
         className="h-full flex items-center justify-center bg-red-400 absolute left-0 top-0"
         style={{ width: thresholdMax }}
@@ -274,6 +334,12 @@ const FeedItem = ({
       >
         <span className="text-2xl text-white">read</span>
       </div>
+    </>
+  );
+
+  return (
+    <div className="overflow-x-hidden relative">
+      {slideBtnsElem}
       <div
         ref={feedItemRef}
         onClick={onClickFeed?.bind(null, item)}
@@ -289,65 +355,15 @@ const FeedItem = ({
           }
         )}
       >
-        {viewType === 1 ? null : (
-          <div
-            className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 ${
-              item.isRead ? "opacity-40" : ""
-            }`}
-          >
-            <Image className="mr-3 rounded-md select-none" {...imageProps} />
-          </div>
-        )}
-        <div
-          className={classnames("flex flex-1", {
-            "opacity-40": item.isRead,
-            "flex-col": viewType !== ViewType.list,
-            "items-center": viewType === ViewType.list,
-          })}
-        >
-          <div
-            className={classnames(
-              "relative flex items-start text-lg text-gray-800 font-medium",
-              {
-                "text-base": viewType === ViewType.list,
-                "mr-2": viewType === ViewType.list,
-                "mb-2": viewType !== ViewType.list,
-              }
-            )}
-          >
-            {item.title}
-          </div>
-          <div
-            className={classnames("flex-1 text-base text-gray-600 w-full", {
-              truncate: viewType === ViewType.list,
-            })}
-          >
-            {item.summary}
-          </div>
-          <div className="flex items-center">
-            <TooltipHost content={item.sourceName} closeDelay={500}>
-              <Text
-                className="
-                  text-sm text-gray-400 max-w-xs
-                  md:max-w-5xs
-                  lg:max-w-xs
-                  xl:max-w-5xs
-                "
-                block
-                nowrap
-              >
-                {item.sourceName}
-              </Text>
-            </TooltipHost>
-            <Text className="text-sm text-gray-400" nowrap>
-              /{item.time}
-            </Text>
-          </div>
-        </div>
+        {feedHeaderElem}
+        {feedBodyElem}
         {feedFooterElem}
       </div>
       {item.isInnerArticleShow ? (
-        <ArticlePane className="bg-white relative z-10 border-b" article={article} />
+        <ArticlePane
+          className="bg-white relative z-10 border-b"
+          article={article}
+        />
       ) : null}
     </div>
   );

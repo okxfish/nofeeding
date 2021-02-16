@@ -1,4 +1,11 @@
-import React, { SetStateAction, useContext, useEffect, useReducer, useState } from "react";
+import React, {
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { useSearchParam } from "../../utils/useSearchParma";
 
@@ -9,9 +16,8 @@ import { FeedContext } from "../../context/feed";
 import FeedPageComponent from "./component";
 import { FeedProps } from "../../component/feedsPane/types";
 
-import Parser from "rss-parser";
-
 import { initState, reducer } from "./reducer";
+import { useFeedsData } from "./utils";
 
 export interface Props {
   className?: string;
@@ -19,22 +25,21 @@ export interface Props {
   setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
-const RSS_SRC = "https://rsshub.app/readhub/category/daily";
-const _RSS_SRC = "http://feeds.feedburner.com/ruanyifeng";
-
-const parser: Parser<any, any> = new Parser();
-
-const FeedContainer = ({ className, isOverViewPaneOpen, setIsOverViewPaneOpen, ...rest }: Props) => {
+const FeedContainer = ({
+  className,
+  isOverViewPaneOpen,
+  setIsOverViewPaneOpen,
+  ...rest
+}: Props) => {
   const [state, dispatch] = useReducer(reducer, initState);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
-  const [feedsData, setFeedsData] = useState([{ content: "", title: "" }]);
   const { viewType } = useContext(ViewTypeContext);
 
   const location = useLocation();
+  const feedsData = useFeedsData();
 
   const openOverviewPane = () => setIsOverViewPaneOpen(true);
-  const closeOverviewPane = () => setIsOverViewPaneOpen(false);
+  const closeOverviewPane = useCallback(() => setIsOverViewPaneOpen(false), [setIsOverViewPaneOpen]);
   const openArticleModal = () => setIsArticleModalOpen(true);
   const closeArticleModal = () => setIsArticleModalOpen(false);
 
@@ -44,20 +49,8 @@ const FeedContainer = ({ className, isOverViewPaneOpen, setIsOverViewPaneOpen, .
   );
 
   useEffect(() => {
-    (async () => {
-      try {
-        const feed = await parser.parseURL(CORS_PROXY + RSS_SRC);
-        setFeedsData(feed.items);
-        console.log(feed.items);
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     closeOverviewPane();
-  }, [location.search]);
+  }, [location.search, closeOverviewPane]);
 
   const onClickFeed = (e: FeedProps): any => {
     const prevActivedFeedId = state.currenActivedFeedId;
@@ -70,7 +63,10 @@ const FeedContainer = ({ className, isOverViewPaneOpen, setIsOverViewPaneOpen, .
         state.feeds.byId[prevActivedFeedId] &&
         state.feeds.byId[prevActivedFeedId].isInnerArticleShow
       ) {
-        dispatch({ type: "feed/ById/hideInnerArticle", payload: prevActivedFeedId });
+        dispatch({
+          type: "feed/ById/hideInnerArticle",
+          payload: prevActivedFeedId,
+        });
       }
 
       if (e.isInnerArticleShow) {

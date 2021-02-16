@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from "react";
 import { HashRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
+import Oauth from './page/oauth/index';
 import "./App.css";
 import "./style/utils.css";
 import { ViewType, ViewTypeContext } from "./context/viewType";
@@ -13,6 +14,7 @@ const CallBackOnUnmount = ({ cb }) => {
 
 const Home = lazy(() => import("./page/home"));
 function App() {
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewType, setViewType] = useState(ViewType.magazine);
 
@@ -41,6 +43,7 @@ function App() {
             }
           >
             <Switch>
+              <Route path="/oauth" component={Oauth} />
               <Route path="/:pageName" component={Home} />
               <Redirect path="/" to="/feed" exact />
             </Switch>
