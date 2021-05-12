@@ -60,8 +60,9 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   };
 
   const handleLoginClick = () => {
+    
     const CLIENT_ID = '999999350';
-    const REDIRECT_URI = 'http://localhost:3000/oauth';
+    const REDIRECT_URI =  `${window.location.origin}/oauth`;
     const OPTIONAL_SCOPES = "read write";
     const CSRF_PROTECTION_STRING = "111";
 
