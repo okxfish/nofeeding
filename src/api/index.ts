@@ -1,8 +1,10 @@
 import { default as axios } from "axios";
 import { auth } from "./auth";
+import { inoreader } from "./inoreader";
 
 export const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:3777';
 export const INOREADER_BASE_URL = "https://www.inoreader.com";
+export const CORS_PROXY_URL = "https://localhost:8080";
 
 const fetch = axios.create({
   baseURL: BASE_URL,
@@ -39,5 +41,6 @@ fetch.interceptors.response.use(
   }
 );
 
-const api = { auth };
+const api = { auth, inoreader };
+
 export { api as default, fetch };

@@ -1,26 +1,36 @@
 import React from "react";
 import { TextField } from "office-ui-fabric-react";
 import { NavLink, Route, Switch } from "react-router-dom";
+import { default as api } from "../../api";
 
 const Setting = ({ location }) => {
   const getErrorMessage = (value: string): string => {
     return /a.*/.test(value) ? "not allowed a" : "";
   };
 
+  const getSubscriptions = async () => {
+    try {
+      const res = await api.inoreader.getSubscriptionList();
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const navBtnsProp = [
     {
-      textContent: 'other',
-      subPath: 'other',
+      textContent: "other",
+      subPath: "other",
     },
     {
-      textContent: 'Profile',
-      subPath: 'profile',
+      textContent: "Profile",
+      subPath: "profile",
     },
     {
-      textContent: 'account',
-      subPath: 'account',
+      textContent: "account",
+      subPath: "account",
     },
-  ]
+  ];
 
   const navBtnsRender = (navBtnsProp: any[]): React.ReactElement | null => {
     navBtnsProp.map(
@@ -45,6 +55,7 @@ const Setting = ({ location }) => {
   return (
     <>
       <div className="col-start-2 row-span-3 divide-y divide-gray-200">
+        <button onClick={getSubscriptions}>getSubscriptions</button>
         {navBtnsRender(navBtnsProp)}
       </div>
       <div className="col-start-3 col-span-2 row-span-3 bg-gray-200">

@@ -8,10 +8,10 @@ import {
 import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import Oauth from "./page/oauth/index";
+import { ViewType, ViewTypeContext } from "./context/viewType";
+
 import "./App.css";
 import "./style/utils.css";
-import { ViewType, ViewTypeContext } from "./context/viewType";
-import { useInoreaderToken } from './utils/useInoreaderToken';
 
 const CallBackOnUnmount = ({ cb }) => {
   useEffect(() => () => cb(), [cb]);
@@ -23,7 +23,6 @@ const Home = lazy(() => import("./page/home"));
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewType, setViewType] = useState(ViewType.magazine);
-  const inoreaderToken =  useInoreaderToken();
 
   return (
     <div className="App">
