@@ -4,6 +4,7 @@ import { Route, Switch, useHistory, useParams } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
+import { default as api } from '../../api';
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
@@ -59,15 +60,9 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
     setIsLoaddingFeeds(true);
   };
 
-  const handleLoginClick = () => {
-    
-    const CLIENT_ID = '999999350';
-    const REDIRECT_URI =  `${window.location.origin}/oauth`;
-    const OPTIONAL_SCOPES = "read write";
-    const CSRF_PROTECTION_STRING = "111";
-
-    const targetUrl = `https://www.inoreader.com/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${OPTIONAL_SCOPES}&state=${CSRF_PROTECTION_STRING}`;
-    const authWindow = window.open(targetUrl);
+  const handleLoginClick = async () => {
+    const data = await api.auth.getInoreaderAuthURI();
+    window.open(data.data.auth_uri);
   };
 
   const handleHamburgerMenuBtnClick = () => {
