@@ -25,6 +25,7 @@
     "html-to-react": "^1.4.5",
     "lodash.throttle": "^4.1.1",
     "mockjs": "^1.1.0",
+    "normalizr": "^3.6.1",
     "oauth": "^0.9.15",
     "postcss": "^7.0.35",
     "react": "^17.0.1",

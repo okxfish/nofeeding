@@ -2,21 +2,21 @@ import { default as axios } from "axios";
 import { auth } from "./auth";
 import { inoreader } from "./inoreader";
 
-export const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:3777';
-export const INOREADER_BASE_URL = "https://www.inoreader.com";
-export const CORS_PROXY_URL = "https://localhost:8080";
+export const INOREADER_AUTH_URL = "http://localhost:3777";
+export const INOREADER_SERVER_URL = "https://www.inoreader.com";
+export const CORS_PROXY_URL = "http://localhost:8080";
 
 const fetch = axios.create({
-  baseURL: BASE_URL,
+  baseURL: `${CORS_PROXY_URL}/${INOREADER_SERVER_URL}`,
   timeout: 30 * 60 * 60 * 1000,
 });
 
 // 请求拦截器
 fetch.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = "JWT " + token;
+    const inoreaderToken = localStorage.getItem("inoreaderToken") || "";
+    if (inoreaderToken) {
+      config.headers.Authorization = `Bearer ${inoreaderToken}`;
     }
     return config;
   },
@@ -28,15 +28,14 @@ fetch.interceptors.request.use(
 // 响应拦截器
 fetch.interceptors.response.use(
   (response) => {
-    const data = response.data;
-    if (data.code === 400) {
-      console.error(data.message);
-      return Promise.reject({ message: response.data.message });
+    const { status, statusText } = response;
+    if ((status >= 200 && status < 300) || status === 304) {
+      return response;
+    } else {
+      return Promise.reject({ message: `${status}: ${statusText}` });
     }
-    return data;
   },
   (error) => {
-    console.error(error);
     return Promise.reject(error);
   }
 );

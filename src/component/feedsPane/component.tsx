@@ -18,63 +18,6 @@ export interface Props {
   dispatch: Dispatch<any>;
 }
 
-const mapStoreToProps = (store): any => {
-  const { byId: groupsById, allId: groupsAllId } = store.groups;
-  const { byId: feedsById } = store.feeds;
-  const groupsEntities = groupsAllId.map((id: string) => groupsById[id]);
-  const [groups, feeds] = groupsEntities.reduce(
-    (
-      previousValue: [IGroup[], FeedProps[]],
-      currentValue: FeedGroup,
-      currentIndex: number
-    ): [IGroup[], FeedProps[]] => {
-      return [
-        reduceGroups(previousValue[0], currentValue, previousValue[1].length),
-        reduceFeeds(previousValue[1], currentValue.children, currentIndex),
-      ];
-    },
-    [[], []]
-  );
-  return { feeds, groups };
-
-  function reduceGroups(
-    previousValue: IGroup[],
-    currentValue: FeedGroup,
-    feedsLenght: number
-  ): IGroup[] {
-    const group = {
-      key: currentValue.id,
-      name: currentValue.name,
-      level: 0,
-      isCollapsed: false,
-      children: [],
-      count: currentValue.children.length,
-      startIndex: feedsLenght,
-    };
-    previousValue.push(group);
-    return previousValue;
-  }
-
-  function reduceFeeds(
-    previousValue: FeedProps[],
-    currentValue: string[],
-    currentIndex: number
-  ): FeedProps[] {
-    return previousValue.concat(
-      currentValue.map(
-        (feedId: string): FeedProps => {
-          const feedEntity = feedsById[feedId];
-          return {
-            ...feedEntity,
-            key: feedEntity.id,
-            currentIndex,
-          };
-        }
-      )
-    );
-  }
-};
-
 const FeedsPane = ({
   className,
   items,
@@ -127,21 +70,18 @@ const FeedsPane = ({
       if(e && typeof e.stopPropagation === 'function'){
         e.stopPropagation();
       } 
-      dispatch({ type: "feed/ById/toggleIsRead", payload: item.key });
     };
 
     const toggleIsStarById = (e: any): void => {
       if(e && typeof e.stopPropagation === 'function'){
         e.stopPropagation();
       } 
-      dispatch({ type: "feed/ById/toggleIsStar", payload: item.key });
     };
 
     const toggleIsPinById = (e: any): void => {
       if(e && typeof e.stopPropagation === 'function'){
         e.stopPropagation();
       } 
-      dispatch({ type: "feed/ById/toggleIsPin", payload: item.key });
     };
 
     return (
@@ -157,6 +97,7 @@ const FeedsPane = ({
       />
     );
   };
+  console.log(items)
 
   return (
     <>
@@ -166,7 +107,7 @@ const FeedsPane = ({
         onRenderCell={onRenderCell}
         onShouldVirtualize={() => false}
         groupProps={groupProps}
-        groups={groups}
+        // groups={groups}
       />
     </>
   );
