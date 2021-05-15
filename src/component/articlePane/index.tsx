@@ -22,17 +22,17 @@ const ArticlePane = ({
   article = { title: "", content: "" },
   closeModal,
 }: Props) => {
-  const htmlToReactParserRef = useRef({ parse: (a) => <div></div> });
-  const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
+  // const htmlToReactParserRef = useRef({ parse: (a) => <div></div> });
+  // const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
 
-  useEffect(() => {
-    htmlToReactParserRef.current = new HtmlToReactParser();
-  }, []);
+  // useEffect(() => {
+  //   htmlToReactParserRef.current = new HtmlToReactParser();
+  // }, []);
 
-  useEffect(()=>{
-    const parse = htmlToReactParserRef.current.parse;
-    setContentJSX(parse(article.content));
-  },[article.content]);
+  // useEffect(()=>{
+  //   const parse = htmlToReactParserRef.current.parse;
+  //   setContentJSX(parse(article.content));
+  // },[article.content]);
 
   const contentRender = () => {
     return (
@@ -48,7 +48,8 @@ const ArticlePane = ({
           <header>
             <h2 className="font-bold text-3xl mb-6">{article.title}</h2>
           </header>
-          {contentJSX}
+          {/* {contentJSX} */}
+          {article.content}
           <footer></footer>
         </article>
       </div>
