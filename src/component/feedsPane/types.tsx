@@ -22,6 +22,7 @@ export interface FeedGroup extends ObejectWithId {
 
 export interface FeedProps {
   key: string;
+  id: string;
   groupIndex: number;
   title: string;
   summary?: string;

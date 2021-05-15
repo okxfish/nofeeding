@@ -22,11 +22,14 @@ import { normalize, schema } from "normalizr";
 
 import { initState, reducer } from "./reducer";
 
+import { default as get } from "lodash.get";
+
 export interface Props {
   className?: string;
   isOverViewPaneOpen: boolean;
   setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
 }
+
 const article = new schema.Entity("article");
 
 const FeedContainer = ({
@@ -44,10 +47,9 @@ const FeedContainer = ({
 
   const openOverviewPane = () => setIsOverViewPaneOpen(true);
 
-  const closeOverviewPane = useCallback(
-    () => setIsOverViewPaneOpen(false),
-    [setIsOverViewPaneOpen]
-  );
+  const closeOverviewPane = useCallback(() => setIsOverViewPaneOpen(false), [
+    setIsOverViewPaneOpen,
+  ]);
   const openArticleModal = () => setIsArticleModalOpen(true);
   const closeArticleModal = () => setIsArticleModalOpen(false);
 
@@ -60,6 +62,7 @@ const FeedContainer = ({
     async () => {
       const { data } = await api.inoreader.getStreamContents();
       const transformedData = data.items.map((item) => ({
+        key: item.id,
         id: item.id,
         title: item.title,
         summary: "",
@@ -77,8 +80,8 @@ const FeedContainer = ({
     },
     {
       select: ({ result, entities }) => {
-         let list = []
-         const article = entities.article;
+        let list = [];
+        const article = entities.article;
         if (typeof article === "object" && article !== null) {
           list = result.map((item) => article[item]);
         }
@@ -91,36 +94,35 @@ const FeedContainer = ({
       onError: (error) => {
         console.error(error);
       },
+      refetchOnWindowFocus: false,
     }
   );
 
-  console.log(streamContentQuery.data?.list);
+  const getArticleById = (id) => get(streamContentQuery, `data.entities.article['${id}']`);
 
-  const onClickFeed = (e: FeedProps): any => {
-    const prevActivedFeedId = state.currenActivedFeedId;
-    dispatch({ type: "feed/ById/changeCurrentActivedFeedId", payload: e.key });
+  const openArticleInner = (articleId) => {
+    const { currenActivedFeedId: prevArticleId } = state;
+    if (prevArticleId !== articleId ) {
+      const prevArticle = getArticleById(prevArticleId);
+      const curArticle = getArticleById(articleId);
+    }
+  }
+
+  const displayArticle = (article) => {
     if (viewType === ViewType.list) {
-      if (
-        prevActivedFeedId &&
-        prevActivedFeedId !== e.key &&
-        state.feeds.byId[prevActivedFeedId] &&
-        state.feeds.byId[prevActivedFeedId].isInnerArticleShow
-      ) {
-        dispatch({
-          type: "feed/ById/hideInnerArticle",
-          payload: prevActivedFeedId,
-        });
-      }
-      
-      if (e.isInnerArticleShow) {
-        dispatch({ type: "feed/ById/hideInnerArticle", payload: e.key });
-      } else {
-        dispatch({ type: "feed/ById/showInnerArticle", payload: e.key });
-      }
+      openArticleInner(article.id)
     } else if (viewType !== ViewType.threeway) {
       openArticleModal();
     }
   };
+
+  const onClickFeed = (e: FeedProps): any => {
+    dispatch({ type: "feed/ById/changeCurrentActivedFeedId", payload: e.id });
+    displayArticle(e)
+  };
+
+  const { currenActivedFeedId } = state;
+  const activedArticle = getArticleById(currenActivedFeedId);
 
   return (
     <FeedContext.Provider
@@ -129,7 +131,7 @@ const FeedContainer = ({
       <ArticleContext.Provider value={null}>
         <FeedPageComponent
           className={className}
-          article={null}
+          article={activedArticle}
           viewType={viewType}
           isArticleModalOpen={isArticleModalOpen}
           isOverViewPaneOpen={isOverViewPaneOpen}

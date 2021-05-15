@@ -97,7 +97,6 @@ const FeedsPane = ({
       />
     );
   };
-  console.log(items)
 
   return (
     <>
