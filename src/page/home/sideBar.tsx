@@ -4,6 +4,7 @@ import { Route, Switch, useHistory, useParams } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
+import { default as api } from '../../api';
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
@@ -11,6 +12,7 @@ const homeIcon: IIconProps = { iconName: "Home" };
 const addIcon: IIconProps = { iconName: "Add" };
 const searchIcon: IIconProps = { iconName: "Search" };
 const syncIcon: IIconProps = { iconName: "Sync" };
+const contactIcon: IIconProps = { iconName: "Contact" };
 const settingsIcon: IIconProps = { iconName: "Settings" };
 const viewIcon: IIconProps = { iconName: "View" };
 
@@ -56,6 +58,11 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
 
   const handleSyncClick = () => {
     setIsLoaddingFeeds(true);
+  };
+
+  const handleLoginClick = async () => {
+    const data = await api.auth.getInoreaderAuthURI();
+    window.open(data.data.auth_uri);
   };
 
   const handleHamburgerMenuBtnClick = () => {
@@ -166,6 +173,15 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
           />
         </Switch>
       </div>
+      <SideBarItem
+        className="hidden sm:block"
+        iconProps={contactIcon}
+        isIconOnly={!isSidePaneOpen}
+        content=""
+        onClick={handleLoginClick}
+      >
+        登录
+      </SideBarItem>
       <SideBarItem
         iconProps={settingsIcon}
         isIconOnly={!isSidePaneOpen}
