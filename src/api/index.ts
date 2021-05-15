@@ -3,7 +3,7 @@ import { auth } from "./auth";
 import { inoreader } from "./inoreader";
 
 export const INOREADER_AUTH_URL = "http://localhost:3777";
-export const INOREADER_SERVER_URL = "https://www.inoreader.com";
+export const INOREADER_SERVER_URL = "https://www.innoreader.com";
 export const CORS_PROXY_URL = "http://localhost:8080";
 
 const fetch = axios.create({

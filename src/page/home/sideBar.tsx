@@ -61,8 +61,8 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   };
 
   const handleLoginClick = async () => {
-    const data = await api.auth.getInoreaderAuthURI();
-    window.open(data.data.auth_uri);
+    const res = await api.auth.getInoreaderAuthURI();
+    window.open(res.data.data.auth_uri);
   };
 
   const handleHamburgerMenuBtnClick = () => {

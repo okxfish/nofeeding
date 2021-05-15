@@ -10,7 +10,8 @@ export const useInoreaderToken = () => {
       if (
         e.key === "inoreaderToken" &&
         typeof e.newValue === "string" &&
-        e.newValue !== ""
+        e.newValue !== "" &&
+        e.newValue !== "undefined"
       ) {
         setInoreaderToken(e.newValue);
       }
