@@ -9,6 +9,7 @@ import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import Oauth from "./page/oauth/index";
 import { ViewType, ViewTypeContext } from "./context/viewType";
+import { useInoreaderToken } from "./utils/useInoreaderToken";
 
 import "./App.css";
 import "./style/utils.css";
@@ -18,11 +19,13 @@ const CallBackOnUnmount = ({ cb }) => {
   return null;
 };
 
+const Login = lazy(() => import("./page/login"));
 const Home = lazy(() => import("./page/home"));
 
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [viewType, setViewType] = useState(ViewType.magazine);
+  const inoreaderToken = useInoreaderToken();
 
   return (
     <div className="App">
@@ -46,8 +49,21 @@ function App() {
           >
             <Switch>
               <Route path="/oauth" component={Oauth} />
-              <Route path="/:pageName" component={Home} />
-              <Redirect path="/" to="/feed" exact />
+              <Route path="/login" component={Login} />
+              <Route
+                path={[
+                  '/feed',
+                  '/setting',
+                ]}
+                render={()=>{
+                  if (inoreaderToken) {
+                    return <Home />
+                  } else {
+                    return <Redirect path="/" to="/login" />
+                  }
+                }}
+              />
+              <Redirect path="/" to="/feed" />
             </Switch>
           </Suspense>
         </Router>

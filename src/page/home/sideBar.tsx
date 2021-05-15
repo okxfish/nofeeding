@@ -9,8 +9,6 @@ import { default as api } from '../../api';
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
 const homeIcon: IIconProps = { iconName: "Home" };
-const addIcon: IIconProps = { iconName: "Add" };
-const searchIcon: IIconProps = { iconName: "Search" };
 const syncIcon: IIconProps = { iconName: "Sync" };
 const contactIcon: IIconProps = { iconName: "Contact" };
 const settingsIcon: IIconProps = { iconName: "Settings" };
@@ -48,21 +46,12 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
     setIsOverViewPaneOpen(true);
   };
 
-  const handleSearchClick = () => {
-    history.replace("/search");
-  };
-
-  const handleAddClick = () => {
-    history.replace("/add");
-  };
-
   const handleSyncClick = () => {
     setIsLoaddingFeeds(true);
   };
 
-  const handleLoginClick = async () => {
-    const res = await api.auth.getInoreaderAuthURI();
-    window.open(res.data.data.auth_uri);
+  const handleProfileClick = async () => {
+
   };
 
   const handleHamburgerMenuBtnClick = () => {
@@ -112,7 +101,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         content=""
         onClick={handleHamburgerMenuBtnClick}
       >
-        menu
+        {''}
       </SideBarItem>
       <SideBarItem
         className={pageName === "feed" ? "hidden sm:block" : ""}
@@ -129,20 +118,6 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         onClick={handleFilterClick}
       >
         filter
-      </SideBarItem>
-      <SideBarItem
-        iconProps={searchIcon}
-        isIconOnly={!isSidePaneOpen}
-        onClick={handleSearchClick}
-      >
-        search
-      </SideBarItem>
-      <SideBarItem
-        iconProps={addIcon}
-        isIconOnly={!isSidePaneOpen}
-        onClick={handleAddClick}
-      >
-        add
       </SideBarItem>
       <div className="hidden sm:block flex-1 flex-col w-full my-8">
         <Switch>
@@ -178,9 +153,9 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         iconProps={contactIcon}
         isIconOnly={!isSidePaneOpen}
         content=""
-        onClick={handleLoginClick}
+        onClick={handleProfileClick}
       >
-        登录
+        profile
       </SideBarItem>
       <SideBarItem
         iconProps={settingsIcon}

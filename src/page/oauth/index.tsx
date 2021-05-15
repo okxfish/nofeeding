@@ -4,6 +4,7 @@ import { default as api } from "../../api";
 
 const Oauth = () => {
   const code = useSearchParam("code") || "";
+
   useEffect(() => {
     const getAutoToken = async () => {
       const {
@@ -11,6 +12,7 @@ const Oauth = () => {
           data: { token },
         },
       } = await api.auth.getInoreaderAccessToken(code);
+      console.log(code, token);
       localStorage.setItem("inoreaderToken", token);
       window.close();
     };

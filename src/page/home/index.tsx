@@ -27,8 +27,6 @@ const Home = () => {
             />
           )}
         />
-        <Route path="/add" render={emptyRender} />
-        <Route path="/search" render={emptyRender} />
         <Route path="/setting" render={Setting} />
       </Switch>
     </div>

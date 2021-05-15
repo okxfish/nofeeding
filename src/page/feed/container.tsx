@@ -69,6 +69,7 @@ const FeedContainer = ({
         content: item.summary.content,
         sourceName: item.origin.title,
         sourceID: item.origin.title.streamId,
+        url: item.canonical[0].href,
         time: item.timestampUsec,
         isRead: false,
         isStar: false,
