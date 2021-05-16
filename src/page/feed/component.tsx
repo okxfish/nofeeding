@@ -91,12 +91,12 @@ const FeedPageComponent = ({
         className=""
         isOpen={isArticleModalOpen}
         onDismiss={closeArticleModal}
-        overlay={{ style: { backdropFilter: "blur(42px)" } }}
+        overlay={{ style: { backgroundColor: "rgba(0, 0, 0, 0.75)" } }}
         isBlocking={false}
         styles={{ main: { maxHeight: "100%", maxWidth: "100%" } }}
       >
         <ArticlePane
-          className="article-modal px-6 h-screen w-screen"
+          className="article-modal h-screen w-screen"
           closeModal={closeArticleModal}
           article={article}
         />

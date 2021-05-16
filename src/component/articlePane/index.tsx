@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IconButton, IIconProps } from "office-ui-fabric-react";
 import { Parser as HtmlToReactParser } from "html-to-react";
-import './style.css';
+import "./style.css";
 
 export interface article {
   title: string;
@@ -35,7 +35,7 @@ const ArticlePane = ({
 
   const contentRender = () => {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full overflow-y-hidden">
         <div className="flex items-center h-10 border-b">
           <IconButton
             className="block lg:hidden"
@@ -43,17 +43,19 @@ const ArticlePane = ({
             onClick={closeModal}
           />
         </div>
-        <article className="max-w-3xl mx-auto py-4">
-          <header>
-            <h2 className="font-bold text-3xl mb-6">
-              <a href={article.url} target="_blank" rel="noreferrer">
-                {article.title}
-              </a>
-            </h2>
-          </header>
-          <div>{contentJSX}</div>
-          <footer></footer>
-        </article>
+        <div className="article-wrapper overflow-y-scroll flex-1 px-6">
+          <article className="max-w-3xl mx-auto py-4">
+            <header>
+              <h2 className="font-bold text-3xl mb-6">
+                <a href={article.url} target="_blank" rel="noreferrer">
+                  {article.title}
+                </a>
+              </h2>
+            </header>
+            <div>{contentJSX}</div>
+            <footer></footer>
+          </article>
+        </div>
       </div>
     );
   };

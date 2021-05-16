@@ -36,6 +36,10 @@ fetch.interceptors.response.use(
     }
   },
   (error) => {
+    if(error.response.data === 'AppId required! Contact app developer. See https://inoreader.dev'){
+      localStorage.removeItem('inoreaderToken');
+      window.location.reload();
+    }
     return Promise.reject(error);
   }
 );

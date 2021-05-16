@@ -5,6 +5,9 @@ import {
   IGroup,
   IGroupRenderProps,
   IGroupHeaderProps,
+  ShimmerElementsGroup,
+  ShimmerElementType,
+  Shimmer,
 } from "office-ui-fabric-react";
 import { FeedGroup, FeedProps } from "./types";
 import "./style.css";
@@ -23,7 +26,7 @@ const FeedsPane = ({
   items,
   groups,
   onClickFeed,
-  dispatch
+  dispatch,
 }: Props) => {
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
     if (props && props.group) {
@@ -65,23 +68,22 @@ const FeedsPane = ({
     item?: any,
     index?: number | undefined
   ): React.ReactNode => {
-    
     const toggleIsReadById = (e: any): void => {
-      if(e && typeof e.stopPropagation === 'function'){
+      if (e && typeof e.stopPropagation === "function") {
         e.stopPropagation();
-      } 
+      }
     };
 
     const toggleIsStarById = (e: any): void => {
-      if(e && typeof e.stopPropagation === 'function'){
+      if (e && typeof e.stopPropagation === "function") {
         e.stopPropagation();
-      } 
+      }
     };
 
     const toggleIsPinById = (e: any): void => {
-      if(e && typeof e.stopPropagation === 'function'){
+      if (e && typeof e.stopPropagation === "function") {
         e.stopPropagation();
-      } 
+      }
     };
 
     return (
@@ -97,6 +99,51 @@ const FeedsPane = ({
       />
     );
   };
+
+  const getCustomElements = (number:number): JSX.Element => {
+    const rowRender = (item, index): JSX.Element => (
+      <div key={index}>
+        <div
+          style={{ width: "100%", display: "flex", alignItems: "flex-start" }}
+        >
+          <ShimmerElementsGroup
+            shimmerElements={[
+              { type: ShimmerElementType.line, height: 100, width: 100 },
+              { type: ShimmerElementType.gap, width: 10, height: 100 },
+            ]}
+          />
+          <ShimmerElementsGroup
+            flexWrap
+            width={"calc(100% - 110px)"}
+            shimmerElements={[
+              { type: ShimmerElementType.line, width: "20%", height: 20 },
+              { type: ShimmerElementType.gap, width: "80%", height: 20 },
+              { type: ShimmerElementType.gap, width: "100%" },
+              { type: ShimmerElementType.line, width: "100%", height: 20 },
+              { type: ShimmerElementType.gap, width: "100%" },
+              { type: ShimmerElementType.line, width: "100%", height: 20 },
+            ]}
+          />
+        </div>
+        <ShimmerElementsGroup
+          shimmerElements={[
+            { type: ShimmerElementType.gap, height: 24, width: "100%" },
+          ]}
+        />
+      </div>
+    );
+
+    return <div>{Array.from({ length: number }).map(rowRender)}</div>;
+  };
+
+  if (!items || (Array.isArray(items) && items.length === 0)) {
+    return (
+      <Shimmer
+        className="mt-4 mx-auto w-11/12"
+        customElementsGroup={getCustomElements(5)}
+      />
+    );
+  }
 
   return (
     <>

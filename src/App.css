@@ -10,8 +10,6 @@ body {
 }
 
 .full-screen-loading__animation-wrapper {
-  /* background-color: rgba(255, 255, 255, 0.4); */
-  backdrop-filter: blur(20px);
   transition: all 400ms ease-out;
 }
 
@@ -22,11 +20,9 @@ body {
 }
 
 .full-screen-loading__animation-wrapper.exit {
-  backdrop-filter: blur(30px);
 }
 
 .full-screen-loading__animation-wrapper.exit-active {
-  backdrop-filter: blur(0px);
 }
 
 .full-screen-loading__animation-wrapper.enter .book {
@@ -37,20 +33,29 @@ body {
   transform: scale(1);
 }
 
-.full-screen-loading__animation-wrapper.exit .book{
+.full-screen-loading__animation-wrapper.exit .book {
   opacity: 1;
   transform: scale(1);
 }
 
-.full-screen-loading__animation-wrapper.exit-active .book{
+.full-screen-loading__animation-wrapper.exit-active .book {
   opacity: 0;
   transform: scale(0.85);
 }
 
-.full-screen-loading__animation-wrapper.exit .full-screen-loading__wrapper{
+.full-screen-loading__animation-wrapper.exit .full-screen-loading__wrapper {
   opacity: 1;
 }
 
-.full-screen-loading__animation-wrapper.exit-active .full-screen-loading__wrapper{
+.full-screen-loading__animation-wrapper.exit-active
+  .full-screen-loading__wrapper {
   opacity: 0;
+}
+
+.ms-Modal-scrollableContent {
+  overflow-y: hidden;
+}
+
+.article-wrapper::-webkit-scrollbar {
+  width: 0;
 }
