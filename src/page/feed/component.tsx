@@ -79,12 +79,11 @@ const FeedPageComponent = ({
       {viewType === ViewType.threeway ? (
         <div
           className="
-              h-full scrollbar overflow-y-auto 
               hidden col-start-4 col-span-1 row-start-1 row-span-3
               xl:block xl:col-start-4 xl:col-span-1
             "
         >
-          <ArticlePane className="px-6" article={article} />
+          <ArticlePane className="h-full" article={article} />
         </div>
       ) : null}
       <Modal

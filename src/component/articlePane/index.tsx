@@ -36,17 +36,17 @@ const ArticlePane = ({
   const contentRender = () => {
     return (
       <div className="flex flex-col h-full overflow-y-hidden">
-        <div className="flex items-center h-10 border-b">
+        <div className="flex items-center h-10 border-b mx-6">
           <IconButton
             className="block lg:hidden"
             iconProps={backIcon}
             onClick={closeModal}
           />
         </div>
-        <div className="article-wrapper overflow-y-scroll flex-1 px-6">
-          <article className="max-w-3xl mx-auto py-4">
+        <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-6">
+          <article className="max-w-3xl w-full mx-auto py-4">
             <header>
-              <h2 className="font-bold text-3xl mb-6">
+              <h2 className="font-bold text-3xl mb-6 break-words">
                 <a href={article.url} target="_blank" rel="noreferrer">
                   {article.title}
                 </a>
