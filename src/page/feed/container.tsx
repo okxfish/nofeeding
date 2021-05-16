@@ -64,6 +64,8 @@ const FeedContainer = ({
     "feed/streamContentQuery",
     async () => {
       const { data } = await api.inoreader.getStreamContents();
+      const res = await api.inoreader.getStreamPreferenceList();
+      console.log('getStreamPreferenceList: ',res);
       const transformedData = data.items.map((item) => ({
         key: item.id,
         id: item.id,

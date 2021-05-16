@@ -30,6 +30,7 @@ export const inoreader = {
     }),
   // User information
   getUserInfo: () => fetch.get(`/reader/api/0/user-info`),
+  getStreamPreferenceList: () => fetch.get(`/reader/api/0/preference/stream/list`),
   // Add subscription
   addSubscription: (url: string) =>
     fetch.post(`/reader/api/0/subscription/quickadd`, null, {

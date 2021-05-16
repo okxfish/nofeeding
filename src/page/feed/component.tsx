@@ -60,7 +60,7 @@ const FeedPageComponent = ({
         </div>
       </CSSTransition>
       <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r">
-        <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0" />
+        <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0 h-full" />
       </div>
       <div
         className={classnames(
