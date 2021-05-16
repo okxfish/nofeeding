@@ -57,6 +57,9 @@ const FeedContainer = ({
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
+
+  console.log('viewType', viewType)
+
   const streamContentQuery = useQuery(
     "feed/streamContentQuery",
     async () => {
@@ -109,13 +112,14 @@ const FeedContainer = ({
     }
   }
 
-  const displayArticle = (article) => {
+  const displayArticle = useCallback((article) => {
+    console.log(viewType);
     if (viewType === ViewType.list) {
       openArticleInner(article.id)
     } else if (viewType !== ViewType.threeway) {
       openArticleModal();
     }
-  };
+  }, [viewType]);
 
   const onClickFeed = (e: FeedProps): any => {
     dispatch({ type: "feed/ById/changeCurrentActivedFeedId", payload: e.id });

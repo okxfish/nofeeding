@@ -206,11 +206,11 @@ const OverviewPane = ({ className }: Props) => {
       />
       <GroupedList
         className="flex-1 border-b border-t overflow-y-auto scrollbar-none bg-gray-50 sm:bg-transparent"
-        items={subscriptionsListQuery.data}
+        items={subscriptionsListQuery.data || []}
         onRenderCell={onRenderCell}
         groupProps={groupProps}
         selectionMode={SelectionMode.none}
-        groups={folders}
+        groups={folders || []}
       />
     </div>
   );
