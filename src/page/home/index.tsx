@@ -16,7 +16,7 @@ const Home = () => {
       className="home__layout overflow-hidden"
       style={{ height: windowHeight }}
     >
-      <SideBar setIsOverViewPaneOpen={setIsOverViewPaneOpen}/>
+      <SideBar setIsOverViewPaneOpen={setIsOverViewPaneOpen} />
       <Switch>
         <Route
           path={["/feed/:options", "/feed"]}

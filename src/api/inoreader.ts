@@ -38,7 +38,7 @@ export const inoreader = {
       },
     }),
   // Folder/Tag list
-  getFolderOrTagList: (types: string, counts: string) =>
+  getFolderOrTagList: (types?: number, counts?: number) =>
     fetch.get(`/reader/api/0/tag/list`, {
       params: {
         types: types,

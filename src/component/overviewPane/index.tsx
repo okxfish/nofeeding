@@ -13,7 +13,9 @@ import { createGroups } from "@fluentui/example-data";
 import OverviewCell from "./overviewCell";
 import "./style.css";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
-
+import { useQuery } from "react-query";
+import { default as api } from "../../api";
+import { default as get } from "lodash.get";
 export interface Props {
   className?: string;
 }
@@ -58,20 +60,67 @@ const OverviewPane = ({ className }: Props) => {
   const location = useLocation();
   const commonPx = "px-2";
 
+  const subscriptionsListQuery = useQuery(
+    "home/subscriptionsListQuery",
+    () => api.inoreader.getSubscriptionList(),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        return data.data.subscriptions.map((item) => {
+          return {
+            id: item.id,
+            key: item.id,
+            title: item.title,
+            iconUrl: item.iconUrl,
+          };
+        });
+      },
+    }
+  );
+
+  const folderQuery = useQuery(
+    "home/folderQuery",
+    () => api.inoreader.getFolderOrTagList(1, 1),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) => {
+        const tagsAndFolders: any[] = get(data, "data.tags", []);
+        const tags: any[] = [];
+        const folders: any = tagsAndFolders.filter(
+          (item) => item.type === "folder"
+        );
+        return folders.map((folder) => {
+          const idPartSplited: any[] = folder.id.split("/");
+          return {
+            count: 4,
+            key: folder.id,
+            name: idPartSplited[idPartSplited.length - 1],
+            startIndex: 4,
+          };
+        });
+      },
+    }
+  );
+
+  console.log("folderQuery/folders:", folderQuery.data?.folders);
+  console.log("subscriptionsListQuery/tags:", subscriptionsListQuery.data);
+
   const onRenderCell = (
     nestingDepth?: number,
     item?: any,
     itemIndex?: number
   ): React.ReactNode => {
-    const onClick = () => history.push(`/feed?type=source&sourceId=${item.key}`);
+    const onClick = () =>
+      history.push(`/feed?type=source&sourceId=${item.key}`);
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
         className={`${listItemClassName} hover:bg-gray-200 rounded-sm`}
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
         onClick={onClick}
       >
-        <FontIcon className="mr-2" iconName="Dictionary" />
-        {item.title}
+        {/* <FontIcon className="mr-2" iconName="Dictionary" /> */}
+        <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
+        <div className="truncate">{item.title}</div>
       </div>
     ) : null;
   };
@@ -93,7 +142,9 @@ const OverviewPane = ({ className }: Props) => {
         });
 
         return (
-          <div className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}>
+          <div
+            className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}
+          >
             <FontIcon
               className={`mr-2 transition-all transform ${
                 props.group!.isCollapsed ? "" : "rotate-90"
@@ -118,25 +169,27 @@ const OverviewPane = ({ className }: Props) => {
     },
   };
 
+  const folders = folderQuery.data;
+
   return (
     <div className={`${className} flex-1 flex flex-col min-h-0 cursor-pointer`}>
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "PreviewLink" }}
         content="all"
-        onClick={()=>history.push('/feed')}
+        onClick={() => history.push("/feed")}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "FavoriteStar" }}
         content="star"
-        onClick={()=>history.push('/feed?type=star')}
+        onClick={() => history.push("/feed?type=star")}
       />
       <OverviewCell
         className={`${commonPx}`}
         iconProps={{ iconName: "Archive" }}
         content="archive"
-        onClick={()=>history.push('/feed?type=archive')}
+        onClick={() => history.push("/feed?type=archive")}
       />
       <OverviewCell
         className={`${commonPx} bg-gray-50 rounded-t-lg rounded-b-none sm:bg-transparent sm:rounded-b-sm sm:rounded-t-sm`}
@@ -153,11 +206,11 @@ const OverviewPane = ({ className }: Props) => {
       />
       <GroupedList
         className="flex-1 border-b border-t overflow-y-auto scrollbar-none bg-gray-50 sm:bg-transparent"
-        items={items}
+        items={subscriptionsListQuery.data}
         onRenderCell={onRenderCell}
         groupProps={groupProps}
         selectionMode={SelectionMode.none}
-        groups={groups}
+        groups={folders}
       />
     </div>
   );
