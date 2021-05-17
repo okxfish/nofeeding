@@ -1,17 +1,15 @@
-import { IContextualMenuProps, IIconProps } from "@fluentui/react";
+import { DirectionalHint, IContextualMenuProps, IIconProps } from "@fluentui/react";
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useParams } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
-import { default as api } from '../../api';
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
 const homeIcon: IIconProps = { iconName: "Home" };
 const syncIcon: IIconProps = { iconName: "Sync" };
 const contactIcon: IIconProps = { iconName: "Contact" };
-const settingsIcon: IIconProps = { iconName: "Settings" };
 const viewIcon: IIconProps = { iconName: "View" };
 
 export interface Props {
@@ -156,14 +154,6 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         onClick={handleProfileClick}
       >
         profile
-      </SideBarItem>
-      <SideBarItem
-        iconProps={settingsIcon}
-        isIconOnly={!isSidePaneOpen}
-        content=""
-        onClick={() => history.replace("/setting")}
-      >
-        settings
       </SideBarItem>
     </div>
   );

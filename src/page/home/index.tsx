@@ -4,7 +4,6 @@ import { useWindowSize } from "react-use";
 import { Route, Switch } from "react-router-dom";
 import "./style.css";
 import SideBar from "./sideBar";
-import Setting from "../setting/index";
 
 const Home = () => {
   const { height: windowHeight } = useWindowSize();
@@ -27,7 +26,6 @@ const Home = () => {
             />
           )}
         />
-        <Route path="/setting" render={Setting} />
       </Switch>
     </div>
   );
