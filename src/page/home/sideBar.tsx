@@ -57,6 +57,8 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   };
 
   const menuProps: IContextualMenuProps = {
+    alignTargetEdge: true,
+    directionalHint: DirectionalHint.rightTopEdge,
     items: [
       {
         key: "cardView",
