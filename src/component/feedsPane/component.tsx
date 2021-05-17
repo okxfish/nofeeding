@@ -151,7 +151,7 @@ const FeedsPane = ({
         className={`${className}`}
         items={items}
         onRenderCell={onRenderCell}
-        onShouldVirtualize={() => false}
+        onShouldVirtualize={() => true}
         groupProps={groupProps}
         // groups={groups}
       />
