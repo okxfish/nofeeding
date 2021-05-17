@@ -222,11 +222,11 @@ const FeedItem = ({
   const feedHeaderElem: React.ReactElement | null =
     viewType === 1 ? null : (
       <div
-        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 ${
+        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
           item.isRead ? "opacity-40" : ""
         }`}
       >
-        <Image className="mr-3 rounded-md select-none" {...imageProps} />
+        <Image className="mr-3  select-none" {...imageProps} />
       </div>
     );
 
