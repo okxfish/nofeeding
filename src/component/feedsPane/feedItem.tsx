@@ -116,6 +116,14 @@ const FeedItem = ({
     [onLeftSlide, onRightSlide]
   );
 
+  useEffect(()=>{
+    if (item?.isInnerArticleShow) {
+      if (feedItemRef.current instanceof HTMLElement) {
+        feedItemRef.current.scrollIntoView({behavior: 'smooth'});
+      }
+    }
+  },[item?.isInnerArticleShow]);
+
   // 订阅左右滑动的触摸事件
   useEffect(() => {
     const handleOnPan = (ev: any) => {
