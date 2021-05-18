@@ -28,9 +28,6 @@ export interface Props {
   item?: FeedProps;
   itemIndex?: number;
   onClickFeed?(e?: FeedProps): void;
-  onPinClick?(e?: any): void;
-  onStarClick?(e?: any): void;
-  onReadClick?(e?: any): void;
   onLeftSlide?(e?: any): void;
   onRightSlide?(e?: any): void;
 }
@@ -67,9 +64,6 @@ const FeedItem = ({
   item,
   itemIndex,
   onClickFeed,
-  onPinClick,
-  onStarClick,
-  onReadClick,
   onLeftSlide = () => {},
   onRightSlide = () => {},
 }: Props) => {
@@ -305,7 +299,7 @@ const FeedItem = ({
         title="mark as read"
         ariaLabel="Mark as read"
         disabled={false}
-        onClick={onReadClick}
+        onClick={item.onReadClick}
       />
       <IconButton
         className="focus:outline-none"
@@ -313,7 +307,7 @@ const FeedItem = ({
         title="favorite"
         ariaLabel="Favorite"
         disabled={false}
-        onClick={onStarClick}
+        onClick={item.onStarClick}
       />
       <IconButton
         className="focus:outline-none"

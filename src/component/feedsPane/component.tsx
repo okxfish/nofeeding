@@ -68,34 +68,11 @@ const FeedsPane = ({
     item?: any,
     index?: number | undefined
   ): React.ReactNode => {
-    const toggleIsReadById = (e: any): void => {
-      if (e && typeof e.stopPropagation === "function") {
-        e.stopPropagation();
-      }
-    };
-
-    const toggleIsStarById = (e: any): void => {
-      if (e && typeof e.stopPropagation === "function") {
-        e.stopPropagation();
-      }
-    };
-
-    const toggleIsPinById = (e: any): void => {
-      if (e && typeof e.stopPropagation === "function") {
-        e.stopPropagation();
-      }
-    };
-
     return (
       <FeedItem
         item={item}
         itemIndex={index}
         onClickFeed={onClickFeed}
-        onPinClick={toggleIsPinById}
-        onStarClick={toggleIsStarById}
-        onReadClick={toggleIsReadById}
-        onLeftSlide={toggleIsReadById}
-        onRightSlide={toggleIsStarById}
       />
     );
   };

@@ -32,6 +32,8 @@ export interface FeedProps {
   isRead?: boolean;
   isStar?: boolean;
   isInnerArticleShow?: boolean;
+  onStarClick(e: any): void;
+  onReadClick(e: any): void;
 }
 
 export interface ById<T> {

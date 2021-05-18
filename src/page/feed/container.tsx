@@ -61,7 +61,31 @@ const FeedContainer = ({
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
-  console.log("viewType", viewType);
+  const toggleReadById = useCallback(
+    (articleId: string) => {
+      queryClient.setQueryData(
+        "feed/streamContentQuery",
+        produce((data) => {
+          const article = get(data, `entities.article['${articleId}']`);
+          article.isRead = !article.isRead;
+        })
+      );
+    },
+    [queryClient]
+  );
+
+  const toggleStarById = useCallback(
+    (articleId: string) => {
+      queryClient.setQueryData(
+        "feed/streamContentQuery",
+        produce((data) => {
+          const article = get(data, `entities.article['${articleId}']`);
+          article.isStar = !article.isStar;
+        })
+      );
+    },
+    [queryClient]
+  );
 
   const streamContentQuery = useQuery<
     NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
@@ -87,6 +111,18 @@ const FeedContainer = ({
         isStar: false,
         isPin: false,
         isInnerArticleShow: false,
+        onStarClick: (e: any) => {
+          if (e) {
+            e.stopPropagation();
+          }
+          toggleStarById(item.id);
+        },
+        onReadClick: (e: any) => {
+          if (e) {
+            e.stopPropagation();
+          }
+          toggleReadById(item.id);
+        },
       }));
       const normalizeData = normalize<
         FeedProps,
@@ -110,13 +146,13 @@ const FeedContainer = ({
   );
 
   const openArticleInner = useCallback(
-    (articleId:string) => {
-      const prevArticleId:string = state.currenActivedFeedId;
+    (articleId: string) => {
+      const prevArticleId: string = state.currenActivedFeedId;
       if (prevArticleId !== articleId) {
         queryClient.setQueryData(
           "feed/streamContentQuery",
           produce((data) => {
-            if (prevArticleId !== '') {
+            if (prevArticleId !== "") {
               data.entities.article[prevArticleId].isInnerArticleShow = false;
             }
             data.entities.article[articleId].isInnerArticleShow = true;
@@ -126,7 +162,7 @@ const FeedContainer = ({
         queryClient.setQueryData(
           "feed/streamContentQuery",
           produce((data) => {
-            data.entities.article[prevArticleId].isInnerArticleShow = false;
+            data.entities.article[articleId].isInnerArticleShow = false;
           })
         );
       }
@@ -145,12 +181,29 @@ const FeedContainer = ({
     [viewType, openArticleInner]
   );
 
+  const markAsRead = useCallback(
+    (articleId: string) => {
+      queryClient.setQueryData(
+        "feed/streamContentQuery",
+        produce((data) => {
+          data.entities.article[articleId].isRead = true;
+        })
+      );
+    },
+    [queryClient]
+  );
+
   const onClickFeed = useCallback(
     (e: FeedProps): any => {
-      dispatch({ type: "feed/ById/changeCurrentActivedFeedId", payload: e.id });
-      displayArticle(e.id);
+      const articleId = e.id;
+      dispatch({
+        type: "feed/ById/changeCurrentActivedFeedId",
+        payload: articleId,
+      });
+      displayArticle(articleId);
+      markAsRead(articleId);
     },
-    [displayArticle]
+    [displayArticle, markAsRead]
   );
 
   const { currenActivedFeedId } = state;
