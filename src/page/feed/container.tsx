@@ -25,6 +25,8 @@ import { initState, reducer } from "./reducer";
 import { default as get } from "lodash.get";
 import { SystemStreamIDs } from "../../api/inoreader";
 
+import { produce } from "immer";
+
 export interface Props {
   className?: string;
   isOverViewPaneOpen: boolean;
@@ -61,7 +63,9 @@ const FeedContainer = ({
 
   console.log("viewType", viewType);
 
-  const streamContentQuery = useQuery(
+  const streamContentQuery = useQuery<
+    NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
+  >(
     "feed/streamContentQuery",
     async () => {
       const { data } = await api.inoreader.getStreamContents("", {
@@ -92,21 +96,10 @@ const FeedContainer = ({
       return normalizeData;
     },
     {
-      select: ({ result, entities }) => {
-        let list: FeedProps[] = [];
-        const article = entities.article;
-        if (typeof article === "object" && article !== null) {
-          list = result.map((item) => article[item]);
-        }
-        return {
-          list,
-          result,
-          entities,
-        };
-      },
       onError: (error) => {
         console.error(error);
       },
+      placeholderData: { entities: { article: {} }, result: [] },
       refetchOnWindowFocus: false,
     }
   );
@@ -117,43 +110,28 @@ const FeedContainer = ({
   );
 
   const openArticleInner = useCallback(
-    (articleId) => {
-      const prevArticleId = state.currenActivedFeedId;
+    (articleId:string) => {
+      const prevArticleId:string = state.currenActivedFeedId;
       if (prevArticleId !== articleId) {
-        const prevArticle = getArticleById(prevArticleId);
-        const curArticle = getArticleById(articleId);
-        queryClient.setQueryData<
-          | NormalizedSchema<
-              { article: { [key: string]: FeedProps } },
-              string[]
-            >
-          | undefined
-        >("feed/streamContentQuery", (data) => {
-          if (typeof data === "undefined") {
-            return undefined;
-          }
-          const newData = {
-            ...data,
-            entities: {
-              article: {
-                ...data.entities.article,
-                [prevArticleId]: {
-                  ...prevArticle,
-                  isInnerArticleShow: false,
-                },
-                [articleId]: {
-                  ...curArticle,
-                  isInnerArticleShow: true,
-                },
-              },
-            },
-          };
-          console.log(newData);
-          return newData;
-        });
+        queryClient.setQueryData(
+          "feed/streamContentQuery",
+          produce((data) => {
+            if (prevArticleId !== '') {
+              data.entities.article[prevArticleId].isInnerArticleShow = false;
+            }
+            data.entities.article[articleId].isInnerArticleShow = true;
+          })
+        );
+      } else {
+        queryClient.setQueryData(
+          "feed/streamContentQuery",
+          produce((data) => {
+            data.entities.article[prevArticleId].isInnerArticleShow = false;
+          })
+        );
       }
     },
-    [getArticleById, state.currenActivedFeedId]
+    [state.currenActivedFeedId, queryClient]
   );
 
   const displayArticle = useCallback(
@@ -178,9 +156,13 @@ const FeedContainer = ({
   const { currenActivedFeedId } = state;
   const activedArticle = getArticleById(currenActivedFeedId);
 
+  const streamContents = streamContentQuery.data?.result.map(
+    (feedId) => streamContentQuery.data?.entities.article[feedId]
+  );
+
   return (
     <FeedContext.Provider
-      value={{ state, dispatch, streamContents: streamContentQuery.data?.list }}
+      value={{ state, dispatch, streamContents: streamContents }}
     >
       <ArticleContext.Provider value={activedArticle}>
         <FeedPageComponent
