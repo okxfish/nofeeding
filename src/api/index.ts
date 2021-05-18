@@ -2,9 +2,9 @@ import { default as axios } from "axios";
 import { auth } from "./auth";
 import { inoreader } from "./inoreader";
 
-export const INOREADER_AUTH_URL = "http://localhost:3777";
+export const INOREADER_AUTH_URL = "http://47.115.60.250:8148";
 export const INOREADER_SERVER_URL = "https://www.innoreader.com";
-export const CORS_PROXY_URL = "http://localhost:8080";
+export const CORS_PROXY_URL = "http://47.115.60.250:8080";
 
 const fetch = axios.create({
   baseURL: `${CORS_PROXY_URL}/${INOREADER_SERVER_URL}`,
