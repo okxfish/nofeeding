@@ -222,8 +222,6 @@ const OverviewPane = ({ className }: Props) => {
           )
         );
 
-        console.log(foldEntity);
-
         groups.push({
           key: foldEntity?.id,
           name: name,
