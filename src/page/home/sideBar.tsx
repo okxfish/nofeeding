@@ -1,4 +1,10 @@
-import { DirectionalHint, IContextualMenuProps, IIconProps } from "@fluentui/react";
+import {
+  ContextualMenuItemType,
+  DirectionalHint,
+  IContextualMenuProps,
+  IIconProps,
+  Toggle,
+} from "@fluentui/react";
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useParams } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
@@ -48,9 +54,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
     setIsLoaddingFeeds(true);
   };
 
-  const handleProfileClick = async () => {
-
-  };
+  const handleProfileClick = async () => {};
 
   const handleHamburgerMenuBtnClick = () => {
     toggleSidePane();
@@ -60,6 +64,22 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
     alignTargetEdge: true,
     directionalHint: DirectionalHint.rightTopEdge,
     items: [
+      {
+        key: "UnreadOnly",
+        onRender: () => {
+          return (
+            <div>
+              <Toggle className="p-2 pb-0" label="Unread Only" inlineLabel />
+            </div>
+          );
+        },
+      },
+      {
+        key: "Views",
+        itemType: ContextualMenuItemType.Header,
+        onRenderIcon: () => null,
+        text: "Views",
+      },
       {
         key: "cardView",
         text: "card view",
@@ -101,7 +121,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         content=""
         onClick={handleHamburgerMenuBtnClick}
       >
-        {''}
+        {""}
       </SideBarItem>
       <SideBarItem
         className={pageName === "feed" ? "hidden sm:block" : ""}
