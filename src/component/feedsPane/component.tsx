@@ -7,6 +7,7 @@ import {
   IGroupHeaderProps,
   ShimmerElementsGroup,
   ShimmerElementType,
+  FontIcon,
   Shimmer,
 } from "office-ui-fabric-react";
 import { FeedGroup, FeedProps } from "./types";
@@ -16,6 +17,7 @@ export interface Props {
   className?: string;
   onClickFeed?(e: FeedProps): void;
   items: FeedProps[];
+  isFetching: boolean;
   groups: IGroup[];
   isSidePaneOpen: boolean;
   dispatch: Dispatch<any>;
@@ -25,6 +27,7 @@ const FeedsPane = ({
   className,
   items,
   groups,
+  isFetching,
   onClickFeed,
   dispatch,
 }: Props) => {
@@ -68,16 +71,10 @@ const FeedsPane = ({
     item?: any,
     index?: number | undefined
   ): React.ReactNode => {
-    return (
-      <FeedItem
-        item={item}
-        itemIndex={index}
-        onClickFeed={onClickFeed}
-      />
-    );
+    return <FeedItem item={item} itemIndex={index} onClickFeed={onClickFeed} />;
   };
 
-  const getCustomElements = (number:number): JSX.Element => {
+  const getCustomElements = (number: number): JSX.Element => {
     const rowRender = (item, index): JSX.Element => (
       <div key={index}>
         <div
@@ -113,12 +110,20 @@ const FeedsPane = ({
     return <div>{Array.from({ length: number }).map(rowRender)}</div>;
   };
 
-  if (!items || (Array.isArray(items) && items.length === 0)) {
+  if (isFetching && (!items || (Array.isArray(items) && items.length === 0))) {
     return (
       <Shimmer
         className="mt-4 mx-auto w-11/12"
         customElementsGroup={getCustomElements(5)}
       />
+    );
+  }
+  if (!isFetching && Array.isArray(items) && items.length === 0) {
+    return (
+      <div className="text-center p-24 text-gray-300">
+        <FontIcon iconName="FangBody" className="text-7xl"/>
+        <div className="font-semibold text-3xl">Nothing Here</div>
+      </div>
     );
   }
 
@@ -130,7 +135,6 @@ const FeedsPane = ({
         onRenderCell={onRenderCell}
         onShouldVirtualize={() => true}
         groupProps={groupProps}
-        // groups={groups}
       />
     </>
   );

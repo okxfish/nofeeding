@@ -9,10 +9,12 @@ import { FeedContext } from './../../context/feed';
 
 export interface Props {
   className?: string;
+  isFetching: boolean;
   onClickFeed?(e: FeedProps): any;
 }
 
 const FeedsPaneContainer = (props: Props) => {
+  const { isFetching, className, onClickFeed } = props;
   const { state, dispatch, streamContents=[] } = useContext(FeedContext);
 
   return (
@@ -20,8 +22,10 @@ const FeedsPaneContainer = (props: Props) => {
       isSidePaneOpen={state.isSidePaneOpen}
       items={streamContents}
       groups={[]}
+      isFetching={isFetching}
       dispatch={dispatch}
-      {...props}
+      className={className}
+      onClickFeed={onClickFeed}
     />
   );
 };

@@ -6,10 +6,17 @@ import {
   Toggle,
 } from "@fluentui/react";
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
-import { Route, Switch, useHistory, useParams } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  useHistory,
+  useParams,
+  useLocation,
+} from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
+import queryString from "query-string";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
@@ -39,6 +46,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   const { setViewType } = useContext(ViewTypeContext);
 
   const history = useHistory();
+  const location = useLocation();
 
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
 
@@ -67,9 +75,18 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
       {
         key: "UnreadOnly",
         onRender: () => {
+          const qs = queryString.parse(location.search);
+          qs['unreadOnly'] = qs['unreadOnly'] === '1' ? '0' : '1';
+          const onChange = () => {
+            history.push({
+              pathname: "/feed",
+              search:  queryString.stringify(qs),
+            });
+          };
+
           return (
             <div>
-              <Toggle className="p-2 pb-0" label="Unread Only" inlineLabel />
+              <Toggle className="p-2 pb-0" label="Unread Only" inlineLabel onChange={onChange} checked={qs['unreadOnly'] === '0'}/>
             </div>
           );
         },

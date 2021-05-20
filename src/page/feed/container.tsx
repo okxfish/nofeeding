@@ -48,6 +48,7 @@ const FeedContainer = ({
 
   const queryClient = useQueryClient();
   const streamId = useSearchParam("streamId") || "";
+  const unreadOnly = useSearchParam("unreadOnly") || "0";
 
   const openOverviewPane = () => setIsOverViewPaneOpen(true);
 
@@ -65,7 +66,7 @@ const FeedContainer = ({
   const setArticleDataById = useCallback(
     (articleId: string, updater: any): void =>
       queryClient.setQueryData(
-        ["feed/streamContentQuery", streamId],
+        ["feed/streamContentQuery", streamId, unreadOnly],
         produce((data) => {
           const articles = get(data, `entities.article`);
           console.log(articles);
@@ -99,10 +100,10 @@ const FeedContainer = ({
   const streamContentQuery = useQuery<
     NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
   >(
-    ["feed/streamContentQuery", streamId],
-    async () => {
-      const { data } = await api.inoreader.getStreamContents(streamId, {
-        // exclude: SystemStreamIDs.READ,
+    ["feed/streamContentQuery", streamId, unreadOnly],
+    async ({queryKey: [key, streamId, unreadOnly]}) => {
+      const { data } = await api.inoreader.getStreamContents(String(streamId), {
+        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
       });
       const transformedData = data.items.map((item) => ({
         key: item.id,
@@ -228,6 +229,7 @@ const FeedContainer = ({
           viewType={viewType}
           isArticleModalOpen={isArticleModalOpen}
           isOverViewPaneOpen={isOverViewPaneOpen}
+          isFetching={streamContentQuery.isFetching}
           onClickFeed={onClickFeed}
           openOverviewPane={openOverviewPane}
           closeOverviewPane={closeOverviewPane}

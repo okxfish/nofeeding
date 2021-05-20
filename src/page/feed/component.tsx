@@ -16,6 +16,7 @@ export interface Props {
   viewType: ViewType;
   isArticleModalOpen: boolean;
   isOverViewPaneOpen: boolean;
+  isFetching: boolean;
   onClickFeed(e: FeedProps): any;
   openOverviewPane(): any;
   closeOverviewPane(): any;
@@ -30,6 +31,7 @@ const FeedPageComponent = ({
   isArticleModalOpen,
   isOverViewPaneOpen,
   onClickFeed,
+  isFetching,
   openOverviewPane,
   closeOverviewPane,
   closeArticleModal,
@@ -73,6 +75,7 @@ const FeedPageComponent = ({
       >
         <FeedsPane
           className="h-full transition-all"
+          isFetching={isFetching}
           onClickFeed={onClickFeed}
         />
       </div>

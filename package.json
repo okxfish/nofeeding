@@ -30,6 +30,7 @@
     "normalizr": "^3.6.1",
     "oauth": "^0.9.15",
     "postcss": "^7.0.35",
+    "query-string": "^7.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-query": "^3.16.0",
