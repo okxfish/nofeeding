@@ -348,7 +348,7 @@ const FeedItem = ({
   );
 
   return (
-    <div className="overflow-x-hidden relative">
+    <div className={`overflow-x-hidden relative ${item.className}`}>
       {slideBtnsElem}
       <div
         ref={feedItemRef}
@@ -371,7 +371,7 @@ const FeedItem = ({
       </div>
       {item.isInnerArticleShow ? (
         <ArticlePane
-          className="bg-white relative z-10 border-b bg-gray-50"
+          className="relative z-10 border-b bg-gray-50"
           article={article}
         />
       ) : null}

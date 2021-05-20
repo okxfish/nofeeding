@@ -13,11 +13,12 @@ import { createGroups } from "@fluentui/example-data";
 import OverviewCell from "./overviewCell";
 import "./style.css";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
 import { normalize, schema } from "normalizr";
 import { IGroup } from "@fluentui/react";
+import { produce } from "immer";
 
 export interface Props {
   className?: string;
@@ -67,6 +68,25 @@ const OverviewPane = ({ className }: Props) => {
   const routeMatch = useRouteMatch();
   const location = useLocation();
   const commonPx = "px-2";
+  const queryClient = useQueryClient();
+
+  const setSubscriptionDataById = (streamId: string, updater: any): void =>
+    queryClient.setQueryData(
+      ["home/subscriptionsListQuery"],
+      produce((data) => {
+        const subscription = get(data, `entities.subscription['${streamId}']`);
+        updater(subscription);
+      })
+    );
+
+  const setFolderDataById = (folderId: string, updater: any): void =>
+    queryClient.setQueryData(
+      ["home/folderQuery"],
+      produce((data) => {
+        const folder = get(data, `entities.folder['${folderId}']`);
+        updater(folder);
+      })
+    );
 
   const subscriptionsListQuery = useQuery(
     "home/subscriptionsListQuery",
@@ -107,6 +127,7 @@ const OverviewPane = ({ className }: Props) => {
         const subscriptions = subscriptionOrdering.match(/.{1,8}/g);
         const folder = get(foldersNormalized, `entities.folder['${folderId}']`);
         folder.subscriptions = subscriptions;
+        folder.isCollapsed = false;
       });
       return foldersNormalized;
     },
@@ -124,8 +145,15 @@ const OverviewPane = ({ className }: Props) => {
     item?: any,
     itemIndex?: number
   ): React.ReactNode => {
-    const onClick = () =>
-      history.push(`/feed?type=source&sourceId=${item.key}`);
+    const onClick = (e: any) => {
+      history.push({
+        pathname: "/feed",
+        search: `streamId=${item.id}`,
+      });
+      if (typeof e.stopPropagation === "function") {
+        e.stopPropagation();
+      }
+    };
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
         className={`${listItemClassName} hover:bg-gray-200 rounded-sm`}
@@ -142,21 +170,23 @@ const OverviewPane = ({ className }: Props) => {
     onRenderHeader: (props?: IGroupHeaderProps): JSX.Element | null => {
       if (props && props.group) {
         const toggleCollapse = (): void => {
-          props.onToggleCollapse!(props.group!);
+          setFolderDataById(props.group?.data.id, (folder) => {
+            folder.isCollapsed = !folder.isCollapsed;
+          });
         };
 
         return (
           <div
             className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}
+            onClick={toggleCollapse}
           >
             <FontIcon
               className={`mr-2 transition-all transform ${
                 props.group!.isCollapsed ? "" : "rotate-90"
               }`}
               iconName="ChevronRight"
-              onClick={toggleCollapse}
             />
-            <span className="flex-1" onClick={toggleCollapse}>
+            <span className="flex-1">
               {props.group!.name} ({props.group?.data.unreadCount})
             </span>
             <CommandBarButton
@@ -191,14 +221,18 @@ const OverviewPane = ({ className }: Props) => {
             )
           )
         );
+
+        console.log(foldEntity);
+
         groups.push({
           key: foldEntity?.id,
           name: name,
           count: count,
           startIndex: amount,
-          isCollapsed: true,
+          isCollapsed: foldEntity.isCollapsed,
           data: {
             unreadCount: foldEntity.unread_count,
+            id: foldEntity?.id,
           },
         });
         return { amount: amount + count, groups, items };

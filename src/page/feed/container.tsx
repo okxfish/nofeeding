@@ -47,6 +47,7 @@ const FeedContainer = ({
   const location = useLocation();
 
   const queryClient = useQueryClient();
+  const streamId = useSearchParam("streamId") || "";
 
   const openOverviewPane = () => setIsOverViewPaneOpen(true);
 
@@ -64,13 +65,17 @@ const FeedContainer = ({
   const setArticleDataById = useCallback(
     (articleId: string, updater: any): void =>
       queryClient.setQueryData(
-        "feed/streamContentQuery",
+        ["feed/streamContentQuery", streamId],
         produce((data) => {
+          const articles = get(data, `entities.article`);
+          console.log(articles);
           const article = get(data, `entities.article['${articleId}']`);
-          updater(article);
+          if (typeof article !== "undefined") {
+            updater(article);
+          }
         })
       ),
-    [queryClient]
+    [queryClient, streamId]
   );
 
   const toggleReadById = useCallback(
@@ -94,10 +99,10 @@ const FeedContainer = ({
   const streamContentQuery = useQuery<
     NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
   >(
-    "feed/streamContentQuery",
+    ["feed/streamContentQuery", streamId],
     async () => {
-      const { data } = await api.inoreader.getStreamContents("", {
-        exclude: SystemStreamIDs.READ,
+      const { data } = await api.inoreader.getStreamContents(streamId, {
+        // exclude: SystemStreamIDs.READ,
       });
       const transformedData = data.items.map((item) => ({
         key: item.id,
@@ -126,9 +131,9 @@ const FeedContainer = ({
           toggleReadById(item.id);
         },
         closeInnerArticle: (e: any) => {
-          setArticleDataById(item.id, (article)=>{
+          setArticleDataById(item.id, (article) => {
             article.isInnerArticleShow = false;
-          })
+          });
         },
       }));
       const normalizeData = normalize<
@@ -185,15 +190,11 @@ const FeedContainer = ({
   );
 
   const markAsRead = useCallback(
-    (articleId: string) => {
-      queryClient.setQueryData(
-        "feed/streamContentQuery",
-        produce((data) => {
-          data.entities.article[articleId].isRead = true;
-        })
-      );
-    },
-    [queryClient]
+    (articleId: string) =>
+      setArticleDataById(articleId, (article) => {
+        article.isRead = true;
+      }),
+    [setArticleDataById]
   );
 
   const onClickFeed = useCallback(
