@@ -9,7 +9,8 @@ article img {
   @apply mb-2;
 }
 
-article iframe {
+article iframe,
+article video {
   width: 100%;
   aspect-ratio: 4 /3;
 }

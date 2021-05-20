@@ -61,30 +61,34 @@ const FeedContainer = ({
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
-  const toggleReadById = useCallback(
-    (articleId: string) => {
+  const setArticleDataById = useCallback(
+    (articleId: string, updater: any): void =>
       queryClient.setQueryData(
         "feed/streamContentQuery",
         produce((data) => {
           const article = get(data, `entities.article['${articleId}']`);
-          article.isRead = !article.isRead;
+          updater(article);
         })
-      );
-    },
+      ),
     [queryClient]
+  );
+
+  const toggleReadById = useCallback(
+    (articleId: string) => {
+      setArticleDataById(articleId, (article) => {
+        article.isRead = !article.isRead;
+      });
+    },
+    [setArticleDataById]
   );
 
   const toggleStarById = useCallback(
     (articleId: string) => {
-      queryClient.setQueryData(
-        "feed/streamContentQuery",
-        produce((data) => {
-          const article = get(data, `entities.article['${articleId}']`);
-          article.isStar = !article.isStar;
-        })
-      );
+      setArticleDataById(articleId, (article) => {
+        article.isStar = !article.isStar;
+      });
     },
-    [queryClient]
+    [setArticleDataById]
   );
 
   const streamContentQuery = useQuery<
@@ -95,8 +99,6 @@ const FeedContainer = ({
       const { data } = await api.inoreader.getStreamContents("", {
         exclude: SystemStreamIDs.READ,
       });
-      const res = await api.inoreader.getStreamPreferenceList();
-      console.log("getStreamPreferenceList: ", res);
       const transformedData = data.items.map((item) => ({
         key: item.id,
         id: item.id,
@@ -122,6 +124,11 @@ const FeedContainer = ({
             e.stopPropagation();
           }
           toggleReadById(item.id);
+        },
+        closeInnerArticle: (e: any) => {
+          setArticleDataById(item.id, (article)=>{
+            article.isInnerArticleShow = false;
+          })
         },
       }));
       const normalizeData = normalize<
@@ -149,25 +156,21 @@ const FeedContainer = ({
     (articleId: string) => {
       const prevArticleId: string = state.currenActivedFeedId;
       if (prevArticleId !== articleId) {
-        queryClient.setQueryData(
-          "feed/streamContentQuery",
-          produce((data) => {
-            if (prevArticleId !== "") {
-              data.entities.article[prevArticleId].isInnerArticleShow = false;
-            }
-            data.entities.article[articleId].isInnerArticleShow = true;
-          })
-        );
+        if (prevArticleId !== "") {
+          setArticleDataById(prevArticleId, (article) => {
+            article.isInnerArticleShow = false;
+          });
+        }
+        setArticleDataById(articleId, (article) => {
+          article.isInnerArticleShow = true;
+        });
       } else {
-        queryClient.setQueryData(
-          "feed/streamContentQuery",
-          produce((data) => {
-            data.entities.article[articleId].isInnerArticleShow = false;
-          })
-        );
+        setArticleDataById(articleId, (article) => {
+          article.isInnerArticleShow = false;
+        });
       }
     },
-    [state.currenActivedFeedId, queryClient]
+    [state.currenActivedFeedId, setArticleDataById]
   );
 
   const displayArticle = useCallback(

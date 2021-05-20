@@ -3,7 +3,6 @@ import {
   IImageProps,
   ImageFit,
   TooltipHost,
-  IconButton,
   IIconProps,
   IContextualMenuProps,
   Image,
@@ -22,6 +21,7 @@ import ArticlePane from "./../articlePane/index";
 import { useUpdateEffect } from "react-use";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { ArticleContext } from "./../../context/article";
+import { IconButton } from "office-ui-fabric-react";
 
 export interface Props {
   nestingDepth?: number;
@@ -72,7 +72,7 @@ const FeedItem = ({
   const { viewType } = useContext(ViewTypeContext);
   const article = useContext(ArticleContext);
 
-  const feedItemRef = useRef<any>(null);
+  const feedItemRef = useRef<HTMLDivElement>(null);
   const hammerInstanceRef = useRef<any>(null);
 
   // 处理滑动事件
@@ -110,27 +110,30 @@ const FeedItem = ({
     [onLeftSlide, onRightSlide]
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     if (item?.isInnerArticleShow) {
-      if (feedItemRef.current instanceof HTMLElement) {
-        feedItemRef.current.scrollIntoView({behavior: 'smooth'});
+      if (feedItemRef?.current instanceof HTMLElement) {
+        feedItemRef?.current.scrollIntoView({ behavior: "smooth" });
       }
     }
-  },[item?.isInnerArticleShow]);
+  }, [item?.isInnerArticleShow]);
 
   // 订阅左右滑动的触摸事件
   useEffect(() => {
     const handleOnPan = (ev: any) => {
-      let translateXMatch = /translateX\(-?(\d*px)\)/g.exec(
-        feedItemRef.current.style.transform
-      );
+      let translateXMatch;
+      const element = feedItemRef.current;
+      if (element) {
+        translateXMatch = /translateX\(-?(\d*px)\)/g.exec(
+          element.style.transform
+        );
+      }
 
       if (!translateXMatch) {
         return null;
       }
 
       const translateX = parseFloat(translateXMatch[1]);
-      // console.log(translateX);
       if (
         ev.offsetDirection !== DIRECTION_LEFT &&
         ev.offsetDirection !== DIRECTION_RIGHT
@@ -149,10 +152,11 @@ const FeedItem = ({
 
       const next =
         easeInCirc(xOffsetAbs / window.innerWidth) * window.innerWidth;
-      window.requestAnimationFrame(
-        () =>
-          (feedItemRef.current.style.transform = `translateX(${xOffsetSign}${next}px)`)
-      );
+      window.requestAnimationFrame(() => {
+        if (element) {
+          element.style.transform = `translateX(${xOffsetSign}${next}px)`;
+        }
+      });
     };
 
     const handleOnPanEnd = (ev: any) => {
@@ -169,9 +173,13 @@ const FeedItem = ({
         onRightSlide();
       }
 
+      const element = feedItemRef.current;
+
       window.requestAnimationFrame(() => {
         // feedItemRef.current.style.transition = `transform ${slideBackAnimationDuration}ms ease-out`;
-        feedItemRef.current.style.transform = `translateX(${0}px)`;
+        if (element) {
+          element.style.transform = `translateX(${0}px)`;
+        }
       });
       // feedItemRef.current.style.transform = `translateX(${0}px)`;
       // setSlideBackAnimation(true);
@@ -363,7 +371,7 @@ const FeedItem = ({
       </div>
       {item.isInnerArticleShow ? (
         <ArticlePane
-          className="bg-white relative z-10 border-b"
+          className="bg-white relative z-10 border-b bg-gray-50"
           article={article}
         />
       ) : null}
