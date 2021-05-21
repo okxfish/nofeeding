@@ -76,7 +76,7 @@ const FeedContainer = ({
           }
         })
       ),
-    [queryClient, streamId]
+    [queryClient, streamId, unreadOnly]
   );
 
   const toggleReadById = useCallback(
@@ -97,6 +97,17 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
+  const filterImgSrcfromHtmlStr =(htmlStr) => {
+    const imgReg = /<img.*?(?:>|\/>)/i;
+    const srcReg = /src=['"]?([^'"]*)['"]?/i;
+    const imgs = htmlStr.match(imgReg);
+    if (Array.isArray(imgs) && imgs.length > 0) {
+      return imgs[0].match(srcReg)[1]
+    }else {
+      return '';
+    }
+  }
+
   const streamContentQuery = useQuery<
     NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
   >(
@@ -105,38 +116,41 @@ const FeedContainer = ({
       const { data } = await api.inoreader.getStreamContents(String(streamId), {
         exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
       });
-      const transformedData = data.items.map((item) => ({
-        key: item.id,
-        id: item.id,
-        title: item.title,
-        summary: "",
-        content: item.summary.content,
-        sourceName: item.origin.title,
-        sourceID: item.origin.title.streamId,
-        url: item.canonical[0].href,
-        time: item.timestampUsec,
-        isRead: false,
-        isStar: false,
-        isPin: false,
-        isInnerArticleShow: false,
-        onStarClick: (e: any) => {
-          if (e) {
-            e.stopPropagation();
-          }
-          toggleStarById(item.id);
-        },
-        onReadClick: (e: any) => {
-          if (e) {
-            e.stopPropagation();
-          }
-          toggleReadById(item.id);
-        },
-        closeInnerArticle: (e: any) => {
-          setArticleDataById(item.id, (article) => {
-            article.isInnerArticleShow = false;
-          });
-        },
-      }));
+      const transformedData = data.items.map((item) => {
+        return ({
+          key: item.id,
+          id: item.id,
+          title: item.title,
+          summary: "",
+          thumbnailSrc: filterImgSrcfromHtmlStr(item.summary.content),
+          content: item.summary.content,
+          sourceName: item.origin.title,
+          sourceID: item.origin.title.streamId,
+          url: item.canonical[0].href,
+          time: item.timestampUsec,
+          isRead: false,
+          isStar: false,
+          isPin: false,
+          isInnerArticleShow: false,
+          onStarClick: (e: any) => {
+            if (e) {
+              e.stopPropagation();
+            }
+            toggleStarById(item.id);
+          },
+          onReadClick: (e: any) => {
+            if (e) {
+              e.stopPropagation();
+            }
+            toggleReadById(item.id);
+          },
+          closeInnerArticle: (e: any) => {
+            setArticleDataById(item.id, (article) => {
+              article.isInnerArticleShow = false;
+            });
+          },
+        })
+      });
       const normalizeData = normalize<
         FeedProps,
         { article: { [key: string]: FeedProps } },
