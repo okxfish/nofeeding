@@ -19,6 +19,8 @@ import { default as get } from "lodash.get";
 import { normalize, schema } from "normalizr";
 import { IGroup } from "@fluentui/react";
 import { produce } from "immer";
+import queryString from "query-string";
+import { SystemStreamIDs } from "../../api/inoreader";
 
 export interface Props {
   className?: string;
@@ -29,20 +31,6 @@ const subscription = new schema.Entity("subscription", undefined, {
   idAttribute: "sortid",
 });
 
-const groupCount = 5;
-const groupDepth = 1;
-const createItems = (count: number): any[] => {
-  return Array.from({
-    length: count,
-  }).map((item: any, index: number): any => ({
-    key: index,
-    unreadCount: 2,
-    title: `this is rss source: ${index}`,
-  }));
-};
-
-const items: any[] = createItems(Math.pow(groupCount, groupDepth + 1));
-const groups = createGroups(groupCount, groupDepth, 0, groupCount);
 const listItemClassName =
   "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
 
@@ -51,22 +39,15 @@ const moreIcon: IIconProps = { iconName: "More" };
 const menuProps: IContextualMenuProps = {
   items: [
     {
-      key: "emailMessage",
+      key: "renameFolder",
       text: "rename",
       iconProps: { iconName: "Edit" },
-    },
-    {
-      key: "calendarEvent",
-      text: "Calendar event",
-      iconProps: { iconName: "Calendar" },
     },
   ],
 };
 
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
-  const routeMatch = useRouteMatch();
-  const location = useLocation();
   const commonPx = "px-2";
   const queryClient = useQueryClient();
 
@@ -250,13 +231,15 @@ const OverviewPane = ({ className }: Props) => {
         className={`${commonPx}`}
         iconProps={{ iconName: "FavoriteStar" }}
         content="star"
-        onClick={() => history.push("/feed?type=star")}
-      />
-      <OverviewCell
-        className={`${commonPx}`}
-        iconProps={{ iconName: "Archive" }}
-        content="archive"
-        onClick={() => history.push("/feed?type=archive")}
+        onClick={() =>
+          history.push({
+            pathname: "/feed",
+            search: queryString.stringify({
+              streamId: SystemStreamIDs.STARRED,
+              unreadOnly: "0",
+            }),
+          })
+        }
       />
       <OverviewCell
         className={`${commonPx} bg-gray-50 rounded-t-lg rounded-b-none sm:bg-transparent sm:rounded-b-sm sm:rounded-t-sm`}

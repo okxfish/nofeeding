@@ -33,7 +33,7 @@ export interface Props {
 const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
-  const { pageName } = useParams<{ pageName: string }>();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     let timeout;
@@ -76,17 +76,23 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         key: "UnreadOnly",
         onRender: () => {
           const qs = queryString.parse(location.search);
-          qs['unreadOnly'] = qs['unreadOnly'] === '1' ? '0' : '1';
+          qs["unreadOnly"] = qs["unreadOnly"] === "1" ? "0" : "1";
           const onChange = () => {
             history.push({
               pathname: "/feed",
-              search:  queryString.stringify(qs),
+              search: queryString.stringify(qs),
             });
           };
 
           return (
             <div>
-              <Toggle className="p-2 pb-0" label="Unread Only" inlineLabel onChange={onChange} checked={qs['unreadOnly'] === '0'}/>
+              <Toggle
+                className="p-2 pb-0"
+                label="Unread Only"
+                inlineLabel
+                onChange={onChange}
+                checked={qs["unreadOnly"] === "0"}
+              />
             </div>
           );
         },
@@ -118,10 +124,23 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
     ],
   };
 
+  const profileMenuProps: IContextualMenuProps = {
+    alignTargetEdge: true,
+    directionalHint: DirectionalHint.rightTopEdge,
+    items: [
+      {
+        key: "logoff",
+        text: "logoff",
+        iconProps: { iconName: "SignOut" },
+        onClick: () => localStorage.removeItem('inoreaderToken'),
+      },
+    ],
+  };
+
   return (
     <div
       className={classnames(
-        "flex items-center col-start-1 z-50  bg-gray-700 transition-all",
+        "flex items-center col-start-1 z-50 bg-gray-900 transition-all",
         "justify-between col-span-4 row-start-3 row-span-1",
         "sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1 sm:row-span-3",
         {
@@ -141,7 +160,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         {""}
       </SideBarItem>
       <SideBarItem
-        className={pageName === "feed" ? "hidden sm:block" : ""}
+        className={pathname === "/feed" ? "hidden sm:block" : ""}
         iconProps={homeIcon}
         isIconOnly={!isSidePaneOpen}
         onClick={handleFeedClick}
@@ -149,12 +168,19 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         feed
       </SideBarItem>
       <SideBarItem
-        className={pageName === "feed" ? "block sm:hidden" : "hidden"}
+        className="block sm:hidden"
         iconProps={filterIcon}
         isIconOnly={true}
         onClick={handleFilterClick}
       >
         filter
+      </SideBarItem>
+      <SideBarItem
+        iconProps={viewIcon}
+        menuProps={menuProps}
+        isIconOnly={!isSidePaneOpen}
+      >
+        view
       </SideBarItem>
       <div className="hidden sm:block flex-1 flex-col w-full my-8">
         <Switch>
@@ -173,13 +199,6 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
                 >
                   sync
                 </SideBarItem>
-                <SideBarItem
-                  iconProps={viewIcon}
-                  menuProps={menuProps}
-                  isIconOnly={!isSidePaneOpen}
-                >
-                  view
-                </SideBarItem>
               </>
             )}
           />
@@ -189,6 +208,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         className="hidden sm:block"
         iconProps={contactIcon}
         isIconOnly={!isSidePaneOpen}
+        menuProps={profileMenuProps}
         content=""
         onClick={handleProfileClick}
       >
