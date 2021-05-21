@@ -6,7 +6,6 @@ import ArticlePane from "../../component/articlePane";
 import { Modal } from "office-ui-fabric-react";
 import { ViewType } from "../../context/viewType";
 
-import { FeedProps } from "../../component/feedsPane/types";
 import { CSSTransition } from "react-transition-group";
 import "./style.css";
 
@@ -17,7 +16,6 @@ export interface Props {
   isArticleModalOpen: boolean;
   isOverViewPaneOpen: boolean;
   isFetching: boolean;
-  onClickFeed(e: FeedProps): any;
   openOverviewPane(): any;
   closeOverviewPane(): any;
   closeArticleModal(): any;
@@ -30,7 +28,6 @@ const FeedPageComponent = ({
   viewType,
   isArticleModalOpen,
   isOverViewPaneOpen,
-  onClickFeed,
   isFetching,
   openOverviewPane,
   closeOverviewPane,
@@ -76,7 +73,6 @@ const FeedPageComponent = ({
         <FeedsPane
           className="h-full transition-all"
           isFetching={isFetching}
-          onClickFeed={onClickFeed}
         />
       </div>
       {viewType === ViewType.threeway ? (

@@ -28,12 +28,15 @@ export interface FeedProps {
   summary?: string;
   thumbnailSrc?: string;
   className?: string;
+  content?: string;
+  url?: string;
   sourceName?: string;
   time?: string;
   isRead?: boolean;
   isStar?: boolean;
   isInnerArticleShow?: boolean;
   closeInnerArticle(e: any): void;
+  onClick(e: any): void;
   onStarClick(e: any): void;
   onReadClick(e: any): void;
 }

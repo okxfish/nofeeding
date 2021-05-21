@@ -27,7 +27,6 @@ export interface Props {
   nestingDepth?: number;
   item?: FeedProps;
   itemIndex?: number;
-  onClickFeed?(e?: FeedProps): void;
   onLeftSlide?(e?: any): void;
   onRightSlide?(e?: any): void;
 }
@@ -63,7 +62,6 @@ const FeedItem = ({
   nestingDepth,
   item,
   itemIndex,
-  onClickFeed,
   onLeftSlide = () => {},
   onRightSlide = () => {},
 }: Props) => {
@@ -352,7 +350,7 @@ const FeedItem = ({
       {slideBtnsElem}
       <div
         ref={feedItemRef}
-        onClick={onClickFeed?.bind(null, item)}
+        onClick={item.onClick}
         style={{
           transition: `transform ${slideBackAnimationDuration}ms ease-out`,
         }}

@@ -21,6 +21,7 @@ import { FeedProps } from "../../component/feedsPane/types";
 import { normalize, NormalizedSchema, schema } from "normalizr";
 
 import { initState, reducer } from "./reducer";
+import { filterImgSrcfromHtmlStr } from "./utils";
 
 import { default as get } from "lodash.get";
 import { SystemStreamIDs } from "../../api/inoreader";
@@ -39,37 +40,39 @@ const FeedContainer = ({
   className,
   isOverViewPaneOpen,
   setIsOverViewPaneOpen,
-  ...rest
 }: Props) => {
   const [state, dispatch] = useReducer(reducer, initState);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
   const location = useLocation();
 
-  const queryClient = useQueryClient();
   const streamId = useSearchParam("streamId") || "";
   const unreadOnly = useSearchParam("unreadOnly") || "0";
 
-  const openOverviewPane = () => setIsOverViewPaneOpen(true);
+  const openOverviewPane = useCallback(
+    () => setIsOverViewPaneOpen(true),
+    [setIsOverViewPaneOpen]
+  );
 
   const closeOverviewPane = useCallback(
     () => setIsOverViewPaneOpen(false),
     [setIsOverViewPaneOpen]
   );
+
   const openArticleModal = () => setIsArticleModalOpen(true);
+
   const closeArticleModal = () => setIsArticleModalOpen(false);
 
   useEffect(() => {
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
+  const queryClient = useQueryClient();
   const setArticleDataById = useCallback(
     (articleId: string, updater: any): void =>
       queryClient.setQueryData(
         ["feed/streamContentQuery", streamId, unreadOnly],
         produce((data) => {
-          const articles = get(data, `entities.article`);
-          console.log(articles);
           const article = get(data, `entities.article['${articleId}']`);
           if (typeof article !== "undefined") {
             updater(article);
@@ -97,27 +100,16 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
-  const filterImgSrcfromHtmlStr =(htmlStr) => {
-    const imgReg = /<img.*?(?:>|\/>)/i;
-    const srcReg = /src=['"]?([^'"]*)['"]?/i;
-    const imgs = htmlStr.match(imgReg);
-    if (Array.isArray(imgs) && imgs.length > 0) {
-      return imgs[0].match(srcReg)[1]
-    }else {
-      return '';
-    }
-  }
-
   const streamContentQuery = useQuery<
     NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
   >(
     ["feed/streamContentQuery", streamId, unreadOnly],
-    async ({queryKey: [key, streamId, unreadOnly]}) => {
+    async ({ queryKey: [key, streamId, unreadOnly] }) => {
       const { data } = await api.inoreader.getStreamContents(String(streamId), {
         exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
       });
       const transformedData = data.items.map((item) => {
-        return ({
+        return {
           key: item.id,
           id: item.id,
           title: item.title,
@@ -132,6 +124,15 @@ const FeedContainer = ({
           isStar: false,
           isPin: false,
           isInnerArticleShow: false,
+          onClick: () => {
+            const articleId = item.id;
+            dispatch({
+              type: "feed/ById/changeCurrentActivedFeedId",
+              payload: articleId,
+            });
+            displayArticle(articleId);
+            markAsRead(articleId);
+          },
           onStarClick: (e: any) => {
             if (e) {
               e.stopPropagation();
@@ -149,7 +150,7 @@ const FeedContainer = ({
               article.isInnerArticleShow = false;
             });
           },
-        })
+        };
       });
       const normalizeData = normalize<
         FeedProps,
@@ -212,19 +213,6 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
-  const onClickFeed = useCallback(
-    (e: FeedProps): any => {
-      const articleId = e.id;
-      dispatch({
-        type: "feed/ById/changeCurrentActivedFeedId",
-        payload: articleId,
-      });
-      displayArticle(articleId);
-      markAsRead(articleId);
-    },
-    [displayArticle, markAsRead]
-  );
-
   const { currenActivedFeedId } = state;
   const activedArticle = getArticleById(currenActivedFeedId);
 
@@ -244,7 +232,6 @@ const FeedContainer = ({
           isArticleModalOpen={isArticleModalOpen}
           isOverViewPaneOpen={isOverViewPaneOpen}
           isFetching={streamContentQuery.isFetching}
-          onClickFeed={onClickFeed}
           openOverviewPane={openOverviewPane}
           closeOverviewPane={closeOverviewPane}
           openArticleModal={openArticleModal}

@@ -10,12 +10,11 @@ import {
   FontIcon,
   Shimmer,
 } from "office-ui-fabric-react";
-import { FeedGroup, FeedProps } from "./types";
+import { FeedProps } from "./types";
 import "./style.css";
 import FeedItem from "./feedItem";
 export interface Props {
   className?: string;
-  onClickFeed?(e: FeedProps): void;
   items: FeedProps[];
   isFetching: boolean;
   groups: IGroup[];
@@ -28,7 +27,6 @@ const FeedsPane = ({
   items,
   groups,
   isFetching,
-  onClickFeed,
   dispatch,
 }: Props) => {
   const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
@@ -71,7 +69,7 @@ const FeedsPane = ({
     item?: any,
     index?: number | undefined
   ): React.ReactNode => {
-    return <FeedItem item={item} itemIndex={index} onClickFeed={onClickFeed} />;
+    return <FeedItem item={item} itemIndex={index} />;
   };
 
   const getCustomElements = (number: number): JSX.Element => {
