@@ -36,6 +36,12 @@ export interface Props {
 
 const article = new schema.Entity<FeedProps>("article");
 
+interface ArticleEntity {
+  article: { [key: string]: FeedProps };
+}
+
+// const NormalizedArticle =  NormalizedSchema<ArticleEntity, string[]>
+
 const FeedContainer = ({
   className,
   isOverViewPaneOpen,
@@ -59,15 +65,19 @@ const FeedContainer = ({
     [setIsOverViewPaneOpen]
   );
 
-  const openArticleModal = () => setIsArticleModalOpen(true);
+  // 打开文章弹窗
+  const openArticleModal = (): void => setIsArticleModalOpen(true);
+  // 关闭文章弹窗
+  const closeArticleModal = (): void => setIsArticleModalOpen(false);
 
-  const closeArticleModal = () => setIsArticleModalOpen(false);
-
+  // 切换当前的订阅源的时候关闭订阅源选择菜单
   useEffect(() => {
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
   const queryClient = useQueryClient();
+
+  // 通过文章的 id 修改对应的文章实体的属性
   const setArticleDataById = useCallback(
     (articleId: string, updater: any): void =>
       queryClient.setQueryData(
@@ -82,6 +92,7 @@ const FeedContainer = ({
     [queryClient, streamId, unreadOnly]
   );
 
+  // 切换文章的是否已读状态
   const toggleReadById = useCallback(
     (articleId: string) => {
       setArticleDataById(articleId, (article) => {
@@ -91,6 +102,7 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
+  // 切换文章的是否加星状态
   const toggleStarById = useCallback(
     (articleId: string) => {
       setArticleDataById(articleId, (article) => {
@@ -100,8 +112,9 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
+  // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
   const streamContentQuery = useQuery<
-    NormalizedSchema<{ article: { [key: string]: FeedProps } }, string[]>
+    NormalizedSchema<ArticleEntity, string[]>
   >(
     ["feed/streamContentQuery", streamId, unreadOnly],
     async ({ queryKey: [key, streamId, unreadOnly] }) => {
@@ -117,7 +130,7 @@ const FeedContainer = ({
           thumbnailSrc: filterImgSrcfromHtmlStr(item.summary.content),
           content: item.summary.content,
           sourceName: item.origin.title,
-          sourceID: item.origin.title.streamId,
+          sourceID: item.origin.streamId,
           url: item.canonical[0].href,
           time: item.timestampUsec,
           isRead: false,
@@ -152,9 +165,10 @@ const FeedContainer = ({
           },
         };
       });
+
       const normalizeData = normalize<
         FeedProps,
-        { article: { [key: string]: FeedProps } },
+        ArticleEntity,
         string[]
       >(transformedData, [article]);
       return normalizeData;
