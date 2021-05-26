@@ -1,53 +1,30 @@
-export interface ObejectWithId {
+
+import { Dayjs } from 'dayjs';
+export interface FeedItem {
   id: string;
-}
-
-export interface Feed extends ObejectWithId {
   title: string;
-  summary: string;
+  summary?: string;
   thumbnailSrc?: string;
-  sourceName: string;
-  sourceID: string;
-  time: string;
-  tags?: string;
-  isRead: boolean;
-  isStar: boolean;
-  isPin: boolean;
+  content?: string;
+  url?: string;
+  sourceName?: string;
+  sourceID?: string;
+  publishedTime: Dayjs;
+  isRead?: boolean;
+  isStar?: boolean;
+  isInnerArticleShow?: boolean;
 }
 
-export interface FeedGroup extends ObejectWithId {
+export interface FeedGroup {
+  id: string;
   name: string;
   children: any[];
 }
 
 export interface FeedProps {
-  key: string;
-  id: string;
-  groupIndex: number;
-  title: string;
-  summary?: string;
-  thumbnailSrc?: string;
   className?: string;
-  content?: string;
-  url?: string;
-  sourceName?: string;
-  time?: string;
-  isRead?: boolean;
-  isStar?: boolean;
-  isInnerArticleShow?: boolean;
-  closeInnerArticle(e: any): void;
-  onClick(e: any): void;
-  onStarClick(e: any): void;
-  onReadClick(e: any): void;
-}
-
-export interface ById<T> {
-  [id: string]: T;
-}
-
-export interface DataInStore<T> {
-  byId: {
-    [id: string]: T;
-  };
-  allId: string[];
+  data: FeedItem;
+  onClick?(item:FeedItem, index:number, e:any):void;
+  onStar?(item:FeedItem, index:number, e:any):void;
+  onRead?(item:FeedItem, index:number, e:any):void;
 }

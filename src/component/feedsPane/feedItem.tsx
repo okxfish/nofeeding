@@ -1,34 +1,21 @@
 import {
   Text,
-  IImageProps,
+  IconButton,
   ImageFit,
   TooltipHost,
   IIconProps,
-  IContextualMenuProps,
   Image,
 } from "@fluentui/react";
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useContext,
-} from "react";
+import React, { useRef, useContext } from "react";
 import classnames from "classnames";
 import { FeedProps } from "./types";
-import Hammer, { DIRECTION_LEFT, DIRECTION_RIGHT } from "hammerjs";
 import ArticlePane from "./../articlePane/index";
-import { useUpdateEffect } from "react-use";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { ArticleContext } from "./../../context/article";
-import { IconButton } from "office-ui-fabric-react";
+import {default as dayjs, Dayjs} from "dayjs";
 
-export interface Props {
-  nestingDepth?: number;
-  item?: FeedProps;
-  itemIndex?: number;
-  onLeftSlide?(e?: any): void;
-  onRightSlide?(e?: any): void;
+export interface Props extends FeedProps {
+  itemIndex: number;
 }
 
 const moreIcon: IIconProps = { iconName: "More" };
@@ -37,211 +24,41 @@ const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
 const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 
-const menuProps: IContextualMenuProps = {
-  items: [
-    {
-      key: "emailMessage",
-      text: "Email message",
-      iconProps: { iconName: "Mail" },
-    },
-    {
-      key: "calendarEvent",
-      text: "Calendar event",
-      iconProps: { iconName: "Calendar" },
-    },
-  ],
-  directionalHintFixed: true,
-};
-
-const initXOffset = 0;
-const thresholdMax = 160;
-const thresholdMin = 10;
-const slideBackAnimationDuration = 130;
-
 const FeedItem = ({
-  nestingDepth,
-  item,
+  data,
   itemIndex,
-  onLeftSlide = () => {},
-  onRightSlide = () => {},
+  className,
+  onClick=()=>{},
+  onRead=()=>{},
+  onStar=()=>{},
 }: Props) => {
-  const [xOffset, setXOffset] = useState<number>(initXOffset);
-  const [slideBackAnimation, setSlideBackAnimation] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
   const article = useContext(ArticleContext);
-
   const feedItemRef = useRef<HTMLDivElement>(null);
-  const hammerInstanceRef = useRef<any>(null);
 
-  // 处理滑动事件
-  const handleOnPan = useCallback((ev: any) => {
-    if (
-      ev.offsetDirection === DIRECTION_LEFT ||
-      ev.offsetDirection === DIRECTION_RIGHT
-    ) {
-      const xOffsetAbs = Math.abs(ev.deltaX);
-      if (xOffsetAbs > thresholdMin && xOffsetAbs < thresholdMax) {
-        setXOffset(initXOffset + ev.deltaX);
-      }
-    }
-  }, []);
-
-  const handleOnPanEnd = useCallback(
-    (ev: any) => {
-      if (ev.offsetDirection === DIRECTION_LEFT) {
-        if (onLeftSlide) {
-          onLeftSlide();
-        }
-      } else if (ev.offsetDirection === DIRECTION_RIGHT) {
-        if (onRightSlide) {
-          onRightSlide();
-        }
-      }
-
-      setSlideBackAnimation(true);
-      setXOffset(0);
-      setTimeout(
-        () => setSlideBackAnimation(false),
-        slideBackAnimationDuration
-      );
-    },
-    [onLeftSlide, onRightSlide]
-  );
-
-  useEffect(() => {
-    if (item?.isInnerArticleShow) {
-      if (feedItemRef?.current instanceof HTMLElement) {
-        feedItemRef?.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [item?.isInnerArticleShow]);
-
-  // 订阅左右滑动的触摸事件
-  useEffect(() => {
-    const handleOnPan = (ev: any) => {
-      let translateXMatch;
-      const element = feedItemRef.current;
-      if (element) {
-        translateXMatch = /translateX\(-?(\d*px)\)/g.exec(
-          element.style.transform
-        );
-      }
-
-      if (!translateXMatch) {
-        return null;
-      }
-
-      const translateX = parseFloat(translateXMatch[1]);
-      if (
-        ev.offsetDirection !== DIRECTION_LEFT &&
-        ev.offsetDirection !== DIRECTION_RIGHT
-      ) {
-        return null;
-      }
-
-      const xOffsetAbs = Math.abs(ev.deltaX);
-      const xOffsetSign = ev.deltaX < 0 ? "-" : "";
-
-      console.log(xOffsetAbs);
-
-      if (xOffsetAbs < thresholdMin || translateX > thresholdMax) {
-        return null;
-      }
-
-      const next =
-        easeInCirc(xOffsetAbs / window.innerWidth) * window.innerWidth;
-      window.requestAnimationFrame(() => {
-        if (element) {
-          element.style.transform = `translateX(${xOffsetSign}${next}px)`;
-        }
-      });
-    };
-
-    const handleOnPanEnd = (ev: any) => {
-      if (
-        ev.offsetDirection !== DIRECTION_LEFT &&
-        ev.offsetDirection !== DIRECTION_RIGHT
-      ) {
-        return null;
-      }
-
-      if (ev.offsetDirection === DIRECTION_LEFT) {
-        onLeftSlide();
-      } else if (ev.offsetDirection === DIRECTION_RIGHT) {
-        onRightSlide();
-      }
-
-      const element = feedItemRef.current;
-
-      window.requestAnimationFrame(() => {
-        // feedItemRef.current.style.transition = `transform ${slideBackAnimationDuration}ms ease-out`;
-        if (element) {
-          element.style.transform = `translateX(${0}px)`;
-        }
-      });
-      // feedItemRef.current.style.transform = `translateX(${0}px)`;
-      // setSlideBackAnimation(true);
-      // setTimeout(
-      //   () => setSlideBackAnimation(false),
-      //   slideBackAnimationDuration
-      // );
-    };
-
-    const feedItemNode = feedItemRef.current;
-
-    if (hammerInstanceRef && feedItemNode) {
-      hammerInstanceRef.current = new Hammer(feedItemNode);
-      hammerInstanceRef.current.on("pan", handleOnPan);
-      hammerInstanceRef.current.on("panend", handleOnPanEnd);
-    }
-
-    return () => {
-      if (hammerInstanceRef && feedItemRef && feedItemNode) {
-        hammerInstanceRef.current.off("pan", handleOnPan);
-        hammerInstanceRef.current.off("panend", handleOnPanEnd);
-      }
-    };
-  }, []);
-
-  // 实现拖动动画
-  useUpdateEffect(() => {
-    window.requestAnimationFrame =
-      requestAnimationFrame || window.requestAnimationFrame;
-    const setNextTranslateX = () => {
-      if (feedItemRef && feedItemRef.current) {
-        feedItemRef.current.style.transform = `translateX(${xOffset}px)`;
-      }
-    };
-
-    window.requestAnimationFrame(setNextTranslateX);
-    setNextTranslateX();
-  }, [xOffset]);
-
-  const imageProps: IImageProps = {
-    src: item?.thumbnailSrc,
-    maximizeFrame: true,
-    imageFit: ImageFit.cover,
-  };
-
-  if (!item || typeof itemIndex !== "number" || itemIndex < 0) {
-    return null;
-  }
+  const nowTime:Dayjs = dayjs();
+  const relativePublishedTime:string = nowTime.from(data.publishedTime)
 
   const feedHeaderElem: React.ReactElement | null =
     viewType === 1 ? null : (
       <div
         className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
-          item.isRead ? "opacity-40" : ""
+          data.isRead ? "opacity-40" : ""
         }`}
       >
-        <Image className="mr-3  select-none" {...imageProps} />
+        <Image
+          className="mr-3  select-none"
+          src={data.thumbnailSrc}
+          maximizeFrame={true}
+          imageFit={ImageFit.cover}
+        />
       </div>
     );
 
   const feedBodyElem: React.ReactElement | null = (
     <div
       className={classnames("flex flex-1", {
-        "opacity-40": item.isRead,
+        "opacity-40": data.isRead,
         "flex-col": viewType !== ViewType.list,
         "items-center": viewType === ViewType.list,
       })}
@@ -256,17 +73,17 @@ const FeedItem = ({
           }
         )}
       >
-        {item.title}
+        {data.title}
       </div>
       <div
         className={classnames("flex-1 text-base text-gray-600 w-full", {
           truncate: viewType === ViewType.list,
         })}
       >
-        {item.summary}
+        {data.summary}
       </div>
       <div className="flex items-center">
-        <TooltipHost content={item.sourceName} closeDelay={500}>
+        <TooltipHost content={data.sourceName} closeDelay={500}>
           <Text
             className="
                   text-sm text-gray-400 max-w-xs
@@ -277,11 +94,11 @@ const FeedItem = ({
             block
             nowrap
           >
-            {item.sourceName}
+            {data.sourceName}
           </Text>
         </TooltipHost>
         <Text className="text-sm text-gray-400" nowrap>
-          /{item.time}
+          /{relativePublishedTime}
         </Text>
       </div>
     </div>
@@ -290,10 +107,7 @@ const FeedItem = ({
   const feedFooterElem: React.ReactElement = (
     <div
       className={classnames(
-        "hidden items-center justify-end",
-        "sm:justify-between sm:flex",
-        "md:justify-end",
-        "xl:justify-between",
+        "hidden items-center justify-end sm:justify-between sm:flex md:justify-end xl:justify-between",
         {
           "flex-col": viewType !== ViewType.list,
         }
@@ -301,23 +115,22 @@ const FeedItem = ({
     >
       <IconButton
         className="focus:outline-none"
-        iconProps={item.isRead ? radioBtnOnIcon : radioBtnOffIcon}
+        iconProps={data.isRead ? radioBtnOffIcon : radioBtnOnIcon}
         title="mark as read"
         ariaLabel="Mark as read"
         disabled={false}
-        onClick={item.onReadClick}
+        onClick={(e) => onRead(data, itemIndex, e)}
       />
       <IconButton
         className="focus:outline-none"
-        iconProps={item.isStar ? favoriteStarFillIcon : favoriteStarIcon}
+        iconProps={data.isStar ? favoriteStarFillIcon : favoriteStarIcon}
         title="favorite"
         ariaLabel="Favorite"
         disabled={false}
-        onClick={item.onStarClick}
+        onClick={(e) => onStar(data, itemIndex, e)}
       />
       <IconButton
         className="focus:outline-none"
-        menuProps={menuProps}
         iconProps={moreIcon}
         onRenderMenuIcon={() => null}
         title="more"
@@ -328,38 +141,15 @@ const FeedItem = ({
     </div>
   );
 
-  const slideBtnsElem = (
-    <>
-      <div
-        className="h-full flex items-center justify-center bg-red-400 absolute left-0 top-0"
-        style={{ width: thresholdMax }}
-      >
-        <span className="text-2xl text-white">star</span>
-      </div>
-      <div
-        className="h-full flex items-center justify-center bg-blue-400 absolute right-0 top-0"
-        style={{ width: thresholdMax }}
-      >
-        <span className="text-2xl text-white">read</span>
-      </div>
-    </>
-  );
-
   return (
-    <div className={`overflow-x-hidden relative ${item.className}`}>
-      {slideBtnsElem}
+    <div className={`overflow-x-hidden relative ${className}`}>
       <div
         ref={feedItemRef}
-        onClick={item.onClick}
-        style={{
-          transition: `transform ${slideBackAnimationDuration}ms ease-out`,
-        }}
+        onClick={(e) => onClick(data, itemIndex, e)}
         className={classnames(
-          "feed-item flex relative z-10 p-4 group bg-white cursor-pointer select-none flex-wrap",
-          "md:flex-nowrap hover:bg-gray-50",
+          "feed-item flex relative z-10 p-4 group bg-white cursor-pointer select-none flex-wrap md:flex-nowrap hover:bg-gray-50",
           {
-            "border-b": viewType === ViewType.list,
-            "py-2": viewType === ViewType.list,
+            "py-2 border-b": viewType === ViewType.list,
           }
         )}
       >
@@ -367,7 +157,7 @@ const FeedItem = ({
         {feedBodyElem}
         {feedFooterElem}
       </div>
-      {item.isInnerArticleShow ? (
+      {data.isInnerArticleShow ? (
         <ArticlePane
           className="relative z-10 border-b bg-gray-50"
           article={article}
@@ -378,7 +168,3 @@ const FeedItem = ({
 };
 
 export default FeedItem;
-
-function easeInCirc(x: number): number {
-  return 1 - Math.sqrt(1 - Math.pow(x, 2));
-}

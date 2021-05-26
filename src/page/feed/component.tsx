@@ -8,6 +8,7 @@ import { ViewType } from "../../context/viewType";
 
 import { CSSTransition } from "react-transition-group";
 import "./style.css";
+import { FeedItem } from './../../component/feedsPane/types';
 
 export interface Props {
   className?: string;
@@ -20,6 +21,9 @@ export interface Props {
   closeOverviewPane(): any;
   closeArticleModal(): any;
   openArticleModal(): any;
+  onFeedClick?(item: FeedItem, index: number, e: any): void;
+  onFeedStar?(item: FeedItem, index: number, e: any): void;
+  onFeedRead?(item: FeedItem, index: number, e: any): void;
 }
 
 const FeedPageComponent = ({
@@ -33,6 +37,9 @@ const FeedPageComponent = ({
   closeOverviewPane,
   closeArticleModal,
   openArticleModal,
+  onFeedClick,
+  onFeedStar,
+  onFeedRead,
 }: Props) => {
   return (
     <>
@@ -73,6 +80,9 @@ const FeedPageComponent = ({
         <FeedsPane
           className="h-full transition-all"
           isFetching={isFetching}
+          onFeedClick={onFeedClick}
+          onFeedStar={onFeedStar}
+          onFeedRead={onFeedRead}
         />
       </div>
       {viewType === ViewType.threeway ? (
