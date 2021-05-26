@@ -27,6 +27,7 @@ import { default as get } from "lodash.get";
 import { SystemStreamIDs } from "../../api/inoreader";
 
 import { produce } from "immer";
+import { Dayjs, default as dayjs } from "dayjs";
 
 export interface Props {
   className?: string;
@@ -39,8 +40,6 @@ const article = new schema.Entity<FeedProps>("article");
 interface ArticleEntity {
   article: { [key: string]: FeedProps };
 }
-
-// const NormalizedArticle =  NormalizedSchema<ArticleEntity, string[]>
 
 const FeedContainer = ({
   className,
@@ -96,7 +95,7 @@ const FeedContainer = ({
   const toggleReadById = useCallback(
     (articleId: string) => {
       setArticleDataById(articleId, (article) => {
-        article.isRead = !article.isRead;
+        article.item.isRead = !article.item.isRead;
       });
     },
     [setArticleDataById]
@@ -106,102 +105,36 @@ const FeedContainer = ({
   const toggleStarById = useCallback(
     (articleId: string) => {
       setArticleDataById(articleId, (article) => {
-        article.isStar = !article.isStar;
+        article.item.isStar = !article.item.isStar;
       });
     },
     [setArticleDataById]
   );
 
   // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
-  const streamContentQuery = useQuery<
-    NormalizedSchema<ArticleEntity, string[]>
-  >(
-    ["feed/streamContentQuery", streamId, unreadOnly],
-    async ({ queryKey: [key, streamId, unreadOnly] }) => {
-      const { data } = await api.inoreader.getStreamContents(String(streamId), {
-        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
-      });
-      const transformedData = data.items.map((item) => {
-        return {
-          key: item.id,
-          id: item.id,
-          title: item.title,
-          summary: "",
-          thumbnailSrc: filterImgSrcfromHtmlStr(item.summary.content),
-          content: item.summary.content,
-          sourceName: item.origin.title,
-          sourceID: item.origin.streamId,
-          url: item.canonical[0].href,
-          time: item.timestampUsec,
-          isRead: false,
-          isStar: false,
-          isPin: false,
-          isInnerArticleShow: false,
-          onClick: () => {
-            const articleId = item.id;
-            dispatch({
-              type: "feed/ById/changeCurrentActivedFeedId",
-              payload: articleId,
-            });
-            displayArticle(articleId);
-            markAsRead(articleId);
-          },
-          onStarClick: (e: any) => {
-            if (e) {
-              e.stopPropagation();
-            }
-            toggleStarById(item.id);
-          },
-          onReadClick: (e: any) => {
-            if (e) {
-              e.stopPropagation();
-            }
-            toggleReadById(item.id);
-          },
-          closeInnerArticle: (e: any) => {
-            setArticleDataById(item.id, (article) => {
-              article.isInnerArticleShow = false;
-            });
-          },
-        };
-      });
-
-      const normalizeData = normalize<
-        FeedProps,
-        ArticleEntity,
-        string[]
-      >(transformedData, [article]);
-      return normalizeData;
-    },
-    {
-      onError: (error) => {
-        console.error(error);
-      },
-      placeholderData: { entities: { article: {} }, result: [] },
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const getArticleById = useCallback(
-    (id) => get(streamContentQuery.data, `entities.article['${id}']`),
-    [streamContentQuery.data]
-  );
+  const streamContentQueryKey = [
+    "feed/streamContentQuery",
+    streamId,
+    unreadOnly,
+  ];
 
   const openArticleInner = useCallback(
     (articleId: string) => {
       const prevArticleId: string = state.currenActivedFeedId;
+      console.log(prevArticleId, articleId);
       if (prevArticleId !== articleId) {
         if (prevArticleId !== "") {
           setArticleDataById(prevArticleId, (article) => {
-            article.isInnerArticleShow = false;
+            debugger;
+            article.item.isInnerArticleShow = false;
           });
         }
         setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = true;
+          article.item.isInnerArticleShow = true;
         });
       } else {
         setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = false;
+          article.item.isInnerArticleShow = false;
         });
       }
     },
@@ -210,6 +143,7 @@ const FeedContainer = ({
 
   const displayArticle = useCallback(
     (articleId) => {
+      console.log("viewType: ", viewType);
       if (viewType === ViewType.list) {
         openArticleInner(articleId);
       } else if (viewType !== ViewType.threeway) {
@@ -222,13 +156,108 @@ const FeedContainer = ({
   const markAsRead = useCallback(
     (articleId: string) =>
       setArticleDataById(articleId, (article) => {
-        article.isRead = true;
+        article.item.isRead = true;
       }),
     [setArticleDataById]
   );
 
+  const handleArticleItemClick = useCallback(
+    (item, index, e) => {
+      const articleId = item.id;
+      dispatch({
+        type: "feed/ById/changeCurrentActivedFeedId",
+        payload: articleId,
+      });
+      displayArticle(articleId);
+      markAsRead(articleId);
+    },
+    [displayArticle, markAsRead]
+  );
+
+  const handleArticleItemStar = useCallback(
+    (item, index, e) => {
+      if (e) {
+        e.stopPropagation();
+      }
+      toggleStarById(item.id);
+    },
+    [toggleStarById]
+  );
+
+  const handleArticleItemRead = useCallback(
+    (item, index, e) => {
+      if (e) {
+        e.stopPropagation();
+      }
+      toggleReadById(item.id);
+    },
+    [toggleReadById]
+  );
+
+  const handleArticleItemInnerArticleClose = useCallback(
+    (item, index, e) => {
+      setArticleDataById(item.id, (article) => {
+        article.item.isInnerArticleShow = false;
+      });
+    },
+    [setArticleDataById]
+  );
+
+  const streamContentQuery = useQuery<
+    NormalizedSchema<ArticleEntity, string[]>
+  >(
+    streamContentQueryKey,
+    async ({ queryKey: [key, streamId, unreadOnly] }) => {
+      const { data } = await api.inoreader.getStreamContents(String(streamId), {
+        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
+      });
+
+      const transformedData: FeedProps[] = data.items.map((item, index) => {
+        const publishedTime: Dayjs = dayjs.unix(item.published);
+        const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
+        return {
+          id: item.id,
+          item: {
+            id: item.id,
+            title: item.title,
+            summary: "",
+            thumbnailSrc: thumbnailSrc,
+            content: item.summary.content,
+            sourceName: item.origin.title,
+            sourceID: item.origin.streamId,
+            url: item.canonical[0].href,
+            publishedTime: publishedTime,
+            isRead: false,
+            isStar: false,
+            isInnerArticleShow: false,
+          },
+          onClick: handleArticleItemClick,
+          onStar: handleArticleItemStar,
+          onRead: handleArticleItemRead,
+          onInnerArticleClose: handleArticleItemInnerArticleClose,
+        };
+      });
+
+      const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
+        transformedData,
+        [article]
+      );
+      return normalizeData;
+    },
+    {
+      onError: (error) => {
+        console.error(error);
+      },
+      placeholderData: { entities: { article: {} }, result: [] },
+      refetchOnWindowFocus: false,
+    }
+  );
+
   const { currenActivedFeedId } = state;
-  const activedArticle = getArticleById(currenActivedFeedId);
+  const activedArticle = get(
+    streamContentQuery.data,
+    `entities.article['${currenActivedFeedId}'].item`
+  );
 
   const streamContents = streamContentQuery.data?.result.map(
     (feedId) => streamContentQuery.data?.entities.article[feedId]
