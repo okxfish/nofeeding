@@ -1,3 +1,4 @@
+import React, { useRef, useContext } from "react";
 import {
   Text,
   IconButton,
@@ -6,13 +7,12 @@ import {
   IIconProps,
   Image,
 } from "@fluentui/react";
-import React, { useRef, useContext } from "react";
 import classnames from "classnames";
 import { FeedProps } from "./types";
 import ArticlePane from "./../articlePane/index";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { ArticleContext } from "./../../context/article";
-import {default as dayjs, Dayjs} from "dayjs";
+import { default as dayjs, Dayjs } from "dayjs";
 
 export interface Props extends FeedProps {
   itemIndex: number;
@@ -23,20 +23,17 @@ const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
 const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 
-const FeedItem = ({
+const FeedItem= ({
   data,
   itemIndex,
   className,
-  onClick=()=>{},
-  onRead=()=>{},
-  onStar=()=>{},
+  onClick = () => {},
+  onRead = () => {},
+  onStar = () => {},
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
   const article = useContext(ArticleContext);
   const feedItemRef = useRef<HTMLDivElement>(null);
-
-  const nowTime:Dayjs = dayjs();
-  const relativePublishedTime:string = nowTime.from(data.publishedTime)
 
   const feedHeaderElem: React.ReactElement | null =
     viewType === 1 ? null : (
@@ -54,6 +51,8 @@ const FeedItem = ({
       </div>
     );
 
+  const nowTime: Dayjs = dayjs();
+  const relativePublishedTime: string = nowTime.from(data.publishedTime);
   const feedBodyElem: React.ReactElement | null = (
     <div
       className={classnames("flex flex-1", {
@@ -84,12 +83,7 @@ const FeedItem = ({
       <div className="flex items-center">
         <TooltipHost content={data.sourceName} closeDelay={500}>
           <Text
-            className="
-                  text-sm text-gray-400 max-w-xs
-                  md:max-w-5xs
-                  lg:max-w-xs
-                  xl:max-w-5xs
-                "
+            className=" text-sm text-gray-400 max-w-xs md:max-w-5xs lg:max-w-xs xl:max-w-5xs"
             block
             nowrap
           >
