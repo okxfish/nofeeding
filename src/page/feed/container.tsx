@@ -15,13 +15,11 @@ import { FeedContext } from "../../context/feed";
 import FeedPageComponent from "./component";
 import { FeedItem, FeedProps } from "../../component/feedsPane/types";
 
-import { normalize, NormalizedSchema, schema } from "normalizr";
-
 import { filterImgSrcfromHtmlStr } from "./utils";
-
-import { default as get } from "lodash.get";
 import { SystemStreamIDs } from "../../api/inoreader";
 
+import { get } from "lodash";
+import { normalize, NormalizedSchema, schema } from "normalizr";
 import { produce } from "immer";
 import { Dayjs, default as dayjs } from "dayjs";
 
