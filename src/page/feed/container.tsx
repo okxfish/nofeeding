@@ -54,11 +54,6 @@ const FeedContainer = ({
   const streamId = useSearchParam("streamId") || "";
   const unreadOnly = useSearchParam("unreadOnly") || "0";
 
-  const openOverviewPane = useCallback(
-    () => setIsOverViewPaneOpen(true),
-    [setIsOverViewPaneOpen]
-  );
-
   const closeOverviewPane = useCallback(
     () => setIsOverViewPaneOpen(false),
     [setIsOverViewPaneOpen]
