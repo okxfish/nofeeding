@@ -1,28 +1,28 @@
-import {
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { useMemo, useState, useContext } from "react";
 import { useSearchParam } from "../../utils/useSearchParma";
-import { useQuery, useQueryClient } from "react-query";
-import { default as api } from "../../api";
+import { useQuery } from "react-query";
 
-import { ViewTypeContext, ViewType } from "../../context/viewType";
 import { ArticleContext } from "../../context/article";
 import { FeedContext } from "../../context/feed";
+import { ViewType, ViewTypeContext } from "../../context/viewType";
 
-import FeedPageComponent from "./component";
 import { FeedItem, FeedProps } from "../../component/feedsPane/types";
 
 import { filterImgSrcfromHtmlStr } from "./utils";
+import { default as api } from "../../api";
 import { SystemStreamIDs } from "../../api/inoreader";
 
 import { get } from "lodash";
 import { normalize, NormalizedSchema, schema } from "normalizr";
-import { produce } from "immer";
 import { Dayjs, default as dayjs } from "dayjs";
+import classnames from "classnames";
 
+import { Modal } from "@fluentui/react";
+
+import ArticlePane from "../../component/articlePane";
+import FeedsPane from "../../component/feedsPane";
+import OverviewPane from "../../component/overviewPane";
+import "./style.css";
 const article = new schema.Entity<FeedProps>("article");
 
 interface ArticleEntity {
@@ -30,23 +30,17 @@ interface ArticleEntity {
 }
 
 const FeedContainer = () => {
-  const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>('');
+  const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
-
   const streamId = useSearchParam("streamId") || "";
   const unreadOnly = useSearchParam("unreadOnly") || "0";
-
-  // 打开文章弹窗
-  const openArticleModal = (): void => setIsArticleModalOpen(true);
-  // 关闭文章弹窗
-  const closeArticleModal = (): void => setIsArticleModalOpen(false);
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
     [streamId, unreadOnly]
-    );
-    // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
+  );
+  // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
   const streamContentQuery = useQuery<
     NormalizedSchema<ArticleEntity, string[]>
   >(
@@ -90,129 +84,50 @@ const FeedContainer = () => {
     }
   );
 
-  const queryClient = useQueryClient();
-  // 通过文章的 id 修改对应的文章实体的属性
-  const setArticleDataById = useCallback(
-    (articleId: string, updater: any): void =>
-      queryClient.setQueryData(
-        streamContentQueryKey,
-        produce((data) => {
-          const article = get(data, `entities.article['${articleId}']`);
-          if (typeof article !== "undefined") {
-            updater(article);
-          }
-        })
-      ),
-    [queryClient, streamContentQueryKey]
-  );
-
-  // 切换文章的是否已读状态
-  const toggleReadById = useCallback(
-    (articleId: string) => {
-      setArticleDataById(articleId, (article) => {
-        article.isRead = !article.isRead;
-      });
-    },
-    [setArticleDataById]
-  );
-
-  // 切换文章的是否加星状态
-  const toggleStarById = useCallback(
-    (articleId: string) => {
-      setArticleDataById(articleId, (article) => {
-        article.isStar = !article.isStar;
-      });
-    },
-    [setArticleDataById]
-  );
-
-  const openArticleInner = useCallback(
-    (articleId: string) => {
-      const prevArticleId: string = currenActivedFeedId;
-      if (prevArticleId !== articleId) {
-        if (prevArticleId !== "") {
-          setArticleDataById(prevArticleId, (article) => {
-            article.isInnerArticleShow = false;
-          });
-        }
-        setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = true;
-        });
-      } else {
-        setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = !article.isInnerArticleShow;
-        });
-      }
-    },
-    [currenActivedFeedId, setArticleDataById]
-  );
-
-  const displayArticle = useCallback(
-    (articleId) => {
-      if (viewType === ViewType.list) {
-        openArticleInner(articleId);
-      } else if (viewType !== ViewType.threeway) {
-        openArticleModal();
-      }
-    },
-    [viewType, openArticleInner]
-  );
-
-  const markAsRead = useCallback(
-    (articleId: string) =>
-      setArticleDataById(articleId, (article) => {
-        article.isRead = true;
-      }),
-    [setArticleDataById]
-  );
-
-  const handleArticleItemClick = useCallback(
-    (item, index, e) => {
-      const articleId = item.id;
-      setCurrenActivedFeedId(articleId)
-      displayArticle(articleId);
-      markAsRead(articleId);
-    },
-    [displayArticle, markAsRead]
-  );
-
-  const handleArticleItemStar = useCallback(
-    (item, index, e) => {
-      if (e) {
-        e.stopPropagation();
-      }
-      toggleStarById(item.id);
-    },
-    [toggleStarById]
-  );
-
-  const handleArticleItemRead = useCallback(
-    (item, index, e) => {
-      if (e) {
-        e.stopPropagation();
-      }
-      toggleReadById(item.id);
-    },
-    [toggleReadById]
-  );
-  
   const activedArticle = get(
     streamContentQuery.data,
     `entities.article['${currenActivedFeedId}']`
   );
 
   return (
-    <FeedContext.Provider
-      value={{ streamContentQuery: streamContentQuery }}
-    >
+    <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
-        <FeedPageComponent
-          isArticleModalOpen={isArticleModalOpen}
-          closeArticleModal={closeArticleModal}
-          onFeedClick={handleArticleItemClick}
-          onFeedStar={handleArticleItemStar}
-          onFeedRead={handleArticleItemRead}
+      <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
+      <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r">
+        <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0 h-full" />
+      </div>
+      <div
+        className={classnames(
+          "overflow-auto scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
+          { "xl:col-span-1": viewType === ViewType.threeway }
+        )}
+        data-is-scrollable
+      >
+        <FeedsPane
+          className="h-full transition-all"
+          currenActivedFeedId={currenActivedFeedId}
+          setCurrenActivedFeedId={setCurrenActivedFeedId}
+          setIsArticleModalOpen={setIsArticleModalOpen}
         />
+      </div>
+      {viewType === ViewType.threeway && (
+        <div className="hidden col-start-4 col-span-1 row-start-1 row-span-3 xl:block xl:col-start-4 xl:col-span-1">
+          <ArticlePane className="h-full" />
+        </div>
+      )}
+      <Modal
+        className=""
+        isOpen={isArticleModalOpen}
+        onDismiss={()=>setIsArticleModalOpen(false)}
+        overlay={{ style: { backgroundColor: "rgba(0, 0, 0, 0.75)" } }}
+        isBlocking={false}
+        styles={{ main: { maxHeight: "100%", maxWidth: "100%" } }}
+      >
+        <ArticlePane
+          className="article-modal h-screen w-screen"
+          closeModal={()=>setIsArticleModalOpen(false)}
+        />
+      </Modal>
       </ArticleContext.Provider>
     </FeedContext.Provider>
   );
