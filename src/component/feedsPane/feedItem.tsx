@@ -11,7 +11,6 @@ import classnames from "classnames";
 import { FeedProps } from "./types";
 import ArticlePane from "./../articlePane/index";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
-import { ArticleContext } from "./../../context/article";
 import { default as dayjs, Dayjs } from "dayjs";
 
 export interface Props extends FeedProps {
@@ -23,7 +22,7 @@ const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
 const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 
-const FeedItem= ({
+const FeedItem = ({
   data,
   itemIndex,
   className,
@@ -32,7 +31,6 @@ const FeedItem= ({
   onStar = () => {},
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
-  const article = useContext(ArticleContext);
   const feedItemRef = useRef<HTMLDivElement>(null);
 
   const feedHeaderElem: React.ReactElement | null =
@@ -52,7 +50,7 @@ const FeedItem= ({
     );
 
   const nowTime: Dayjs = dayjs();
-  const relativePublishedTime: string = nowTime.from(data.publishedTime);
+  const relativePublishedTime: string = data.publishedTime.from(nowTime);
   const feedBodyElem: React.ReactElement | null = (
     <div
       className={classnames("flex flex-1", {
@@ -144,10 +142,7 @@ const FeedItem= ({
         {feedFooterElem}
       </div>
       {data.isInnerArticleShow ? (
-        <ArticlePane
-          className="relative z-10 border-b bg-gray-50"
-          article={article}
-        />
+        <ArticlePane className="relative z-10 border-b bg-gray-50" />
       ) : null}
     </div>
   );

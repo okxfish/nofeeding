@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useState,
 } from "react";
@@ -42,7 +43,6 @@ interface ArticleEntity {
 }
 
 const FeedContainer = ({
-  className,
   isOverViewPaneOpen,
   setIsOverViewPaneOpen,
 }: Props) => {
@@ -74,13 +74,60 @@ const FeedContainer = ({
     closeOverviewPane();
   }, [location.search, closeOverviewPane]);
 
-  const queryClient = useQueryClient();
+  const streamContentQueryKey = useMemo(
+    () => ["feed/streamContentQuery", streamId, unreadOnly],
+    [streamId, unreadOnly]
+    );
+    // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
+  const streamContentQuery = useQuery<
+    NormalizedSchema<ArticleEntity, string[]>
+  >(
+    streamContentQueryKey,
+    async ({ queryKey: [key, streamId, unreadOnly] }) => {
+      const { data } = await api.inoreader.getStreamContents(String(streamId), {
+        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
+      });
 
+      const transformedData: FeedItem[] = data.items.map((item, index) => {
+        const publishedTime: Dayjs = dayjs.unix(item.published);
+        const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
+        return {
+          id: item.id,
+          title: item.title,
+          summary: "",
+          thumbnailSrc: thumbnailSrc,
+          content: item.summary.content,
+          sourceName: item.origin.title,
+          sourceID: item.origin.streamId,
+          url: item.canonical[0].href,
+          publishedTime: publishedTime,
+          isRead: false,
+          isStar: false,
+          isInnerArticleShow: false,
+        };
+      });
+
+      const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
+        transformedData,
+        [article]
+      );
+      return normalizeData;
+    },
+    {
+      onError: (error) => {
+        console.error(error);
+      },
+      placeholderData: { entities: { article: {} }, result: [] },
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const queryClient = useQueryClient();
   // 通过文章的 id 修改对应的文章实体的属性
   const setArticleDataById = useCallback(
     (articleId: string, updater: any): void =>
       queryClient.setQueryData(
-        ["feed/streamContentQuery", streamId, unreadOnly],
+        streamContentQueryKey,
         produce((data) => {
           const article = get(data, `entities.article['${articleId}']`);
           if (typeof article !== "undefined") {
@@ -88,7 +135,7 @@ const FeedContainer = ({
           }
         })
       ),
-    [queryClient, streamId, unreadOnly]
+    [queryClient, streamContentQueryKey]
   );
 
   // 切换文章的是否已读状态
@@ -110,13 +157,6 @@ const FeedContainer = ({
     },
     [setArticleDataById]
   );
-
-  // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
-  const streamContentQueryKey = [
-    "feed/streamContentQuery",
-    streamId,
-    unreadOnly,
-  ];
 
   const openArticleInner = useCallback(
     (articleId: string) => {
@@ -200,74 +240,21 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
-  const streamContentQuery = useQuery<
-    NormalizedSchema<ArticleEntity, string[]>
-  >(
-    streamContentQueryKey,
-    async ({ queryKey: [key, streamId, unreadOnly] }) => {
-      const { data } = await api.inoreader.getStreamContents(String(streamId), {
-        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
-      });
-
-      const transformedData: FeedItem[] = data.items.map((item, index) => {
-        const publishedTime: Dayjs = dayjs.unix(item.published);
-        const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
-        return {
-          id: item.id,
-          title: item.title,
-          summary: "",
-          thumbnailSrc: thumbnailSrc,
-          content: item.summary.content,
-          sourceName: item.origin.title,
-          sourceID: item.origin.streamId,
-          url: item.canonical[0].href,
-          publishedTime: publishedTime,
-          isRead: false,
-          isStar: false,
-          isInnerArticleShow: false,
-        };
-      });
-
-      const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
-        transformedData,
-        [article]
-      );
-      return normalizeData;
-    },
-    {
-      onError: (error) => {
-        console.error(error);
-      },
-      placeholderData: { entities: { article: {} }, result: [] },
-      refetchOnWindowFocus: false,
-    }
-  );
-
   const { currenActivedFeedId } = state;
   const activedArticle = get(
     streamContentQuery.data,
     `entities.article['${currenActivedFeedId}']`
   );
 
-  const streamContents = streamContentQuery.data?.result.map(
-    (feedId) => streamContentQuery.data?.entities.article[feedId]
-  );
-
   return (
     <FeedContext.Provider
-      value={{ state, dispatch, streamContents: streamContents }}
+      value={{ state, dispatch, streamContentQuery: streamContentQuery }}
     >
       <ArticleContext.Provider value={activedArticle}>
         <FeedPageComponent
-          className={className}
-          article={activedArticle}
-          viewType={viewType}
           isArticleModalOpen={isArticleModalOpen}
           isOverViewPaneOpen={isOverViewPaneOpen}
-          isFetching={streamContentQuery.isFetching}
-          openOverviewPane={openOverviewPane}
           closeOverviewPane={closeOverviewPane}
-          openArticleModal={openArticleModal}
           closeArticleModal={closeArticleModal}
           onFeedClick={handleArticleItemClick}
           onFeedStar={handleArticleItemStar}

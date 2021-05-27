@@ -1,56 +1,37 @@
-import React from "react";
+import { useContext } from 'react';
 import classnames from "classnames";
+import { Modal } from "@fluentui/react";
 import OverviewPane from "../../component/overviewPane";
 import FeedsPane from "../../component/feedsPane";
 import ArticlePane from "../../component/articlePane";
-import { Modal } from "office-ui-fabric-react";
-import { ViewType } from "../../context/viewType";
-
 import { CSSTransition } from "react-transition-group";
+import { FeedItem } from "./../../component/feedsPane/types";
+import { ViewType, ViewTypeContext } from "../../context/viewType";
 import "./style.css";
-import { FeedItem } from './../../component/feedsPane/types';
 
 export interface Props {
-  className?: string;
-  article: any;
-  viewType: ViewType;
   isArticleModalOpen: boolean;
   isOverViewPaneOpen: boolean;
-  isFetching: boolean;
-  openOverviewPane(): any;
   closeOverviewPane(): any;
   closeArticleModal(): any;
-  openArticleModal(): any;
   onFeedClick?(item: FeedItem, index: number, e: any): void;
   onFeedStar?(item: FeedItem, index: number, e: any): void;
   onFeedRead?(item: FeedItem, index: number, e: any): void;
 }
 
 const FeedPageComponent = ({
-  className,
-  article,
-  viewType,
   isArticleModalOpen,
   isOverViewPaneOpen,
-  isFetching,
-  openOverviewPane,
   closeOverviewPane,
   closeArticleModal,
-  openArticleModal,
   onFeedClick,
   onFeedStar,
   onFeedRead,
 }: Props) => {
-  return (
-    <>
-      <div
-        className="
-            flex items-center justify-between z-30
-            row-start-1 row-span-1 col-start-1 col-span-4
-            border-b border-gray-200
-            sm:hidden
-          "
-      ></div>
+  const { viewType } = useContext(ViewTypeContext);
+
+  const modalOverviewPaneRender = (): React.ReactElement | null => {
+    return (
       <CSSTransition
         classNames="block sm:hidden overview-pane-animate-wrapper overview-pane-animate-wrapper"
         in={isOverViewPaneOpen}
@@ -59,40 +40,39 @@ const FeedPageComponent = ({
       >
         <div className="z-50">
           <div
-            className="overview-pane__mask h-full fixed top-0 left-0 w-screen h-screen"
+            className="overview-pane__mask fixed top-0 left-0 w-screen h-screen"
             onClick={closeOverviewPane}
           />
           <OverviewPane className="bg-white rounded-t-2xl shadow-lg pt-6 px-2 sm:rounded-none sm:pt-0 overview-pane overview-pane-modal" />
         </div>
       </CSSTransition>
+    );
+  };
+
+  return (
+    <>
+      <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
+      {modalOverviewPaneRender()}
       <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r">
         <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0 h-full" />
       </div>
       <div
         className={classnames(
-          "overflow-auto scrollbar h-full",
-          "col-start-1 col-span-4 row-start-2 row-span-1",
-          "sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
+          "overflow-auto scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
           { "xl:col-span-1": viewType === ViewType.threeway }
         )}
         data-is-scrollable
       >
         <FeedsPane
           className="h-full transition-all"
-          isFetching={isFetching}
           onFeedClick={onFeedClick}
           onFeedStar={onFeedStar}
           onFeedRead={onFeedRead}
         />
       </div>
       {viewType === ViewType.threeway ? (
-        <div
-          className="
-              hidden col-start-4 col-span-1 row-start-1 row-span-3
-              xl:block xl:col-start-4 xl:col-span-1
-            "
-        >
-          <ArticlePane className="h-full" article={article} />
+        <div className="hidden col-start-4 col-span-1 row-start-1 row-span-3 xl:block xl:col-start-4 xl:col-span-1">
+          <ArticlePane className="h-full" />
         </div>
       ) : null}
       <Modal
@@ -106,7 +86,6 @@ const FeedPageComponent = ({
         <ArticlePane
           className="article-modal h-screen w-screen"
           closeModal={closeArticleModal}
-          article={article}
         />
       </Modal>
     </>

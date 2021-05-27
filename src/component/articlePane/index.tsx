@@ -1,4 +1,4 @@
-import React, {
+import {
   useEffect,
   useRef,
   useState,
@@ -10,13 +10,13 @@ import { IconButton, IIconProps } from "office-ui-fabric-react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./../feedsPane/types";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { ArticleContext } from "./../../context/article";
 
 import "./style.css";
 
 export interface Props {
   className?: string;
   closeModal?(): any;
-  article?: FeedItem;
   style?: {
     [prop: string]: string;
   };
@@ -25,7 +25,8 @@ export interface Props {
 const backIcon: IIconProps = { iconName: "Back" };
 
 const ArticlePane = forwardRef(
-  ({ className, style, article, closeModal }: Props, ref) => {
+  ({ className, style, closeModal }: Props, ref) => {
+    const article:FeedItem = useContext(ArticleContext);
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const { viewType } = useContext(ViewTypeContext);
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
