@@ -1,13 +1,9 @@
-import React, {
-  SetStateAction,
+import {
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useReducer,
   useState,
 } from "react";
-import { useLocation } from "react-router-dom";
 import { useSearchParam } from "../../utils/useSearchParma";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
@@ -21,7 +17,6 @@ import { FeedItem, FeedProps } from "../../component/feedsPane/types";
 
 import { normalize, NormalizedSchema, schema } from "normalizr";
 
-import { initState, reducer } from "./reducer";
 import { filterImgSrcfromHtmlStr } from "./utils";
 
 import { default as get } from "lodash.get";
@@ -30,44 +25,24 @@ import { SystemStreamIDs } from "../../api/inoreader";
 import { produce } from "immer";
 import { Dayjs, default as dayjs } from "dayjs";
 
-export interface Props {
-  className?: string;
-  isOverViewPaneOpen: boolean;
-  setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
-}
-
 const article = new schema.Entity<FeedProps>("article");
 
 interface ArticleEntity {
   article: { [key: string]: FeedProps };
 }
 
-const FeedContainer = ({
-  isOverViewPaneOpen,
-  setIsOverViewPaneOpen,
-}: Props) => {
-  const [state, dispatch] = useReducer(reducer, initState);
+const FeedContainer = () => {
+  const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>('');
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
-  const location = useLocation();
 
   const streamId = useSearchParam("streamId") || "";
   const unreadOnly = useSearchParam("unreadOnly") || "0";
-
-  const closeOverviewPane = useCallback(
-    () => setIsOverViewPaneOpen(false),
-    [setIsOverViewPaneOpen]
-  );
 
   // 打开文章弹窗
   const openArticleModal = (): void => setIsArticleModalOpen(true);
   // 关闭文章弹窗
   const closeArticleModal = (): void => setIsArticleModalOpen(false);
-
-  // 切换当前的订阅源的时候关闭订阅源选择菜单
-  useEffect(() => {
-    closeOverviewPane();
-  }, [location.search, closeOverviewPane]);
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -155,7 +130,7 @@ const FeedContainer = ({
 
   const openArticleInner = useCallback(
     (articleId: string) => {
-      const prevArticleId: string = state.currenActivedFeedId;
+      const prevArticleId: string = currenActivedFeedId;
       if (prevArticleId !== articleId) {
         if (prevArticleId !== "") {
           setArticleDataById(prevArticleId, (article) => {
@@ -171,7 +146,7 @@ const FeedContainer = ({
         });
       }
     },
-    [state.currenActivedFeedId, setArticleDataById]
+    [currenActivedFeedId, setArticleDataById]
   );
 
   const displayArticle = useCallback(
@@ -196,10 +171,7 @@ const FeedContainer = ({
   const handleArticleItemClick = useCallback(
     (item, index, e) => {
       const articleId = item.id;
-      dispatch({
-        type: "feed/ById/changeCurrentActivedFeedId",
-        payload: articleId,
-      });
+      setCurrenActivedFeedId(articleId)
       displayArticle(articleId);
       markAsRead(articleId);
     },
@@ -235,7 +207,6 @@ const FeedContainer = ({
     [setArticleDataById]
   );
 
-  const { currenActivedFeedId } = state;
   const activedArticle = get(
     streamContentQuery.data,
     `entities.article['${currenActivedFeedId}']`
@@ -243,13 +214,11 @@ const FeedContainer = ({
 
   return (
     <FeedContext.Provider
-      value={{ state, dispatch, streamContentQuery: streamContentQuery }}
+      value={{ streamContentQuery: streamContentQuery }}
     >
       <ArticleContext.Provider value={activedArticle}>
         <FeedPageComponent
           isArticleModalOpen={isArticleModalOpen}
-          isOverViewPaneOpen={isOverViewPaneOpen}
-          closeOverviewPane={closeOverviewPane}
           closeArticleModal={closeArticleModal}
           onFeedClick={handleArticleItemClick}
           onFeedStar={handleArticleItemStar}
