@@ -195,16 +195,7 @@ const FeedContainer = () => {
     },
     [toggleReadById]
   );
-
-  const handleArticleItemInnerArticleClose = useCallback(
-    (item, index, e) => {
-      setArticleDataById(item.id, (article) => {
-        article.isInnerArticleShow = false;
-      });
-    },
-    [setArticleDataById]
-  );
-
+  
   const activedArticle = get(
     streamContentQuery.data,
     `entities.article['${currenActivedFeedId}']`
