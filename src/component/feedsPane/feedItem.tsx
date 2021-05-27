@@ -18,7 +18,6 @@ export interface Props extends FeedProps {
   itemIndex: number;
 }
 
-const moreIcon: IIconProps = { iconName: "More" };
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
 const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
@@ -130,15 +129,6 @@ const FeedItem = ({
         ariaLabel="Favorite"
         disabled={false}
         onClick={(e) => onStar(data, itemIndex, e)}
-      />
-      <IconButton
-        className="focus:outline-none"
-        iconProps={moreIcon}
-        onRenderMenuIcon={() => null}
-        title="more"
-        ariaLabel="More"
-        disabled={false}
-        checked={false}
       />
     </div>
   );
