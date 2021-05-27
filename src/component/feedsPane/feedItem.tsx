@@ -135,7 +135,7 @@ const FeedItem= ({
         className={classnames(
           "feed-item flex relative z-10 p-4 group bg-white cursor-pointer select-none flex-wrap md:flex-nowrap hover:bg-gray-50",
           {
-            "py-2 border-b": viewType === ViewType.list,
+            "py-1 border-b": viewType === ViewType.list,
           }
         )}
       >
