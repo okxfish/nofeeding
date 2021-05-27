@@ -122,7 +122,9 @@ const FeedItem = ({
         onClick={(e) => onRead(data, itemIndex, e)}
       />
       <IconButton
-        className="focus:outline-none"
+        className={classnames("focus:outline-none", {
+          "text-yellow-300 hover:text-yellow-300": data.isStar,
+        })}
         iconProps={data.isStar ? favoriteStarFillIcon : favoriteStarIcon}
         title="favorite"
         ariaLabel="Favorite"
