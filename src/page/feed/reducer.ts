@@ -10,8 +10,6 @@ export const reducer = (state, action) => {
         ...state,
         currenActivedFeedId: action.payload,
       };
-    case "sidePane/open":
-      return { ...state, isSidePaneOpen: true };
     default:
       throw new Error();
   }
