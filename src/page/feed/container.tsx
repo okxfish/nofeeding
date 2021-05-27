@@ -121,7 +121,6 @@ const FeedContainer = ({
   const openArticleInner = useCallback(
     (articleId: string) => {
       const prevArticleId: string = state.currenActivedFeedId;
-      console.log(prevArticleId, articleId);
       if (prevArticleId !== articleId) {
         if (prevArticleId !== "") {
           setArticleDataById(prevArticleId, (article) => {
@@ -133,7 +132,7 @@ const FeedContainer = ({
         });
       } else {
         setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = false;
+          article.isInnerArticleShow = !article.isInnerArticleShow;
         });
       }
     },
