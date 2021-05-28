@@ -1,6 +1,7 @@
 import React from "react";
 import {
   GroupedList,
+  IGroup,
   IGroupRenderProps,
   IGroupHeaderProps,
   CommandBarButton,
@@ -8,14 +9,13 @@ import {
   FontIcon,
   SelectionMode,
   IContextualMenuProps,
-} from "office-ui-fabric-react";
+} from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
 import { normalize, schema } from "normalizr";
-import { IGroup } from "@fluentui/react";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
