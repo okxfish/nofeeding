@@ -90,6 +90,7 @@ const Home = () => {
         hasCloseButton={false}
         onDismiss={() => setIsOverViewPaneOpen(false)}
         onLightDismissClick={() => setIsOverViewPaneOpen(false)}
+        styles={{content: 'p-0'}}
       >
         <OverviewPane />
       </HelfScreenPanel>

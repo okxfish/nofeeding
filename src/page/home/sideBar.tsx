@@ -10,7 +10,6 @@ import {
   Route,
   Switch,
   useHistory,
-  useParams,
   useLocation,
 } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
