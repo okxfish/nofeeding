@@ -6,7 +6,7 @@ import { ArticleContext } from "../../context/article";
 import { FeedContext } from "../../context/feed";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 
-import { FeedItem, FeedProps } from "../../component/feedsPane/types";
+import { FeedItem, FeedProps } from "./types";
 
 import { filterImgSrcfromHtmlStr } from "./utils";
 import { default as api } from "../../api";
@@ -20,7 +20,7 @@ import classnames from "classnames";
 import { Modal } from "@fluentui/react";
 
 import ArticlePane from "../../component/articlePane";
-import FeedsPane from "../../component/feedsPane";
+import FeedsPane from "./feedsPane";
 import OverviewPane from "../../component/overviewPane";
 import "./style.css";
 const article = new schema.Entity<FeedProps>("article");

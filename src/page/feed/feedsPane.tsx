@@ -1,5 +1,5 @@
 import { default as React, useCallback, useContext } from "react";
-import { FeedContext } from "./../../context/feed";
+import { FeedContext } from "../../context/feed";
 
 import {
   ActionButton,
