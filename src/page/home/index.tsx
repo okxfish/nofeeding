@@ -3,9 +3,9 @@ import { default as FeedPage } from "../feed";
 import { useWindowSize } from "react-use";
 import { Route, Switch, useLocation } from "react-router-dom";
 import OverviewPane from "../feed/overviewPane";
-import { Panel, PanelType } from "@fluentui/react";
 import SideBar from "./sideBar";
 import "./style.css";
+import HelfScreenPanel from "../../component/helfScreenPanel/helfScreenPanel";
 
 const Home = () => {
   const location = useLocation();
@@ -28,33 +28,15 @@ const Home = () => {
       <Switch>
         <Route path={["/feed/:options", "/feed"]} component={FeedPage} />
       </Switch>
-      <Panel
+      <HelfScreenPanel
         isOpen={isOverViewPaneOpen}
-        type={PanelType.smallFluid}
-        styles={{
-          overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
-          main: [
-            `rounded-t-lg ${
-              isOverViewPaneOpen
-                ? 'ms-motion-slideUpIn'
-                : 'ms-motion-slideDownOut'
-            }`,
-            {
-              height: "75vh",
-              margin: "auto 0 0",
-              animationName: "none",
-            },
-          ],
-          content: "px-0",
-          scrollableContent: "scrollbar-none",
-        }}
-        onDismiss={() => setIsOverViewPaneOpen(false)}
         isLightDismiss
         hasCloseButton={false}
+        onDismiss={() => setIsOverViewPaneOpen(false)}
         onLightDismissClick={() => setIsOverViewPaneOpen(false)}
       >
         <OverviewPane />
-      </Panel>
+      </HelfScreenPanel>
     </div>
   );
 };
