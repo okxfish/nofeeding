@@ -11,7 +11,6 @@ import {
 } from "office-ui-fabric-react";
 import { createGroups } from "@fluentui/example-data";
 import OverviewCell from "./overviewCell";
-import "./style.css";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
