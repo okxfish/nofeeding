@@ -9,9 +9,8 @@ import {
   SelectionMode,
   IContextualMenuProps,
 } from "office-ui-fabric-react";
-import { createGroups } from "@fluentui/example-data";
 import OverviewCell from "./overviewCell";
-import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
