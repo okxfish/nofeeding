@@ -1,3 +1,3 @@
-import FeedPage from './container';
+import FeedPage from './feed';
 
 export default FeedPage;
