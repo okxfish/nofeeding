@@ -32,18 +32,6 @@ const subscription = new schema.Entity("subscription", undefined, {
 const listItemClassName =
   "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
 
-const moreIcon: IIconProps = { iconName: "More" };
-
-const menuProps: IContextualMenuProps = {
-  items: [
-    {
-      key: "renameFolder",
-      text: "rename",
-      iconProps: { iconName: "Edit" },
-    },
-  ],
-};
-
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const commonPx = "px-2";
@@ -168,12 +156,6 @@ const OverviewPane = ({ className }: Props) => {
             <span className="flex-1">
               {props.group!.name} ({props.group?.data.unreadCount})
             </span>
-            <CommandBarButton
-              className="bg-transparent hover:bg-transparent focus:bg-transparent focus:outline-none min-w-0"
-              menuProps={menuProps}
-              iconProps={moreIcon}
-              onRenderMenuIcon={() => null}
-            />
           </div>
         );
       } else {
@@ -238,19 +220,6 @@ const OverviewPane = ({ className }: Props) => {
             }),
           })
         }
-      />
-      <OverviewCell
-        className={`${commonPx} bg-gray-50 rounded-t-lg rounded-b-none sm:bg-transparent sm:rounded-b-sm sm:rounded-t-sm`}
-        iconProps={{ iconName: "Source" }}
-        content="source"
-        onFooterRender={() => (
-          <CommandBarButton
-            className="bg-transparent hover:bg-transparent focus:bg-transparent focus:outline-none min-w-0"
-            menuProps={menuProps}
-            iconProps={moreIcon}
-            onRenderMenuIcon={() => null}
-          />
-        )}
       />
       <GroupedList
         className="flex-1 border-b border-t overflow-y-auto scrollbar-none bg-gray-50 sm:bg-transparent"
