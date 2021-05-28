@@ -3,7 +3,7 @@ import { default as FeedPage } from "../feed";
 import { useWindowSize } from "react-use";
 import { Route, Switch, useLocation } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
-import OverviewPane from "../../component/overviewPane";
+import OverviewPane from "../feed/overviewPane";
 import SideBar from "./sideBar";
 import "./style.css";
 

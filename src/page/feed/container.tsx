@@ -21,8 +21,9 @@ import { Modal } from "@fluentui/react";
 
 import ArticlePane from "../../component/articlePane";
 import FeedsPane from "./feedsPane";
-import OverviewPane from "../../component/overviewPane";
+import OverviewPane from "./overviewPane";
 import "./style.css";
+
 const article = new schema.Entity<FeedProps>("article");
 
 interface ArticleEntity {
