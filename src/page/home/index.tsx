@@ -34,19 +34,19 @@ const Home = () => {
         styles={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
           main: [
+            `rounded-t-lg ${
+              isOverViewPaneOpen
+                ? 'ms-motion-slideUpIn'
+                : 'ms-motion-slideDownOut'
+            }`,
             {
-              height: "80vh",
-              width: "100vw",
+              height: "75vh",
               margin: "auto 0 0",
               animationName: "none",
             },
-            "$ms-motion-duration-4 rounded-t-lg",
-            isOverViewPaneOpen
-              ? "ms-motion-slideUpIn"
-              : "ms-motion-slideDownOut",
           ],
-          content: 'px-0',
-          scrollableContent: 'scrollbar-none'
+          content: "px-0",
+          scrollableContent: "scrollbar-none",
         }}
         onDismiss={() => setIsOverViewPaneOpen(false)}
         isLightDismiss
