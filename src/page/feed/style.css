@@ -7,45 +7,6 @@
   grid-template-rows: var(--header-h) 1fr var(--footer-h);
 }
 
-.overview-pane__mask {
-  transition: all 300ms ease-in-out;
-}
-
-.overview-pane-animate-wrapper-enter .overview-pane__mask {
-  background-color: rgba(0, 0, 0, 0);
-}
-
-.overview-pane-animate-wrapper-enter-active .overview-pane__mask {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.overview-pane-animate-wrapper-enter-done .overview-pane__mask {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.overview-pane-modal {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-
-  width: 100%;
-  height: 80vh;
-  transform: translateY(80%);
-  transition: all 300ms ease-in-out;
-}
-
-.overview-pane-animate-wrapper-enter-done .overview-pane {
-  transform: translateY(0);
-}
-
-.overview-pane-animate-wrapper-exit .overview-pane {
-  transform: translateY(0);
-}
-
-.overview-pane-animate-wrapper-exit-active .overview-pane {
-  transform: translateY(100%);
-}
-
 @media (min-width: 768px) {
   .article-modal {
     @apply max-w-5xl;
