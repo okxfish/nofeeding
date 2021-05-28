@@ -28,9 +28,14 @@ const viewIcon: IIconProps = { iconName: "View" };
 export interface Props {
   className?: string;
   setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
+  setIsViewSettingPaneOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
+const SideBar = ({
+  className,
+  setIsOverViewPaneOpen,
+  setIsViewSettingPaneOpen,
+}: Props) => {
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
   const { pathname } = useLocation();
@@ -132,7 +137,7 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         key: "logoff",
         text: "logoff",
         iconProps: { iconName: "SignOut" },
-        onClick: () => localStorage.removeItem('inoreaderToken'),
+        onClick: () => localStorage.removeItem("inoreaderToken"),
       },
     ],
   };
@@ -176,8 +181,17 @@ const SideBar = ({ className, setIsOverViewPaneOpen }: Props) => {
         filter
       </SideBarItem>
       <SideBarItem
+        className="hidden sm:block"
         iconProps={viewIcon}
         menuProps={menuProps}
+        isIconOnly={!isSidePaneOpen}
+      >
+        view
+      </SideBarItem>
+      <SideBarItem
+        className="block sm:hidden"
+        iconProps={viewIcon}
+        onClick={() => setIsViewSettingPaneOpen(true)}
         isIconOnly={!isSidePaneOpen}
       >
         view

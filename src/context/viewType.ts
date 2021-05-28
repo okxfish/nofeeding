@@ -1,9 +1,9 @@
 import React from "react";
 export enum ViewType {
-  list = 1,
-  magazine,
-  threeway,
-  card,
+  list = 'LIST',
+  magazine = 'MAGZ',
+  threeway = '3WAY',
+  card = 'CARD',
 }
 
 export const ViewTypeContext = React.createContext<any>(ViewType.magazine);

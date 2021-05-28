@@ -23,12 +23,12 @@ const HelfScreenPanel: React.FunctionComponent<IPanelProps> = ({
           isOpen ? "ms-motion-slideUpIn" : "ms-motion-slideDownOut"
         }`,
         {
-          height: "75vh",
+          maxHeight: "75vh",
+          height: "max-content",
           margin: "auto 0 0",
           animationName: "none",
         },
       ],
-      content: "px-0",
       scrollableContent: "scrollbar-none",
     };
 
