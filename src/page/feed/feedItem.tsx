@@ -9,7 +9,7 @@ import {
 } from "@fluentui/react";
 import classnames from "classnames";
 import { FeedProps } from "./types";
-import ArticlePane from "../../component/articlePane/index";
+import ArticlePane from "./articlePane";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { default as dayjs, Dayjs } from "dayjs";
 

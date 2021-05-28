@@ -19,7 +19,7 @@ import classnames from "classnames";
 
 import { Modal } from "@fluentui/react";
 
-import ArticlePane from "../../component/articlePane";
+import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
 import "./style.css";

@@ -8,9 +8,9 @@ import {
 } from "react";
 import { IconButton, IIconProps } from "office-ui-fabric-react";
 import { Parser as HtmlToReactParser } from "html-to-react";
-import { FeedItem } from "../../page/feed/types";
+import { FeedItem } from "./types";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
-import { ArticleContext } from "./../../context/article";
+import { ArticleContext } from "../../context/article";
 
 import "./style.css";
 
