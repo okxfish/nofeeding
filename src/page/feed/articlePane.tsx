@@ -34,11 +34,22 @@ const ArticlePane = forwardRef(
 
     useImperativeHandle(ref, () => rootNodeRef.current);
 
-    const htmlContent = article?.content;
     useEffect(() => {
-      const parse = htmlToReactParserRef.current.parse;
-      setContentJSX(parse(htmlContent));
-    }, [htmlContent]);
+      if (article !== null) {
+        const htmlContent = article.content;
+        const parse = htmlToReactParserRef.current.parse;
+        setContentJSX(parse(htmlContent));
+      }
+    }, [article]);
+
+    if (article === null) {
+      return (
+        <div className="text-center p-24 text-gray-300">
+          <FontIcon iconName="ReadingMode" className="text-7xl" />
+          <div className="font-semibold text-3xl">No Article Here</div>
+        </div>
+      );
+    }
 
     const contentRender = () => {
       return (
