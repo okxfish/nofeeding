@@ -6,12 +6,7 @@ import {
   Toggle,
 } from "@fluentui/react";
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
-import {
-  Route,
-  Switch,
-  useHistory,
-  useLocation,
-} from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarItem";
 import classnames from "classnames";
@@ -148,7 +143,7 @@ const SideBar = ({
         "justify-between col-span-4 row-start-3 row-span-1",
         "sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1 sm:row-span-3",
         {
-          "sm:w-48 col-span-2": isSidePaneOpen,
+          "sm:w-48 col-span-2 ms-depth-64": isSidePaneOpen,
           "sm:w-full": !isSidePaneOpen,
         },
         className
