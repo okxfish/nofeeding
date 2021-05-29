@@ -151,7 +151,7 @@ const SideBar = ({
         className
       )}
       style={{
-        backgroundColor: NeutralColors.gray10,
+        backgroundColor: NeutralColors.gray30,
       }}
     >
       <SideBarItem

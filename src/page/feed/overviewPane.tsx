@@ -8,7 +8,11 @@ import {
   IIconProps,
   FontIcon,
   SelectionMode,
+  Stack,
   IContextualMenuProps,
+  Separator,
+  Icon,
+  Label,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory } from "react-router-dom";
@@ -19,6 +23,7 @@ import { normalize, schema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
+import { NeutralColors } from '@fluentui/theme';
 
 export interface Props {
   className?: string;
@@ -123,7 +128,7 @@ const OverviewPane = ({ className }: Props) => {
     };
     return item && typeof itemIndex === "number" && itemIndex > -1 ? (
       <div
-        className={`${listItemClassName} hover:bg-gray-200 rounded-sm`}
+        className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
         onClick={onClick}
       >
@@ -200,17 +205,17 @@ const OverviewPane = ({ className }: Props) => {
     );
 
   return (
-    <div className={`${className} flex-1 flex flex-col min-h-0 cursor-pointer`}>
+    <Stack className={`${className} min-h-0`} style={{backgroundColor: NeutralColors.gray10}}>
       <OverviewCell
-        className={`${commonPx}`}
+      className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
-        content="all"
+        text="all"
         onClick={() => history.push("/feed")}
       />
       <OverviewCell
-        className={`${commonPx}`}
+      className={commonPx}
         iconProps={{ iconName: "FavoriteStar" }}
-        content="star"
+        text="star"
         onClick={() =>
           history.push({
             pathname: "/feed",
@@ -221,15 +226,19 @@ const OverviewPane = ({ className }: Props) => {
           })
         }
       />
+      <Label className={`border-b ${commonPx}`}>
+        <Icon iconName="Folder" />
+        <span className="inline-block ml-2">Folder</span>
+      </Label>
       <GroupedList
-        className="flex-1 border-b border-t overflow-y-auto scrollbar-none bg-gray-50 sm:bg-transparent"
+        className="flex-1 overflow-y-auto scrollbar-none"
         items={items || []}
         onRenderCell={onRenderCell}
         groupProps={groupProps}
         selectionMode={SelectionMode.none}
         groups={groups || []}
       />
-    </div>
+    </Stack>
   );
 };
 

@@ -1,30 +1,58 @@
-import React from 'react';
-import { Icon, IIconProps } from '@fluentui/react';
+import React from "react";
+import {
+  DefaultButton,
+  IButtonProps,
+  IButtonStyles,
+  mergeStyleSets,
+} from "@fluentui/react";
+import {
+  NeutralColors
+} from "@fluentui/theme";
 
-export interface Props {
-className?: string;
-iconProps?: IIconProps;
-content?: string | React.ReactElement;
-onFooterRender?(): React.ReactElement | null;
-onClick?(): any;
-}
+export interface Props extends IButtonProps {}
 
-const defaultFooterRender = ():React.ReactElement => <Icon iconName="ChevronRight"/>
+const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
+  const defaultStyles: IButtonStyles = {
+    root: [
+      {
+        width: "100%",
+        borderRadius: "0",
+        border: "0",
+        paddingLeft: 0,
+        paddingRight: 0,
+        minWidth: "0",
+        textAlign:'left',
+        color: NeutralColors.gray180,
+        backgroundColor: "transparent",
+      },
+      "h-10 text-base",
+    ],
+    rootFocused: {
+      outlineOffset: "1",
+    },
+    rootExpanded: {
+      backgroundColor: 'white'
+    },
+    rootHovered: {
+      backgroundColor: NeutralColors.gray30,
+    },
+    icon: {
+      margin: '0',
+    },
+    textContainer: 'ml-2',
+    label: {
+      fontWeight: "normal",
+      margin: '0',
+    },
+  };
 
-const OverviewCell = ({
-className='',
-iconProps,
-content,
-onClick=()=>{},
-onFooterRender=defaultFooterRender
-}:Props) => {
   return (
-    <div className={`${className} flex items-center h-10 rounded-sm hover:bg-gray-200`} onClick={onClick}>
-      <Icon className="mr-2" {...iconProps} />
-      <div className="flex-1">{content}</div>
-      {onFooterRender()}
-    </div>
+    <DefaultButton
+      className={`${className}`}
+      styles={mergeStyleSets(defaultStyles, styles)}
+      {...rest}
+    />
   );
-}
+};
 
 export default OverviewCell;

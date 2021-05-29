@@ -25,6 +25,7 @@ const SideBarItem = ({
         border: "0",
         minWidth: "0",
         backgroundColor: "transparent",
+        color: NeutralColors.gray180,
       },
       "h-12 text-base",
     ],
