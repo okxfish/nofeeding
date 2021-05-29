@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { IconButton, IIconProps } from "office-ui-fabric-react";
+import { IconButton, IIconProps, FontIcon } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
