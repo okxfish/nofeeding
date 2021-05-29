@@ -85,9 +85,10 @@ const FeedContainer = () => {
     }
   );
 
-  const activedArticle = get(
+  const activedArticle:FeedItem | null = get(
     streamContentQuery.data,
-    `entities.article['${currenActivedFeedId}']`
+    `entities.article['${currenActivedFeedId}']`,
+    null
   );
 
   return (

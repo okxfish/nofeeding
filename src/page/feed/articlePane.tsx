@@ -26,7 +26,7 @@ const backIcon: IIconProps = { iconName: "Back" };
 
 const ArticlePane = forwardRef(
   ({ className, style, closeModal }: Props, ref) => {
-    const article:FeedItem = useContext(ArticleContext);
+    const article: FeedItem | null = useContext(ArticleContext);
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const { viewType } = useContext(ViewTypeContext);
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
