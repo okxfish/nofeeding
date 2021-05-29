@@ -9,7 +9,7 @@ import { NeutralColors } from '@fluentui/theme'
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
-import SideBarItem from "./sideBarItem";
+import SideBarItem from "./sideBarButton";
 import classnames from "classnames";
 import queryString from "query-string";
 
