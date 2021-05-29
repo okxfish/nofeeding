@@ -139,7 +139,7 @@ const SideBar = ({
   return (
     <div
       className={classnames(
-        "flex items-center col-start-1 z-50 bg-gray-900 transition-all",
+        "flex items-center col-start-1 z-50 bg-gray-100 transition-all",
         "justify-between col-span-4 row-start-3 row-span-1",
         "sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1 sm:row-span-3",
         {
