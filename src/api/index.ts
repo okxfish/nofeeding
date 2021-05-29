@@ -5,7 +5,7 @@ import { inoreader } from "./inoreader";
 export const INOREADER_AUTH_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3777"
-    : "http://47.115.60.250:8148";
+    : "http://47.115.60.250:3777";
 export const INOREADER_SERVER_URL = "https://www.innoreader.com";
 export const CORS_PROXY_URL =
   process.env.NODE_ENV === "development"
@@ -14,7 +14,7 @@ export const CORS_PROXY_URL =
 
 const fetch = axios.create({
   baseURL: `${CORS_PROXY_URL}/${INOREADER_SERVER_URL}`,
-  timeout: 30 * 60 * 60 * 1000,
+  timeout: 60 * 60 * 1000,
 });
 
 // 请求拦截器
