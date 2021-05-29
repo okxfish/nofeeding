@@ -178,6 +178,7 @@ const FeedsPane = ({
         <FeedItemComponent
           data={item}
           itemIndex={index}
+          isSelected={item.id === currenActivedFeedId}
           onClick={handleArticleItemClick}
           onStar={handleArticleItemStar}
           onRead={handleArticleItemRead}

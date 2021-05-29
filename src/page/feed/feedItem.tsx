@@ -15,6 +15,7 @@ import { default as dayjs, Dayjs } from "dayjs";
 
 export interface Props extends FeedProps {
   itemIndex: number;
+  isSelected: boolean;
 }
 
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
@@ -25,6 +26,7 @@ const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 const FeedItem = ({
   data,
   itemIndex,
+  isSelected,
   className,
   onClick = () => {},
   onRead = () => {},
@@ -118,6 +120,7 @@ const FeedItem = ({
           "relative z-10 p-4 group cursor-pointer select-none hover:bg-blue-50",
           {
             "py-1 border-b": viewType === ViewType.list,
+            'bg-blue-100': isSelected,
           }
         )}
       >
