@@ -20,7 +20,7 @@ const Home = () => {
   const location = useLocation();
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const [isViewSettingPaneOpen, setIsViewSettingPaneOpen] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const { height: windowHeight } = useWindowSize();
   const { viewType, setViewType } = useContext(ViewTypeContext);
   const history = useHistory();
@@ -90,7 +90,7 @@ const Home = () => {
         hasCloseButton={false}
         onDismiss={() => setIsOverViewPaneOpen(false)}
         onLightDismissClick={() => setIsOverViewPaneOpen(false)}
-        styles={{content: 'p-0'}}
+        styles={{ content: "p-0" }}
       >
         <OverviewPane />
       </HelfScreenPanel>
