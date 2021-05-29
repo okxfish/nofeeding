@@ -12,6 +12,7 @@ import {
   IContextualMenuProps,
   Separator,
   Icon,
+  Text,
   Label,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
@@ -23,7 +24,7 @@ import { normalize, schema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
-import { NeutralColors } from '@fluentui/theme';
+import { NeutralColors } from "@fluentui/theme";
 
 export interface Props {
   className?: string;
@@ -133,7 +134,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={onClick}
       >
         <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
-        <div className="truncate">{item.title}</div>
+        <Text block nowrap>{item.title}</Text>
       </div>
     ) : null;
   };
@@ -158,9 +159,7 @@ const OverviewPane = ({ className }: Props) => {
               }`}
               iconName="ChevronRight"
             />
-            <span className="flex-1">
-              {props.group!.name} ({props.group?.data.unreadCount})
-            </span>
+            <Text block nowrap>{props.group!.name} ({props.group?.data.unreadCount})</Text>
           </div>
         );
       } else {
@@ -205,15 +204,18 @@ const OverviewPane = ({ className }: Props) => {
     );
 
   return (
-    <Stack className={`${className} min-h-0`} style={{backgroundColor: NeutralColors.gray10}}>
+    <Stack
+      className={`${className} min-h-0`}
+      style={{ backgroundColor: NeutralColors.gray10 }}
+    >
       <OverviewCell
-      className={commonPx}
+        className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
         text="all"
         onClick={() => history.push("/feed")}
       />
       <OverviewCell
-      className={commonPx}
+        className={commonPx}
         iconProps={{ iconName: "FavoriteStar" }}
         text="star"
         onClick={() =>

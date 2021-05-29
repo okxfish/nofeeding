@@ -1,11 +1,11 @@
-import React, { useRef, useContext } from "react";
+import React, { useContext } from "react";
 import {
   Text,
   IconButton,
   ImageFit,
-  TooltipHost,
   IIconProps,
   Image,
+  Stack,
 } from "@fluentui/react";
 import classnames from "classnames";
 import { FeedProps } from "./types";
@@ -31,10 +31,9 @@ const FeedItem = ({
   onStar = () => {},
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
-  const feedItemRef = useRef<HTMLDivElement>(null);
 
   const feedHeaderElem: React.ReactElement | null =
-    viewType === 1 ? null : (
+    viewType === ViewType.list ? null : (
       <div
         className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
           data.isRead ? "opacity-40" : ""
@@ -52,57 +51,42 @@ const FeedItem = ({
   const nowTime: Dayjs = dayjs();
   const relativePublishedTime: string = data.publishedTime.from(nowTime);
   const feedBodyElem: React.ReactElement | null = (
-    <div
-      className={classnames("flex flex-1", {
+    <Stack
+      horizontal={viewType === ViewType.list}
+      verticalAlign={viewType === ViewType.list ? "center" : "stretch"}
+      className={classnames("flex-1 overflow-hidden", {
         "opacity-40": data.isRead,
-        "flex-col": viewType !== ViewType.list,
-        "items-center": viewType === ViewType.list,
       })}
     >
-      <div
-        className={classnames(
-          "relative flex items-start text-lg text-gray-800 font-medium",
-          {
-            "text-base": viewType === ViewType.list,
-            "mr-2": viewType === ViewType.list,
-            "mb-2": viewType !== ViewType.list,
-          }
-        )}
-      >
-        {data.title}
-      </div>
-      <div
-        className={classnames("flex-1 text-base text-gray-600 w-full", {
-          truncate: viewType === ViewType.list,
+      <Text
+        className={classnames("text-base", {
+          "mr-2": viewType === ViewType.list,
+          "mb-2": viewType !== ViewType.list,
         })}
       >
-        {data.summary}
-      </div>
-      <div className="flex items-center">
-        <TooltipHost content={data.sourceName} closeDelay={500}>
-          <Text
-            className=" text-sm text-gray-400 max-w-xs md:max-w-5xs lg:max-w-xs xl:max-w-5xs"
-            block
-            nowrap
-          >
-            {data.sourceName}
-          </Text>
-        </TooltipHost>
-        <Text className="text-sm text-gray-400" nowrap>
-          /{relativePublishedTime}
+        {data.title}
+      </Text>
+      <Text className="flex-1 text-base w-full">{data.summary}</Text>
+      <Stack
+        horizontal
+        verticalAlign="center"
+        className="text-sm text-gray-400"
+      >
+        <Text className="flex-1" block nowrap title={data.sourceName}>
+          {data.sourceName}
         </Text>
-      </div>
-    </div>
+        <Text className="flex-0" nowrap>
+          {relativePublishedTime}
+        </Text>
+      </Stack>
+    </Stack>
   );
 
   const feedFooterElem: React.ReactElement = (
-    <div
-      className={classnames(
-        "hidden items-center justify-end sm:justify-between sm:flex md:justify-end xl:justify-between",
-        {
-          "flex-col": viewType !== ViewType.list,
-        }
-      )}
+    <Stack
+      horizontal={viewType === ViewType.list}
+      verticalAlign={viewType === ViewType.list ? "center" : "start"}
+      className="hidden sm:flex"
     >
       <IconButton
         className="focus:outline-none"
@@ -122,16 +106,16 @@ const FeedItem = ({
         disabled={false}
         onClick={(e) => onStar(data, itemIndex, e)}
       />
-    </div>
+    </Stack>
   );
 
   return (
     <div className={`overflow-x-hidden relative ${className}`}>
-      <div
-        ref={feedItemRef}
+      <Stack
+        horizontal
         onClick={(e) => onClick(data, itemIndex, e)}
         className={classnames(
-          "feed-item flex relative z-10 p-4 group bg-white cursor-pointer select-none flex-wrap md:flex-nowrap hover:bg-gray-50",
+          "relative z-10 p-4 group cursor-pointer select-none hover:bg-blue-50",
           {
             "py-1 border-b": viewType === ViewType.list,
           }
@@ -140,7 +124,7 @@ const FeedItem = ({
         {feedHeaderElem}
         {feedBodyElem}
         {feedFooterElem}
-      </div>
+      </Stack>
       {data.isInnerArticleShow ? (
         <ArticlePane className="relative z-10 border-b bg-gray-50" />
       ) : null}
