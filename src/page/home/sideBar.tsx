@@ -5,6 +5,7 @@ import {
   IIconProps,
   Toggle,
 } from "@fluentui/react";
+import { NeutralColors } from '@fluentui/theme'
 import React, { SetStateAction, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
@@ -17,6 +18,7 @@ const filterIcon: IIconProps = { iconName: "Filter" };
 const homeIcon: IIconProps = { iconName: "Home" };
 const syncIcon: IIconProps = { iconName: "Sync" };
 const contactIcon: IIconProps = { iconName: "Contact" };
+const cancelIcon: IIconProps = { iconName: "Cancel" };
 const viewIcon: IIconProps = { iconName: "View" };
 
 export interface Props {
@@ -139,7 +141,7 @@ const SideBar = ({
   return (
     <div
       className={classnames(
-        "flex items-center col-start-1 z-50 bg-gray-100 transition-all",
+        "flex items-center col-start-1 z-50 transition-all",
         "justify-between col-span-4 row-start-3 row-span-1",
         "sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1 sm:row-span-3",
         {
@@ -148,49 +150,46 @@ const SideBar = ({
         },
         className
       )}
+      style={{
+        backgroundColor: NeutralColors.gray10,
+      }}
     >
       <SideBarItem
         className="hidden sm:block"
-        iconProps={globalNavButtonIcon}
+        iconProps={isSidePaneOpen ? cancelIcon : globalNavButtonIcon}
         isIconOnly={!isSidePaneOpen}
-        content=""
+        text=" "
         onClick={handleHamburgerMenuBtnClick}
-      >
-        {""}
-      </SideBarItem>
+      />
       <SideBarItem
         className={pathname === "/feed" ? "hidden sm:block" : ""}
         iconProps={homeIcon}
         isIconOnly={!isSidePaneOpen}
         onClick={handleFeedClick}
-      >
-        feed
-      </SideBarItem>
+        text="Feed"
+      />
       <SideBarItem
         className="block sm:hidden"
         iconProps={filterIcon}
         isIconOnly={true}
         onClick={handleFilterClick}
-      >
-        filter
-      </SideBarItem>
+        text="Filter"
+      />
       <SideBarItem
         className="hidden sm:block"
         iconProps={viewIcon}
         menuProps={menuProps}
         isIconOnly={!isSidePaneOpen}
-      >
-        view
-      </SideBarItem>
+        text="View"
+      />
       <SideBarItem
         className="block sm:hidden"
         iconProps={viewIcon}
         onClick={() => setIsViewSettingPaneOpen(true)}
         isIconOnly={!isSidePaneOpen}
-      >
-        view
-      </SideBarItem>
-      <div className="hidden sm:block flex-1 flex-col w-full my-8">
+        text="View"
+      />
+      <div className="hidden sm:block flex-1 flex-col w-full">
         <Switch>
           <Route
             path={["/feed/:options", "/feed"]}
