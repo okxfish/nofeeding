@@ -23,6 +23,7 @@ import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
 import "./style.css";
+import { NeutralColors } from '@fluentui/theme';
 
 const article = new schema.Entity<FeedProps>("article");
 
@@ -95,8 +96,8 @@ const FeedContainer = () => {
     <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
       <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
-      <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r">
-        <OverviewPane className="bg-white rounded-t-2xl pt-6 px-2 sm:rounded-none sm:pt-0 h-full" />
+      <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r" style={{ backgroundColor: NeutralColors.gray10 }}>
+        <OverviewPane className="" />
       </div>
       <div
         className={classnames(
@@ -123,7 +124,7 @@ const FeedContainer = () => {
         onDismiss={()=>setIsArticleModalOpen(false)}
         overlay={{ style: { backgroundColor: "rgba(0, 0, 0, 0.75)" } }}
         isBlocking={false}
-        styles={{ main: { maxHeight: "100%", maxWidth: "100%" } }}
+        styles={{ main: [{ maxHeight: "100%", maxWidth: "100%", animationDuration: '400ms!important' }, isArticleModalOpen ? 'ms-motion-scaleDownIn' : 'ms-motion-scaleDownOut'] }}
       >
         <ArticlePane
           className="article-modal h-screen w-screen"

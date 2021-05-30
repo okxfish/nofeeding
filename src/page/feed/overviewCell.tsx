@@ -28,7 +28,7 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
       "h-10 text-base",
     ],
     rootFocused: {
-      outlineOffset: "1",
+      outline: "none",
     },
     rootExpanded: {
       backgroundColor: 'white'

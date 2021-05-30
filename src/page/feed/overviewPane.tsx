@@ -210,7 +210,6 @@ const OverviewPane = ({ className }: Props) => {
   return (
     <Stack
       className={`${className} min-h-0`}
-      style={{ backgroundColor: NeutralColors.gray10 }}
     >
       <OverviewCell
         className={commonPx}

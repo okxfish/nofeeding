@@ -188,7 +188,7 @@ const FeedsPane = ({
 
     return (
       <GroupedList
-        className={`${className}`}
+        className={`${className} ms-motion-slideUpIn`}
         items={streamContents}
         onRenderCell={onRenderCell}
         groupProps={{
