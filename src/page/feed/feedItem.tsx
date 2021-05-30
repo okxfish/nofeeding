@@ -35,7 +35,7 @@ const FeedItem = ({
   const { viewType } = useContext(ViewTypeContext);
 
   const feedHeaderElem: React.ReactElement | null =
-    viewType === ViewType.list ? null : (
+    viewType === ViewType.list || !data.thumbnailSrc ? null : (
       <div
         className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
           data.isRead ? "opacity-40" : ""
@@ -120,7 +120,7 @@ const FeedItem = ({
           "relative z-10 p-4 group cursor-pointer select-none hover:bg-blue-50",
           {
             "py-1 border-b": viewType === ViewType.list,
-            'bg-blue-100': isSelected,
+            "bg-blue-100": isSelected,
           }
         )}
       >

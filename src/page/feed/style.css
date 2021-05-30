@@ -9,7 +9,7 @@
 
 @media (min-width: 768px) {
   .article-modal {
-    @apply max-w-5xl;
+    @apply max-w-3xl;
     height: 95vh;
   }
 }
@@ -32,8 +32,12 @@ article video {
   aspect-ratio: 4 /3;
 }
 
-article a {
-  text-decoration: underline;
+article .article-body a {
+  @apply text-blue-800;
+}
+
+article .article-body a:hover {
+  @apply underline;
 }
 
 article hr {
@@ -48,12 +52,18 @@ article h2 {
   @apply text-xl;
 }
 
+article {
+  font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+}
+
 article,
 article h3,
 article h4,
 article h5,
 article p {
-  @apply text-lg;
+  @apply text-base;
 }
 
 article p {

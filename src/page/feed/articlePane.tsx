@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { IconButton, IIconProps, FontIcon } from "@fluentui/react";
+import { IconButton, IIconProps, FontIcon, Text } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
@@ -64,12 +64,20 @@ const ArticlePane = forwardRef(
             </div>
           )}
 
-          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-6">
+          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-12">
             <article className="max-w-3xl w-full mx-auto py-4">
               <header className="mb-4">
-                <h2 className="font-bold text-3xl break-words leading-10 mb-4">
-                  <a href={article?.url} target="_blank" rel="noreferrer">
-                    {article?.title}
+                <h2 className="mb-4">
+                  <a
+                    className="no-underline"
+                    href={article?.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={article?.url}
+                  >
+                    <Text className="font-bold text-2xl break-words leading-7">
+                      {article?.title}
+                    </Text>
                   </a>
                 </h2>
                 <div className="text-sm font-normal text-gray-400 flex align-middle">
@@ -79,7 +87,7 @@ const ArticlePane = forwardRef(
                   </div>
                 </div>
               </header>
-              <div>{contentJSX}</div>
+              <div className="article-body">{contentJSX}</div>
               <footer></footer>
             </article>
           </div>
