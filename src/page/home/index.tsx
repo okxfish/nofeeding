@@ -5,7 +5,7 @@ import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { Route, Switch, useLocation, useHistory } from "react-router-dom";
 import OverviewPane from "../feed/overviewPane";
 import SideBar from "./sideBar";
-import HelfScreenPanel from "../../component/helfScreenPanel/helfScreenPanel";
+import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import {
   ChoiceGroup,
   IChoiceGroupOption,
