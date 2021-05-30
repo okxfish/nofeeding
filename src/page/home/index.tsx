@@ -15,6 +15,8 @@ import {
 } from "@fluentui/react";
 import queryString from "query-string";
 import "./style.css";
+import { FeedThumbnailDisplayType, SettingContext, SettingState } from "../../context/setting";
+import produce from "immer";
 
 const Home = () => {
   const location = useLocation();
@@ -23,6 +25,8 @@ const Home = () => {
     useState<boolean>(false);
   const { height: windowHeight } = useWindowSize();
   const { viewType, setViewType } = useContext(ViewTypeContext);
+  const { setting, setSetting } = useContext(SettingContext);
+
   const history = useHistory();
 
   const closeOverviewPane = (): void => setIsOverViewPaneOpen(false);
@@ -53,11 +57,35 @@ const Home = () => {
     },
   ];
 
+  const feedThumbnaillOptions: IChoiceGroupOption[] = [
+    {
+      key: FeedThumbnailDisplayType.alwaysDisplay,
+      text: "Always Display",
+    },
+    {
+      key: FeedThumbnailDisplayType.alwaysNotDisplay,
+      text: "Always Not Display",
+    },
+    {
+      key: FeedThumbnailDisplayType.displayWhenThumbnaillExist,
+      text: "Display When Thumbnaill Exist",
+    },
+  ];
+
   const onViewTypeChange = (
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     option?: IChoiceGroupOption
   ) => {
     setViewType(option?.key);
+  };
+
+  const onfeedThumbnaillDisplayTypeChange = (
+    ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+    option?: IChoiceGroupOption
+  ) => {
+    setSetting(produce<SettingState>((draft=>{
+      draft.feed.feedThumbnailDisplayType = option?.key;
+    })));
   };
 
   const qs = queryString.parse(location.search);
@@ -113,6 +141,14 @@ const Home = () => {
             styles={{ label: "flex-1 order-none m-0" }}
             onChange={onIsUreadOnlyChange}
             checked={qs["unreadOnly"] === "0"}
+          />
+           <Separator />
+          <ChoiceGroup
+            selectedKey={setting.feed.feedThumbnailDisplayType}
+            options={feedThumbnaillOptions}
+            onChange={onfeedThumbnaillDisplayTypeChange}
+            label="Feed Thumbnail"
+            styles={{ label: "mb-2" }}
           />
           <Separator />
           <ChoiceGroup

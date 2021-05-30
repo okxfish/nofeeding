@@ -12,6 +12,10 @@ import { FeedProps } from "./types";
 import ArticlePane from "./articlePane";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { default as dayjs, Dayjs } from "dayjs";
+import {
+  FeedThumbnailDisplayType,
+  SettingContext,
+} from "../../context/setting";
 
 export interface Props extends FeedProps {
   itemIndex: number;
@@ -33,9 +37,14 @@ const FeedItem = ({
   onStar = () => {},
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
+  const { setting } = useContext(SettingContext);
 
-  const feedHeaderElem: React.ReactElement | null =
-    viewType === ViewType.list || !data.thumbnailSrc ? null : (
+  const feedHeaderRender = (): React.ReactElement | null => {
+    if (viewType === ViewType.list) {
+      return null;
+    }
+
+    const thumbnaillElem: React.ReactElement = (
       <div
         className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
           data.isRead ? "opacity-40" : ""
@@ -49,6 +58,18 @@ const FeedItem = ({
         />
       </div>
     );
+
+    switch (setting.feed.feedThumbnailDisplayType) {
+      case FeedThumbnailDisplayType.alwaysDisplay:
+        return thumbnaillElem;
+      case FeedThumbnailDisplayType.displayWhenThumbnaillExist:
+        return data.thumbnailSrc ? thumbnaillElem : null;
+      case FeedThumbnailDisplayType.alwaysNotDisplay:
+        return null;
+      default:
+        return null;
+    }
+  };
 
   const nowTime: Dayjs = dayjs();
   const relativePublishedTime: string = data.publishedTime.from(nowTime);
@@ -124,7 +145,7 @@ const FeedItem = ({
           }
         )}
       >
-        {feedHeaderElem}
+        {feedHeaderRender()}
         {feedBodyElem}
         {feedFooterElem}
       </Stack>
