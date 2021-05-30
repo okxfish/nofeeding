@@ -134,7 +134,9 @@ const OverviewPane = ({ className }: Props) => {
         onClick={onClick}
       >
         <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
-        <Text block nowrap>{item.title}</Text>
+        <Text block nowrap>
+          {item.title}
+        </Text>
       </div>
     ) : null;
   };
@@ -159,7 +161,9 @@ const OverviewPane = ({ className }: Props) => {
               }`}
               iconName="ChevronRight"
             />
-            <Text block nowrap>{props.group!.name} ({props.group?.data.unreadCount})</Text>
+            <Text block nowrap>
+              {props.group!.name} ({props.group?.data.unreadCount})
+            </Text>
           </div>
         );
       } else {
@@ -228,10 +232,7 @@ const OverviewPane = ({ className }: Props) => {
           })
         }
       />
-      <Label className={`border-b ${commonPx}`}>
-        <Icon iconName="Folder" />
-        <span className="inline-block ml-2">Folder</span>
-      </Label>
+      <Label className={`text-lg ${commonPx}`}>Folder</Label>
       <GroupedList
         className="flex-1 overflow-y-auto scrollbar-none"
         items={items || []}
