@@ -59,3 +59,31 @@ body {
 .article-wrapper::-webkit-scrollbar {
   width: 0;
 }
+
+.ms-Panel-main.ms-motion-slideUpIn {
+  animation-name: fread-motion-slideUpIn;
+  animation-duration: 300ms;
+}
+
+.ms-Panel-main.ms-motion-slideDownOut {
+  animation-name: fread-motion-slideDownOut;
+  animation-duration: 200ms;
+}
+
+@keyframes fread-motion-slideUpIn {
+  0% {
+    transform: translate3d(0, 80%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fread-motion-slideDownOut {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 100%, 0);
+  }
+}

@@ -14,10 +14,9 @@ const HelfScreenPanel: React.FunctionComponent<IPanelProps> = ({
   styles,
   ...rest
 }) => {
-  
   const defaultStyles: IStyleFunctionOrObject<IPanelStyleProps, IPanelStyles> =
     {
-      overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
+      overlay: { backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: 'blur(24px)' },
       main: [
         `rounded-t-lg ${
           isOpen ? "ms-motion-slideUpIn" : "ms-motion-slideDownOut"
@@ -26,7 +25,6 @@ const HelfScreenPanel: React.FunctionComponent<IPanelProps> = ({
           maxHeight: "75vh",
           height: "max-content",
           margin: "auto 0 0",
-          animationName: "none",
         },
       ],
       scrollableContent: "scrollbar-none",
