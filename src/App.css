@@ -70,6 +70,15 @@ body {
   animation-duration: 200ms;
 }
 
+.fread-motion.ms-motion-scaleDownIn {
+  animation: ms-motion-scaleDownIn 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) both,
+    ms-motion-fadeIn 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+}
+
+.fread-motion.ms-motion-fadeIn {
+  animation: ms-motion-fadeIn .8s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+}
+
 @keyframes fread-motion-slideUpIn {
   0% {
     transform: translate3d(0, 80%, 0);

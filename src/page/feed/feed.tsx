@@ -23,7 +23,7 @@ import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
 import "./style.css";
-import { NeutralColors } from '@fluentui/theme';
+import { NeutralColors } from "@fluentui/theme";
 
 const article = new schema.Entity<FeedProps>("article");
 
@@ -86,7 +86,7 @@ const FeedContainer = () => {
     }
   );
 
-  const activedArticle:FeedItem | null = get(
+  const activedArticle: FeedItem | null = get(
     streamContentQuery.data,
     `entities.article['${currenActivedFeedId}']`,
     null
@@ -95,42 +95,62 @@ const FeedContainer = () => {
   return (
     <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
-      <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
-      <div className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r" style={{ backgroundColor: NeutralColors.gray10 }}>
-        <OverviewPane className="" />
-      </div>
-      <div
-        className={classnames(
-          "overflow-scroll scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
-          { "xl:col-span-1": viewType === ViewType.threeway }
-        )}
-        data-is-scrollable
-      >
-        <FeedsPane
-          className="h-full transition-all"
-          currenActivedFeedId={currenActivedFeedId}
-          setCurrenActivedFeedId={setCurrenActivedFeedId}
-          setIsArticleModalOpen={setIsArticleModalOpen}
-        />
-      </div>
-      {viewType === ViewType.threeway && (
-        <div className="hidden col-start-4 col-span-1 row-start-1 row-span-3 xl:block xl:col-start-4 xl:col-span-1">
-          <ArticlePane className="h-full" />
+        <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
+        <div
+          className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r"
+          style={{ backgroundColor: NeutralColors.gray10 }}
+        >
+          <OverviewPane className="" />
         </div>
-      )}
-      <Modal
-        className=""
-        isOpen={isArticleModalOpen}
-        onDismiss={()=>setIsArticleModalOpen(false)}
-        overlay={{ style: { backgroundColor: "rgba(0, 0, 0, 0.75)" } }}
-        isBlocking={false}
-        styles={{ main: [{ maxHeight: "100%", maxWidth: "100%", animationDuration: '400ms!important' }, isArticleModalOpen ? 'ms-motion-scaleDownIn' : 'ms-motion-scaleDownOut'] }}
-      >
-        <ArticlePane
-          className="article-modal h-screen w-screen"
-          closeModal={()=>setIsArticleModalOpen(false)}
-        />
-      </Modal>
+        <div
+          className={classnames(
+            "overflow-scroll scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
+            { "xl:col-span-1": viewType === ViewType.threeway }
+          )}
+          data-is-scrollable
+        >
+          <FeedsPane
+            className="h-full transition-all"
+            currenActivedFeedId={currenActivedFeedId}
+            setCurrenActivedFeedId={setCurrenActivedFeedId}
+            setIsArticleModalOpen={setIsArticleModalOpen}
+          />
+        </div>
+        {viewType === ViewType.threeway && (
+          <div className="hidden col-start-4 col-span-1 row-start-1 row-span-3 xl:block xl:col-start-4 xl:col-span-1">
+            <ArticlePane className="h-full" />
+          </div>
+        )}
+        <Modal
+          className=""
+          isOpen={isArticleModalOpen}
+          onDismiss={() => setIsArticleModalOpen(false)}
+          overlay={{
+            styles: {
+              root: [
+                {
+                  backgroundColor: "rgba(0, 0, 0, 0.85)",
+                },
+                "ms-motion-fadeIn fread-motion",
+              ],
+            },
+          }}
+          isBlocking={false}
+          styles={{
+            main: [
+              { maxHeight: "100%", maxWidth: "100%" },
+              isArticleModalOpen
+                ? "ms-motion-scaleDownIn"
+                : "",
+              "fread-motion",
+            ],
+          }}
+        >
+          <ArticlePane
+            className="article-modal h-screen w-screen"
+            closeModal={() => setIsArticleModalOpen(false)}
+          />
+        </Modal>
       </ArticleContext.Provider>
     </FeedContext.Provider>
   );
