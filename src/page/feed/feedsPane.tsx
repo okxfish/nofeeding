@@ -19,6 +19,7 @@ import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { isEmpty, get, groupBy } from "lodash";
 import { useQueryClient } from "react-query";
 import dayjs from "dayjs";
+import { useUpdateEffect } from "react-use";
 export interface Props {
   className?: string;
   currenActivedFeedId: string;
@@ -91,6 +92,17 @@ const FeedsPane = ({
     [currenActivedFeedId, setArticleDataById]
   );
 
+  const closeArticleInner = useCallback(
+    (articleId: string) => {
+      if (articleId !== "") {
+        setArticleDataById(articleId, (article) => {
+          article.isInnerArticleShow = false;
+        });
+      }
+    },
+    [setArticleDataById]
+  );
+
   const displayArticle = useCallback(
     (articleId) => {
       if (viewType === ViewType.list) {
@@ -139,6 +151,15 @@ const FeedsPane = ({
     },
     [toggleReadById]
   );
+
+  useUpdateEffect(
+    ()=>{
+      if (viewType !== ViewType.list ) {
+        closeArticleInner(currenActivedFeedId)
+      }
+    },
+    [viewType, closeArticleInner, currenActivedFeedId]
+  )
 
   const streamContents = streamContentQuery.data?.result.map(
     (feedId) => streamContentQuery.data?.entities.article[feedId]
