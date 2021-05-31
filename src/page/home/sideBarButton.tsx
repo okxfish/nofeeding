@@ -36,7 +36,7 @@ const SideBarItem = ({
       backgroundColor: 'white'
     },
     rootHovered: {
-      backgroundColor: NeutralColors.gray30,
+      backgroundColor: NeutralColors.gray50,
     },
     textContainer: [{
       display: isIconOnly ? "none" : "flex",
