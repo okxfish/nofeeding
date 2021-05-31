@@ -10,14 +10,13 @@ export interface FeedSetting {
   feedThumbnailDisplayType?: FeedThumbnailDisplayType | string;
 }
 
-export interface Setting {
-  feed: FeedSetting;
-  layout: {};
-  theme: {};
+export interface subscriptionSetting {
+  isIconDisplay: boolean;
 }
 
 export interface SettingState {
   feed: FeedSetting;
+  subscription: subscriptionSetting;
   layout: {};
   theme: {};
 }
@@ -25,6 +24,9 @@ export interface SettingState {
 export const initSetting:SettingState = {
   feed: {
     feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysDisplay,
+  },
+  subscription: {
+    isIconDisplay: false
   },
   layout: {},
   theme: {},

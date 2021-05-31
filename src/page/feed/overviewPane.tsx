@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   GroupedList,
   IGroup,
@@ -19,6 +19,7 @@ import { normalize, schema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
+import { SettingContext } from "./../../context/setting";
 
 export interface Props {
   className?: string;
@@ -36,6 +37,7 @@ const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const commonPx = "px-2";
   const queryClient = useQueryClient();
+  const { setting, setSetting } = useContext(SettingContext);
 
   const setSubscriptionDataById = (streamId: string, updater: any): void =>
     queryClient.setQueryData(
@@ -127,7 +129,7 @@ const OverviewPane = ({ className }: Props) => {
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
         onClick={onClick}
       >
-        <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
+        { setting.subscription.isIconDisplay && <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />}
         <Text block nowrap>
           {item.title}
         </Text>
@@ -202,9 +204,7 @@ const OverviewPane = ({ className }: Props) => {
     );
 
   return (
-    <Stack
-      className={`${className} min-h-0`}
-    >
+    <Stack className={`${className} min-h-0`}>
       <OverviewCell
         className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}

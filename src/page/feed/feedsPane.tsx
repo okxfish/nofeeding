@@ -9,14 +9,16 @@ import {
   ShimmerElementType,
   FontIcon,
   Shimmer,
+  IGroup,
 } from "@fluentui/react";
 
 import { produce } from "immer";
 import FeedItemComponent from "./feedItem";
 import { FeedItem } from "./types";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
-import { isEmpty, get } from "lodash";
-import { useQueryClient } from 'react-query';
+import { isEmpty, get, groupBy } from "lodash";
+import { useQueryClient } from "react-query";
+import dayjs from "dayjs";
 export interface Props {
   className?: string;
   currenActivedFeedId: string;
@@ -47,7 +49,7 @@ const FeedsPane = ({
       ),
     [queryClient, streamContentQueryKey]
   );
-  
+
   // 切换文章的是否已读状态
   const toggleReadById = useCallback(
     (articleId: string) => {
@@ -57,7 +59,7 @@ const FeedsPane = ({
     },
     [setArticleDataById]
   );
-  
+
   // 切换文章的是否加星状态
   const toggleStarById = useCallback(
     (articleId: string) => {
@@ -100,7 +102,6 @@ const FeedsPane = ({
     [viewType, openArticleInner, setIsArticleModalOpen]
   );
 
-
   const markAsRead = useCallback(
     (articleId: string) =>
       setArticleDataById(articleId, (article) => {
@@ -110,9 +111,9 @@ const FeedsPane = ({
   );
 
   const handleArticleItemClick = useCallback(
-  (item: FeedItem, index: number, e: any): void => {
+    (item: FeedItem, index: number, e: any): void => {
       const articleId = item.id;
-      setCurrenActivedFeedId(articleId)
+      setCurrenActivedFeedId(articleId);
       displayArticle(articleId);
       markAsRead(articleId);
     },
@@ -142,6 +143,47 @@ const FeedsPane = ({
   const streamContents = streamContentQuery.data?.result.map(
     (feedId) => streamContentQuery.data?.entities.article[feedId]
   );
+
+  const getGroups = (streamContents: FeedItem[]): IGroup[] => {
+    const streamContentsGrouped = groupBy(streamContents, (article) => {
+      return dayjs(dayjs(article.publishedTime).format("YYYY-MM-DD")).fromNow();
+    });
+
+    const comparePublishDate = (a, b): number => {
+      const dayA = dayjs(a);
+      const dayB = dayjs(b);
+      return dayB.diff(dayA);
+    };
+
+    const getGroupByKey = (key:string) => {
+      return streamContentsGrouped[key]
+    }
+
+    const getGroupName = (key:string) => {
+      return key;
+    }
+
+    const keys = Object.keys(streamContentsGrouped);
+    const keysOrderByPublishDate = keys.sort(comparePublishDate);
+    let groupStartIndex = 0;
+    const result:IGroup[] = keysOrderByPublishDate.reduce<IGroup[]>((acc, cur, index) => {
+      const groupElements = getGroupByKey(cur);
+      const group = {
+        key: cur,
+        name: getGroupName(cur),
+        startIndex: groupStartIndex,
+        count: groupElements.length,
+        isCollapsed: false,
+      };
+      groupStartIndex += groupElements.length;
+      acc.push(group);
+      return acc;
+    }, []);
+
+    return result;
+  };
+
+  console.log(getGroups(streamContents))
 
   if (!isEmpty(streamContents)) {
     const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
@@ -191,6 +233,7 @@ const FeedsPane = ({
         className={`${className} ms-motion-slideUpIn`}
         items={streamContents}
         onRenderCell={onRenderCell}
+        groups={getGroups(streamContents)}
         groupProps={{
           onRenderHeader: onRenderHeader,
           onRenderFooter: onRenderFooter,
