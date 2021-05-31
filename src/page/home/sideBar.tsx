@@ -6,7 +6,7 @@ import {
   Toggle,
 } from "@fluentui/react";
 import { NeutralColors } from '@fluentui/theme'
-import React, { SetStateAction, useContext, useEffect, useState } from "react";
+import React, { SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarButton";
@@ -138,6 +138,14 @@ const SideBar = ({
     ],
   };
 
+  const handleMouseLeave = useCallback(() => {
+    setTimeout(()=>{
+      if (isSidePaneOpen) {
+        setIsSidePaneOpen(false)
+      }
+    }, 300)
+  },[isSidePaneOpen])
+
   return (
     <div
       className={classnames(
@@ -150,6 +158,7 @@ const SideBar = ({
         },
         className
       )}
+      onMouseLeave={handleMouseLeave}
       style={{
         backgroundColor: NeutralColors.gray30,
       }}
