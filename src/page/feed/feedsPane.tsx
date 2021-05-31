@@ -204,8 +204,6 @@ const FeedsPane = ({
     return result;
   };
 
-  console.log(getGroups(streamContents))
-
   if (!isEmpty(streamContents)) {
     const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
       if (!props || !props.group) {
