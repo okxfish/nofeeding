@@ -4,13 +4,13 @@ import { inoreader } from "./inoreader";
 
 export const INOREADER_AUTH_URL =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:3777"
-    : "http://47.115.60.250:3777";
+    ? "http://localhost:3777/"
+    : "https://helloo.world/";
 export const INOREADER_SERVER_URL = "https://www.innoreader.com";
 export const CORS_PROXY_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:8080"
-    : "http://47.115.60.250:8080";
+    : "https://helloo.world/cors";
 
 const fetch = axios.create({
   baseURL: `${CORS_PROXY_URL}/${INOREADER_SERVER_URL}`,
