@@ -4,14 +4,9 @@ import {
   IGroup,
   IGroupRenderProps,
   IGroupHeaderProps,
-  CommandBarButton,
-  IIconProps,
   FontIcon,
   SelectionMode,
   Stack,
-  IContextualMenuProps,
-  Separator,
-  Icon,
   Text,
   Label,
 } from "@fluentui/react";
@@ -24,7 +19,6 @@ import { normalize, schema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
-import { NeutralColors } from "@fluentui/theme";
 
 export interface Props {
   className?: string;
