@@ -129,7 +129,9 @@ const OverviewPane = ({ className }: Props) => {
         style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
         onClick={onClick}
       >
-        { setting.subscription.isIconDisplay && <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />}
+        {setting.subscription.isIconDisplay && (
+          <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
+        )}
         <Text block nowrap>
           {item.title}
         </Text>
@@ -168,8 +170,21 @@ const OverviewPane = ({ className }: Props) => {
     },
   };
 
-  const { groups, items }: { amount: number; groups: IGroup[]; items: any[] } =
-    folderQuery.data?.result.reduce(
+  const getListData = () => {
+    const subscriptionsIsGroupedMap = {};
+    const subscriptionEntities = get(
+      subscriptionsListQuery,
+      "data.entities.subscription",
+      {}
+    );
+
+    get(subscriptionsListQuery, `data.result`).forEach(
+      (subscriptionId: string): void => {
+        subscriptionsIsGroupedMap[subscriptionId] = false;
+      }
+    );
+
+    const result = folderQuery.data?.result.reduce(
       ({ amount, groups, items }: any, folderId: string) => {
         const foldEntity = get(
           folderQuery,
@@ -179,12 +194,10 @@ const OverviewPane = ({ className }: Props) => {
         const name = idPartSplited[idPartSplited.length - 1];
         const count = foldEntity.subscriptions.length;
         items = items.concat(
-          foldEntity.subscriptions.map((subscriptionsId) =>
-            get(
-              subscriptionsListQuery,
-              `data.entities.subscription['${subscriptionsId}']`
-            )
-          )
+          foldEntity.subscriptions.map((subscriptionsId) => {
+            subscriptionsIsGroupedMap[subscriptionsId] = true;
+            return subscriptionEntities[subscriptionsId];
+          })
         );
 
         groups.push({
@@ -202,6 +215,20 @@ const OverviewPane = ({ className }: Props) => {
       },
       { amount: 0, groups: [], items: [] }
     );
+
+    Object.keys(subscriptionsIsGroupedMap)
+      .filter(
+        (subscriptionId: string): boolean =>
+          !subscriptionsIsGroupedMap[subscriptionId]
+      )
+      .forEach((subscriptionId: string): void => {
+        result.items.push(subscriptionEntities[subscriptionId]);
+      });
+
+    return result;
+  };
+
+  const { groups, items }: { amount: number; groups: IGroup[]; items: any[] } = getListData();
 
   return (
     <Stack className={`${className} min-h-0`}>

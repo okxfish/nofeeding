@@ -97,7 +97,7 @@ const FeedContainer = () => {
       <ArticleContext.Provider value={activedArticle}>
         <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
         <div
-          className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r"
+          className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r overflow-y-scroll scrollbar-none"
           style={{ backgroundColor: NeutralColors.gray10 }}
         >
           <OverviewPane className="" />

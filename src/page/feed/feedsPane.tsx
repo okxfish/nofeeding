@@ -15,9 +15,10 @@ import {
 import { produce } from "immer";
 import FeedItemComponent from "./feedItem";
 import { FeedItem } from "./types";
+import { default as api } from "../../api";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { isEmpty, get, groupBy } from "lodash";
-import { useQueryClient } from "react-query";
+import { useQueryClient, useMutation } from "react-query";
 import dayjs from "dayjs";
 import { useUpdateEffect } from "react-use";
 export interface Props {
@@ -67,6 +68,7 @@ const FeedsPane = ({
       setArticleDataById(articleId, (article) => {
         article.isStar = !article.isStar;
       });
+      
     },
     [setArticleDataById]
   );
@@ -114,12 +116,55 @@ const FeedsPane = ({
     [viewType, openArticleInner, setIsArticleModalOpen]
   );
 
+  const markAsReadMutation = useMutation(
+    ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
+      api.inoreader.markArticleAsRead(id, asUnread),
+    {
+      onMutate: ({ id }): void => {
+        setArticleDataById(id, (article) => {
+          article['unreadMarkButtonProps'] = {disabled: true};
+        });
+      },
+      onSuccess: (data, { id, asUnread }) => {
+        setArticleDataById(id, (article) => {
+          article.isRead = !asUnread;
+        });
+      },
+      onSettled: (data, error, { id, asUnread }) => {
+        setArticleDataById(id, (article) => {
+          article['unreadMarkButtonProps'] = {disabled: false};
+        });
+      },
+    }
+  );
+
+  const markAsStarMutation = useMutation(
+    ({ id, isStar }: { id: string; isStar?: boolean }): any =>
+      api.inoreader.markArticleAsStar(id, isStar),
+    {
+      onMutate: ({ id }): void => {
+        setArticleDataById(id, (article) => {
+          article['starButtonProps'] = {disabled: true};
+        });
+      },
+      onSuccess: (data, { id, isStar }) => {
+        setArticleDataById(id, (article) => {
+          article.isStar = isStar;
+        });
+      },
+      onSettled: (data, error, { id, isStar }) => {
+        setArticleDataById(id, (article) => {
+          article['starButtonProps'] = {disabled: false};
+        });
+      },
+    }
+  );
+
   const markAsRead = useCallback(
-    (articleId: string) =>
-      setArticleDataById(articleId, (article) => {
-        article.isRead = true;
-      }),
-    [setArticleDataById]
+    (articleId: string): void => {
+      markAsReadMutation.mutate({ id: articleId });
+    },
+    [markAsReadMutation]
   );
 
   const handleArticleItemClick = useCallback(
@@ -137,9 +182,9 @@ const FeedsPane = ({
       if (e) {
         e.stopPropagation();
       }
-      toggleStarById(item.id);
+      markAsStarMutation.mutate({id: item.id, isStar: !item.isStar})
     },
-    [toggleStarById]
+    [markAsStarMutation]
   );
 
   const handleArticleItemRead = useCallback(
@@ -147,19 +192,18 @@ const FeedsPane = ({
       if (e) {
         e.stopPropagation();
       }
-      toggleReadById(item.id);
+      markAsReadMutation.mutate(
+        { id: item.id, asUnread: item.isRead },
+      );
     },
-    [toggleReadById]
+    [markAsReadMutation]
   );
 
-  useUpdateEffect(
-    ()=>{
-      if (viewType !== ViewType.list ) {
-        closeArticleInner(currenActivedFeedId)
-      }
-    },
-    [viewType, closeArticleInner, currenActivedFeedId]
-  )
+  useUpdateEffect(() => {
+    if (viewType !== ViewType.list) {
+      closeArticleInner(currenActivedFeedId);
+    }
+  }, [viewType, closeArticleInner, currenActivedFeedId]);
 
   const streamContents = streamContentQuery.data?.result.map(
     (feedId) => streamContentQuery.data?.entities.article[feedId]
@@ -176,30 +220,33 @@ const FeedsPane = ({
       return dayB.diff(dayA);
     };
 
-    const getGroupByKey = (key:string) => {
-      return streamContentsGrouped[key]
-    }
+    const getGroupByKey = (key: string) => {
+      return streamContentsGrouped[key];
+    };
 
-    const getGroupName = (key:string) => {
+    const getGroupName = (key: string) => {
       return key;
-    }
+    };
 
     const keys = Object.keys(streamContentsGrouped);
     const keysOrderByPublishDate = keys.sort(comparePublishDate);
     let groupStartIndex = 0;
-    const result:IGroup[] = keysOrderByPublishDate.reduce<IGroup[]>((acc, cur, index) => {
-      const groupElements = getGroupByKey(cur);
-      const group = {
-        key: cur,
-        name: getGroupName(cur),
-        startIndex: groupStartIndex,
-        count: groupElements.length,
-        isCollapsed: false,
-      };
-      groupStartIndex += groupElements.length;
-      acc.push(group);
-      return acc;
-    }, []);
+    const result: IGroup[] = keysOrderByPublishDate.reduce<IGroup[]>(
+      (acc, cur, index) => {
+        const groupElements = getGroupByKey(cur);
+        const group = {
+          key: cur,
+          name: getGroupName(cur),
+          startIndex: groupStartIndex,
+          count: groupElements.length,
+          isCollapsed: false,
+        };
+        groupStartIndex += groupElements.length;
+        acc.push(group);
+        return acc;
+      },
+      []
+    );
 
     return result;
   };

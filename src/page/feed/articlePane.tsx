@@ -64,7 +64,7 @@ const ArticlePane = forwardRef(
             </div>
           )}
 
-          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-12">
+          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12">
             <article className="max-w-3xl w-full mx-auto py-4">
               <header className="mb-4">
                 <h2 className="mb-4">

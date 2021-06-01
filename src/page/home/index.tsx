@@ -15,7 +15,11 @@ import {
 } from "@fluentui/react";
 import queryString from "query-string";
 import "./style.css";
-import { FeedThumbnailDisplayType, SettingContext, SettingState } from "../../context/setting";
+import {
+  FeedThumbnailDisplayType,
+  SettingContext,
+  SettingState,
+} from "../../context/setting";
 import produce from "immer";
 
 const Home = () => {
@@ -53,7 +57,7 @@ const Home = () => {
       key: ViewType.threeway,
       text: "Threeway",
       iconProps: { iconName: "ColumnRightTwoThirds" },
-      styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+      styles: { root: "hidden lg:block flex-1", choiceFieldWrapper: "flex-1" },
     },
   ];
 
@@ -83,9 +87,11 @@ const Home = () => {
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     option?: IChoiceGroupOption
   ) => {
-    setSetting(produce<SettingState>((draft=>{
-      draft.feed.feedThumbnailDisplayType = option?.key;
-    })));
+    setSetting(
+      produce<SettingState>((draft) => {
+        draft.feed.feedThumbnailDisplayType = option?.key;
+      })
+    );
   };
 
   const qs = queryString.parse(location.search);
@@ -142,15 +148,19 @@ const Home = () => {
             onChange={onIsUreadOnlyChange}
             checked={qs["unreadOnly"] === "0"}
           />
-           <Separator />
-          <ChoiceGroup
-            selectedKey={setting.feed.feedThumbnailDisplayType}
-            options={feedThumbnaillOptions}
-            onChange={onfeedThumbnaillDisplayTypeChange}
-            label="Feed Thumbnail"
-            styles={{ label: "mb-2" }}
-          />
           <Separator />
+          {viewType !== ViewType.list && (
+            <>
+              <ChoiceGroup
+                selectedKey={setting.feed.feedThumbnailDisplayType}
+                options={feedThumbnaillOptions}
+                onChange={onfeedThumbnaillDisplayTypeChange}
+                label="Feed Thumbnail"
+                styles={{ label: "mb-2" }}
+              />
+              <Separator />
+            </>
+          )}
           <ChoiceGroup
             selectedKey={viewType}
             options={options}

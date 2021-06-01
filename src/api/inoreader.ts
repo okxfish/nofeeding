@@ -1,9 +1,9 @@
 import { fetch } from "./index";
 
 export enum TextDirection {
-  ltr='ltr',
-  rtl='rtl',
-};
+  ltr = "ltr",
+  rtl = "rtl",
+}
 
 export interface StreamContentItem {
   alternate: { href: string; type: string }[];
@@ -94,4 +94,26 @@ export const inoreader = {
         counts: counts,
       },
     }),
+  markArticleAsRead: (id: string, asUnread?:boolean) => {
+    const params = { i: id };
+    if(asUnread){
+      params['r'] = SystemStreamIDs.READ;
+    }else {
+      params['a'] = SystemStreamIDs.READ;
+    }
+    return fetch.post(`/reader/api/0/edit-tag`, null, {
+      params: params,
+    });
+  },
+  markArticleAsStar: (id: string, isStar?:boolean) => {
+    const params = { i: id };
+    if(isStar){
+      params['a'] = SystemStreamIDs.STARRED;
+    }else {
+      params['r'] = SystemStreamIDs.STARRED;
+    }
+    return fetch.post(`/reader/api/0/edit-tag`, null, {
+      params: params,
+    });
+  },
 };

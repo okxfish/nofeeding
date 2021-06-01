@@ -6,6 +6,7 @@ import {
   IIconProps,
   Image,
   Stack,
+  IButtonProps,
 } from "@fluentui/react";
 import classnames from "classnames";
 import { FeedProps } from "./types";
@@ -118,6 +119,7 @@ const FeedItem = ({
         ariaLabel="Mark as read"
         disabled={false}
         onClick={(e) => onRead(data, itemIndex, e)}
+        {...data.unreadMarkButtonProps}
       />
       <IconButton
         className={classnames("focus:outline-none", {
@@ -128,6 +130,7 @@ const FeedItem = ({
         ariaLabel="Favorite"
         disabled={false}
         onClick={(e) => onStar(data, itemIndex, e)}
+        {...data.starButtonProps}
       />
     </Stack>
   );
