@@ -7,9 +7,15 @@ import {
   IGroupHeaderProps,
   ShimmerElementsGroup,
   ShimmerElementType,
-  FontIcon,
   Shimmer,
+  Stack,
+  FontIcon,
   IGroup,
+  Text,
+  Icon,
+  Link,
+  DefaultButton,
+  IconButton,
 } from "@fluentui/react";
 
 import { produce } from "immer";
@@ -68,7 +74,6 @@ const FeedsPane = ({
       setArticleDataById(articleId, (article) => {
         article.isStar = !article.isStar;
       });
-      
     },
     [setArticleDataById]
   );
@@ -122,7 +127,7 @@ const FeedsPane = ({
     {
       onMutate: ({ id }): void => {
         setArticleDataById(id, (article) => {
-          article['unreadMarkButtonProps'] = {disabled: true};
+          article["unreadMarkButtonProps"] = { disabled: true };
         });
       },
       onSuccess: (data, { id, asUnread }) => {
@@ -132,7 +137,7 @@ const FeedsPane = ({
       },
       onSettled: (data, error, { id, asUnread }) => {
         setArticleDataById(id, (article) => {
-          article['unreadMarkButtonProps'] = {disabled: false};
+          article["unreadMarkButtonProps"] = { disabled: false };
         });
       },
     }
@@ -144,7 +149,7 @@ const FeedsPane = ({
     {
       onMutate: ({ id }): void => {
         setArticleDataById(id, (article) => {
-          article['starButtonProps'] = {disabled: true};
+          article["starButtonProps"] = { disabled: true };
         });
       },
       onSuccess: (data, { id, isStar }) => {
@@ -154,7 +159,7 @@ const FeedsPane = ({
       },
       onSettled: (data, error, { id, isStar }) => {
         setArticleDataById(id, (article) => {
-          article['starButtonProps'] = {disabled: false};
+          article["starButtonProps"] = { disabled: false };
         });
       },
     }
@@ -182,7 +187,7 @@ const FeedsPane = ({
       if (e) {
         e.stopPropagation();
       }
-      markAsStarMutation.mutate({id: item.id, isStar: !item.isStar})
+      markAsStarMutation.mutate({ id: item.id, isStar: !item.isStar });
     },
     [markAsStarMutation]
   );
@@ -192,9 +197,7 @@ const FeedsPane = ({
       if (e) {
         e.stopPropagation();
       }
-      markAsReadMutation.mutate(
-        { id: item.id, asUnread: item.isRead },
-      );
+      markAsReadMutation.mutate({ id: item.id, asUnread: item.isRead });
     },
     [markAsReadMutation]
   );
@@ -295,16 +298,56 @@ const FeedsPane = ({
     };
 
     return (
-      <GroupedList
-        className={`${className} ms-motion-slideUpIn`}
-        items={streamContents}
-        onRenderCell={onRenderCell}
-        groups={getGroups(streamContents)}
-        groupProps={{
-          onRenderHeader: onRenderHeader,
-          onRenderFooter: onRenderFooter,
-        }}
-      />
+      <div className={`${className} ms-motion-slideUpIn`}>
+        <div>
+          <div className="border-b p-4 pt-8">
+            <Stack>
+              <Stack
+                horizontal
+                horizontalAlign="space-between"
+                verticalAlign="start"
+              >
+                <Icon iconName="Contact" className="text-5xl mb-2" />
+                <IconButton iconProps={{ iconName: "Settings" }} />
+              </Stack>
+              <Text className="text-2xl">Hacker News</Text>
+              <Text className="text-base text-gray-400">Hacker News</Text>
+              <Link href="https://news.ycombinator.com/newest">
+                https://news.ycombinator.com/newest
+              </Link>
+            </Stack>
+            <Stack
+              className="mt-4"
+              horizontal
+              horizontalAlign="space-between"
+              tokens={{ childrenGap: "16px" }}
+            >
+              <Stack className="flex-1">
+                <Text className="text-gray-400">order:</Text>
+                <Text className="text-gray-600">123</Text>
+              </Stack>
+              <Stack className="flex-1">
+                <Text className="text-gray-400">last update:</Text>
+                <Text className="text-gray-600">12d</Text>
+              </Stack>
+              <Stack className="flex-1">
+                <Text className="text-gray-400">update cycle:</Text>
+                <Text className="text-gray-600">1d</Text>
+              </Stack>
+            </Stack>
+          </div>
+          <div></div>
+        </div>
+        <GroupedList
+          items={streamContents}
+          onRenderCell={onRenderCell}
+          groups={getGroups(streamContents)}
+          groupProps={{
+            onRenderHeader: onRenderHeader,
+            onRenderFooter: onRenderFooter,
+          }}
+        />
+      </div>
     );
   } else {
     if (streamContentQuery.isFetching) {
