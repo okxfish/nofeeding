@@ -1,4 +1,4 @@
-import { default as React, useCallback, useContext } from "react";
+import { default as React, useCallback, useContext, useState } from "react";
 import { FeedContext } from "../../context/feed";
 
 import {
@@ -14,8 +14,8 @@ import {
   Text,
   Icon,
   Link,
-  DefaultButton,
   IconButton,
+  Separator,
 } from "@fluentui/react";
 
 import { produce } from "immer";
@@ -41,6 +41,8 @@ const FeedsPane = ({
   setIsArticleModalOpen,
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
+  const [isSubscriptionInfoCardCollapsed, setIsSubscriptionInfoCardCollapsed] =
+    useState<boolean>(false);
   const queryClient = useQueryClient();
   const { streamContentQuery, streamContentQueryKey } = useContext(FeedContext);
 
@@ -56,26 +58,6 @@ const FeedsPane = ({
         })
       ),
     [queryClient, streamContentQueryKey]
-  );
-
-  // 切换文章的是否已读状态
-  const toggleReadById = useCallback(
-    (articleId: string) => {
-      setArticleDataById(articleId, (article) => {
-        article.isRead = !article.isRead;
-      });
-    },
-    [setArticleDataById]
-  );
-
-  // 切换文章的是否加星状态
-  const toggleStarById = useCallback(
-    (articleId: string) => {
-      setArticleDataById(articleId, (article) => {
-        article.isStar = !article.isStar;
-      });
-    },
-    [setArticleDataById]
   );
 
   const openArticleInner = useCallback(
@@ -297,10 +279,27 @@ const FeedsPane = ({
       );
     };
 
-    return (
-      <div className={`${className} ms-motion-slideUpIn`}>
-        <div>
-          <div className="border-b p-4 pt-8">
+    const subscriptionInfoRender = (): React.ReactElement => {
+      if (isSubscriptionInfoCardCollapsed) {
+        return (
+          <Stack
+            className="px-4 py-2"
+            horizontal
+            horizontalAlign="space-between"
+            verticalAlign="center"
+          >
+            <Icon iconName="Contact" className="text-lg mr-2" />
+            <Text className="text-lg flex-1">Hacker News</Text>
+            <IconButton iconProps={{ iconName: "Settings" }} />
+            <IconButton
+              iconProps={{ iconName: "ChevronDown" }}
+              onClick={() => setIsSubscriptionInfoCardCollapsed(false)}
+            />
+          </Stack>
+        );
+      } else {
+        return (
+          <div className="px-4 pt-8 pb-0">
             <Stack>
               <Stack
                 horizontal
@@ -335,9 +334,22 @@ const FeedsPane = ({
                 <Text className="text-gray-600">1d</Text>
               </Stack>
             </Stack>
+            <Stack className="mt-4" horizontal horizontalAlign="space-between">
+              <IconButton
+                className="ml-auto mr-0"
+                iconProps={{ iconName: "ChevronUp" }}
+                onClick={() => setIsSubscriptionInfoCardCollapsed(true)}
+              />
+            </Stack>
           </div>
-          <div></div>
-        </div>
+        );
+      }
+    };
+
+    return (
+      <div className={`${className} ms-motion-slideUpIn`}>
+        <div>{subscriptionInfoRender()}</div>
+        <Separator className="p-0" />
         <GroupedList
           items={streamContents}
           onRenderCell={onRenderCell}
