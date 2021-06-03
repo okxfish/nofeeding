@@ -1,21 +1,12 @@
-import { default as React, useCallback, useContext, useState } from "react";
+import { default as React, useCallback, useContext } from "react";
 import { FeedContext } from "../../context/feed";
 
 import {
   ActionButton,
   GroupedList,
   IGroupHeaderProps,
-  ShimmerElementsGroup,
-  ShimmerElementType,
-  Shimmer,
-  Stack,
   FontIcon,
   IGroup,
-  Text,
-  Icon,
-  Link,
-  IconButton,
-  Separator,
 } from "@fluentui/react";
 
 import { produce } from "immer";
@@ -27,6 +18,8 @@ import { isEmpty, get, groupBy } from "lodash";
 import { useQueryClient, useMutation } from "react-query";
 import dayjs from "dayjs";
 import { useUpdateEffect } from "react-use";
+import FeedShimmer from "./feedShimmer";
+import SubscriptionInfoCard from "./subscriptionInfoCard";
 export interface Props {
   className?: string;
   currenActivedFeedId: string;
@@ -41,8 +34,6 @@ const FeedsPane = ({
   setIsArticleModalOpen,
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
-  const [isSubscriptionInfoCardCollapsed, setIsSubscriptionInfoCardCollapsed] =
-    useState<boolean>(false);
   const queryClient = useQueryClient();
   const { streamContentQuery, streamContentQueryKey } = useContext(FeedContext);
 
@@ -279,77 +270,20 @@ const FeedsPane = ({
       );
     };
 
-    const subscriptionInfoRender = (): React.ReactElement => {
-      if (isSubscriptionInfoCardCollapsed) {
-        return (
-          <Stack
-            className="px-4 py-2"
-            horizontal
-            horizontalAlign="space-between"
-            verticalAlign="center"
-          >
-            <Icon iconName="Contact" className="text-lg mr-2" />
-            <Text className="text-lg flex-1">Hacker News</Text>
-            <IconButton iconProps={{ iconName: "Settings" }} />
-            <IconButton
-              iconProps={{ iconName: "ChevronDown" }}
-              onClick={() => setIsSubscriptionInfoCardCollapsed(false)}
-            />
-          </Stack>
-        );
-      } else {
-        return (
-          <div className="px-4 pt-8 pb-0">
-            <Stack>
-              <Stack
-                horizontal
-                horizontalAlign="space-between"
-                verticalAlign="start"
-              >
-                <Icon iconName="Contact" className="text-5xl mb-2" />
-                <IconButton iconProps={{ iconName: "Settings" }} />
-              </Stack>
-              <Text className="text-2xl">Hacker News</Text>
-              <Text className="text-base text-gray-400">Hacker News</Text>
-              <Link href="https://news.ycombinator.com/newest">
-                https://news.ycombinator.com/newest
-              </Link>
-            </Stack>
-            <Stack
-              className="mt-4"
-              horizontal
-              horizontalAlign="space-between"
-              tokens={{ childrenGap: "16px" }}
-            >
-              <Stack className="flex-1">
-                <Text className="text-gray-400">order:</Text>
-                <Text className="text-gray-600">123</Text>
-              </Stack>
-              <Stack className="flex-1">
-                <Text className="text-gray-400">last update:</Text>
-                <Text className="text-gray-600">12d</Text>
-              </Stack>
-              <Stack className="flex-1">
-                <Text className="text-gray-400">update cycle:</Text>
-                <Text className="text-gray-600">1d</Text>
-              </Stack>
-            </Stack>
-            <Stack className="mt-4" horizontal horizontalAlign="space-between">
-              <IconButton
-                className="ml-auto mr-0"
-                iconProps={{ iconName: "ChevronUp" }}
-                onClick={() => setIsSubscriptionInfoCardCollapsed(true)}
-              />
-            </Stack>
-          </div>
-        );
-      }
-    };
-
     return (
       <div className={`${className} ms-motion-slideUpIn`}>
-        <div>{subscriptionInfoRender()}</div>
-        <Separator className="p-0" />
+        <div className="border-b">
+          <SubscriptionInfoCard
+            id="1"
+            name={"Hacker News"}
+            htmlUrl={"Hacker News"}
+            iconUrl={"Hacker News"}
+            xmlUrl={"Hacker News"}
+            orderNumber={100}
+            lastUpdateTime={"3d"}
+            updateCycle={"3d"}
+          />
+        </div>
         <GroupedList
           items={streamContents}
           onRenderCell={onRenderCell}
@@ -363,54 +297,7 @@ const FeedsPane = ({
     );
   } else {
     if (streamContentQuery.isFetching) {
-      const shimmerRowRender = (item, index): JSX.Element => (
-        <div key={index}>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "flex-start",
-            }}
-          >
-            <ShimmerElementsGroup
-              shimmerElements={[
-                { type: ShimmerElementType.line, height: 100, width: 100 },
-                { type: ShimmerElementType.gap, width: 10, height: 100 },
-              ]}
-            />
-            <ShimmerElementsGroup
-              flexWrap
-              width={"calc(100% - 110px)"}
-              shimmerElements={[
-                { type: ShimmerElementType.line, width: "20%", height: 20 },
-                { type: ShimmerElementType.gap, width: "80%", height: 20 },
-                { type: ShimmerElementType.gap, width: "100%" },
-                { type: ShimmerElementType.line, width: "100%", height: 20 },
-                { type: ShimmerElementType.gap, width: "100%" },
-                { type: ShimmerElementType.line, width: "100%", height: 20 },
-              ]}
-            />
-          </div>
-          <ShimmerElementsGroup
-            shimmerElements={[
-              { type: ShimmerElementType.gap, height: 24, width: "100%" },
-            ]}
-          />
-        </div>
-      );
-
-      const getCustomElements = (number: number): JSX.Element => {
-        return (
-          <div>{Array.from({ length: number }).map(shimmerRowRender)}</div>
-        );
-      };
-
-      return (
-        <Shimmer
-          className="mt-4 mx-auto w-11/12"
-          customElementsGroup={getCustomElements(5)}
-        />
-      );
+      return <FeedShimmer />;
     } else {
       return (
         <div className="text-center p-24 text-gray-300">
