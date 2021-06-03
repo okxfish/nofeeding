@@ -10,7 +10,7 @@ import { FeedItem, FeedProps } from "./types";
 
 import { filterImgSrcfromHtmlStr } from "./utils";
 import { default as api } from "../../api";
-import { SystemStreamIDs } from "../../api/inoreader";
+import { StreamContentsResponse, SystemStreamIDs } from "../../api/inoreader";
 
 import { get } from "lodash";
 import { normalize, NormalizedSchema, schema } from "normalizr";
@@ -42,45 +42,46 @@ const FeedContainer = () => {
     () => ["feed/streamContentQuery", streamId, unreadOnly],
     [streamId, unreadOnly]
   );
+
+  const resolveStreamContent = (data: StreamContentsResponse) => {
+    const transformedData: FeedItem[] = data.items.map((item, index) => {
+      const publishedTime: Dayjs = dayjs.unix(item.published);
+      const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
+      return {
+        id: item.id,
+        title: item.title,
+        summary: "",
+        thumbnailSrc: thumbnailSrc,
+        content: item.summary.content,
+        sourceName: item.origin.title,
+        sourceID: item.origin.streamId,
+        url: item.canonical[0].href,
+        publishedTime: publishedTime,
+        isRead: false,
+        isStar: false,
+        isInnerArticleShow: false,
+      };
+    });
+    const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
+      transformedData,
+      [article]
+    );
+    return normalizeData;
+  };
+
   // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
   const streamContentQuery = useQuery<
     NormalizedSchema<ArticleEntity, string[]>
   >(
     streamContentQueryKey,
     async ({ queryKey: [key, streamId, unreadOnly] }) => {
+      const exclude = unreadOnly === "1" ? SystemStreamIDs.READ : "";
       const { data } = await api.inoreader.getStreamContents(String(streamId), {
-        exclude: unreadOnly === "1" ? SystemStreamIDs.READ : "",
+        exclude: exclude,
       });
-
-      const transformedData: FeedItem[] = data.items.map((item, index) => {
-        const publishedTime: Dayjs = dayjs.unix(item.published);
-        const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
-        return {
-          id: item.id,
-          title: item.title,
-          summary: "",
-          thumbnailSrc: thumbnailSrc,
-          content: item.summary.content,
-          sourceName: item.origin.title,
-          sourceID: item.origin.streamId,
-          url: item.canonical[0].href,
-          publishedTime: publishedTime,
-          isRead: false,
-          isStar: false,
-          isInnerArticleShow: false,
-        };
-      });
-
-      const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
-        transformedData,
-        [article]
-      );
-      return normalizeData;
+      return resolveStreamContent(data);
     },
     {
-      onError: (error) => {
-        console.error(error);
-      },
       placeholderData: { entities: { article: {} }, result: [] },
       refetchOnWindowFocus: false,
     }
@@ -139,9 +140,7 @@ const FeedContainer = () => {
           styles={{
             main: [
               { maxHeight: "100%", maxWidth: "100%" },
-              isArticleModalOpen
-                ? "ms-motion-scaleDownIn"
-                : "",
+              isArticleModalOpen ? "ms-motion-scaleDownIn" : "",
               "fread-motion",
             ],
           }}

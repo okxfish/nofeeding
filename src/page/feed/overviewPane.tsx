@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo, useCallback } from "react";
 import {
   GroupedList,
   IGroup,
@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
-import { normalize, schema } from "normalizr";
+import { normalize, schema, NormalizedSchema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
 import { SystemStreamIDs } from "../../api/inoreader";
@@ -25,10 +25,19 @@ export interface Props {
   className?: string;
 }
 
+export interface Subscription {
+  id: string;
+  title: string;
+  iconUrl?: string;
+  sortId: string;
+}
+
+interface subscriptionEntity {
+  subscription: { [key: string]: Subscription };
+}
+
 const folder = new schema.Entity("folder");
-const subscription = new schema.Entity("subscription", undefined, {
-  idAttribute: "sortid",
-});
+const subscription = new schema.Entity("subscription", undefined);
 
 const listItemClassName =
   "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
@@ -57,33 +66,68 @@ const OverviewPane = ({ className }: Props) => {
       })
     );
 
-  const subscriptionsListQuery = useQuery(
+  const subscriptionsListQuery = useQuery<
+    NormalizedSchema<subscriptionEntity, string[]>
+  >(
     "home/subscriptionsListQuery",
     async () => {
       const subscriptionList = await api.inoreader.getSubscriptionList();
       const subscriptions = get(subscriptionList, "data.subscriptions");
-      const subscriptionsNormalized = normalize<any>(subscriptions, [
-        subscription,
-      ]);
+      const subscriptionsNormalized = normalize<
+        Subscription,
+        subscriptionEntity
+      >(subscriptions, [subscription]);
       return subscriptionsNormalized;
     },
     {
       refetchOnWindowFocus: false,
       placeholderData: {
-        entities: {},
+        entities: { subscription: {} },
         result: [],
       },
     }
   );
 
-  const folderQuery = useQuery(
-    "home/folderQuery",
+  const sortIdToSubscriptionIdMap = useMemo(() => {
+    const result = {};
+    const subscriptionsEntities = get(
+      subscriptionsListQuery.data,
+      "entities.subscription",
+      {}
+    );
+    for (const id in subscriptionsEntities) {
+      if (Object.prototype.hasOwnProperty.call(subscriptionsEntities, id)) {
+        const subscription = subscriptionsEntities[id];
+        result[subscription.sortid] = id;
+      }
+    }
+    return result;
+  }, [subscriptionsListQuery.data]);
+
+  console.log(sortIdToSubscriptionIdMap);
+
+  const getSubscriptionIdById = useCallback(
+    (sortId: string): string => {
+      return sortIdToSubscriptionIdMap[sortId];
+    },
+    [sortIdToSubscriptionIdMap]
+  );
+
+  const streamPreferencesQueyr = useQuery(
+    ["streamPreferences"],
     async () => {
-      const res = await Promise.all([
-        api.inoreader.getFolderOrTagList(1, 1),
-        api.inoreader.getStreamPreferenceList(),
-      ]);
-      const tags = res[0].data.tags;
+      return api.inoreader.getStreamPreferenceList();
+    },
+    { refetchOnWindowFocus: false, retry: false }
+  );
+
+  console.log(streamPreferencesQueyr.data)
+
+  const folderQuery = useQuery(
+    ["home/folderQuery"],
+    async () => {
+      const res = await api.inoreader.getFolderOrTagList(1, 1);
+      const tags = res.data.tags;
       const folders = tags.filter((tag) => tag.type === "folder");
       const foldersNormalized = normalize<any>(folders, [folder]);
       const streamPreferences = res[1].data.streamprefs;
@@ -93,7 +137,11 @@ const OverviewPane = ({ className }: Props) => {
           `['${folderId}'][1].value`,
           ""
         );
-        const subscriptions = subscriptionOrdering.match(/.{1,8}/g);
+
+        const subscriptions = subscriptionOrdering
+          .match(/.{1,8}/g)
+          .map((sortId: string): string => getSubscriptionIdById(sortId));
+
         const folder = get(foldersNormalized, `entities.folder['${folderId}']`);
         folder.subscriptions = subscriptions;
         folder.isCollapsed = false;
@@ -196,7 +244,9 @@ const OverviewPane = ({ className }: Props) => {
         items = items.concat(
           foldEntity.subscriptions.map((subscriptionsId) => {
             subscriptionsIsGroupedMap[subscriptionsId] = true;
-            return subscriptionEntities[subscriptionsId];
+            const subscription = subscriptionEntities[subscriptionsId];
+            console.log(subscription);
+            return subscription;
           })
         );
 
@@ -228,7 +278,8 @@ const OverviewPane = ({ className }: Props) => {
     return result;
   };
 
-  const { groups, items }: { amount: number; groups: IGroup[]; items: any[] } = getListData();
+  const { groups, items }: { amount: number; groups: IGroup[]; items: any[] } =
+    getListData();
 
   return (
     <Stack className={`${className} min-h-0`}>
