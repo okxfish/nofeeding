@@ -33,7 +33,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await api.auth.getInoreaderAuthURI();
-      
       setIsLoginWithInoreader(true);
       window.open(res.data.data.auth_uri);
     } catch (error) {

@@ -88,40 +88,13 @@ const OverviewPane = ({ className }: Props) => {
     }
   );
 
-  const sortIdToSubscriptionIdMap = useMemo(() => {
-    const result = {};
-    const subscriptionsEntities = get(
-      subscriptionsListQuery.data,
-      "entities.subscription",
-      {}
-    );
-    for (const id in subscriptionsEntities) {
-      if (Object.prototype.hasOwnProperty.call(subscriptionsEntities, id)) {
-        const subscription = subscriptionsEntities[id];
-        result[subscription.sortid] = id;
-      }
-    }
-    return result;
-  }, [subscriptionsListQuery.data]);
-
-  console.log(sortIdToSubscriptionIdMap);
-
-  const getSubscriptionIdById = useCallback(
-    (sortId: string): string => {
-      return sortIdToSubscriptionIdMap[sortId];
-    },
-    [sortIdToSubscriptionIdMap]
-  );
-
-  const streamPreferencesQueyr = useQuery(
+  const streamPreferencesQuery = useQuery(
     ["streamPreferences"],
     async () => {
       return api.inoreader.getStreamPreferenceList();
     },
     { refetchOnWindowFocus: false, retry: false }
   );
-
-  console.log(streamPreferencesQueyr.data)
 
   const folderQuery = useQuery(
     ["home/folderQuery"],
@@ -130,22 +103,6 @@ const OverviewPane = ({ className }: Props) => {
       const tags = res.data.tags;
       const folders = tags.filter((tag) => tag.type === "folder");
       const foldersNormalized = normalize<any>(folders, [folder]);
-      const streamPreferences = res[1].data.streamprefs;
-      foldersNormalized.result.forEach((folderId) => {
-        const subscriptionOrdering = get(
-          streamPreferences,
-          `['${folderId}'][1].value`,
-          ""
-        );
-
-        const subscriptions = subscriptionOrdering
-          .match(/.{1,8}/g)
-          .map((sortId: string): string => getSubscriptionIdById(sortId));
-
-        const folder = get(foldersNormalized, `entities.folder['${folderId}']`);
-        folder.subscriptions = subscriptions;
-        folder.isCollapsed = false;
-      });
       return foldersNormalized;
     },
     {
@@ -219,17 +176,37 @@ const OverviewPane = ({ className }: Props) => {
   };
 
   const getListData = () => {
+    const getSortIdToSubscriptionIdMap = () => {
+      const result = {};
+      const subscriptionsEntities = get(
+        subscriptionsListQuery.data,
+        "entities.subscription",
+        {}
+      );
+      for (const id in subscriptionsEntities) {
+        if (Object.prototype.hasOwnProperty.call(subscriptionsEntities, id)) {
+          const subscription = subscriptionsEntities[id];
+          result[subscription.sortid] = id;
+        }
+      }
+      return result;
+    };
+
+    const streamPreferences = streamPreferencesQuery.data;
+
+    if (!streamPreferences) {
+      return null;
+    }
+
+    const sortIdToSubscriptionIdMap = getSortIdToSubscriptionIdMap();
+    const getSubscriptionIdById = (sortId: string): string =>
+      sortIdToSubscriptionIdMap[sortId];
+
     const subscriptionsIsGroupedMap = {};
     const subscriptionEntities = get(
       subscriptionsListQuery,
       "data.entities.subscription",
       {}
-    );
-
-    get(subscriptionsListQuery, `data.result`).forEach(
-      (subscriptionId: string): void => {
-        subscriptionsIsGroupedMap[subscriptionId] = false;
-      }
     );
 
     const result = folderQuery.data?.result.reduce(
@@ -240,15 +217,27 @@ const OverviewPane = ({ className }: Props) => {
         );
         const idPartSplited: any[] = folderId.split("/");
         const name = idPartSplited[idPartSplited.length - 1];
-        const count = foldEntity.subscriptions.length;
-        items = items.concat(
-          foldEntity.subscriptions.map((subscriptionsId) => {
-            subscriptionsIsGroupedMap[subscriptionsId] = true;
-            const subscription = subscriptionEntities[subscriptionsId];
-            console.log(subscription);
-            return subscription;
-          })
+
+        const subscriptionOrdering = get(
+          streamPreferences,
+          `data.streamprefs.['${folderId}'][1].value`,
+          null
         );
+
+        if (!subscriptionOrdering) {
+          return null;
+        }
+
+        const subscriptions = subscriptionOrdering
+          .match(/.{1,8}/g)
+          .map((sortId: string): string => getSubscriptionIdById(sortId))
+          .map((subscriptionId: string): Subscription => {
+            subscriptionsIsGroupedMap[subscriptionId] = true;
+            return subscriptionEntities[subscriptionId];
+          });
+
+        const count = subscriptions.length;
+        items = items.concat(subscriptions);
 
         groups.push({
           key: foldEntity?.id,
@@ -278,8 +267,7 @@ const OverviewPane = ({ className }: Props) => {
     return result;
   };
 
-  const { groups, items }: { amount: number; groups: IGroup[]; items: any[] } =
-    getListData();
+  const { groups, items } = getListData();
 
   return (
     <Stack className={`${className} min-h-0`}>
