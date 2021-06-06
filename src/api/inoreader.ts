@@ -1,4 +1,5 @@
 import { fetch } from "./index";
+import { InoreaderTag } from '../page/feed/overviewPane'
 
 export enum TextDirection {
   ltr = "ltr",
@@ -42,6 +43,20 @@ export interface StreamContentsResponse {
   updated: number;
 }
 
+export interface IdValuePair {
+  id: string;
+  value: string;
+} 
+
+export interface StreamPreferenceListResponse {
+  streamprefs: {
+    [key: string]: IdValuePair[];
+  };
+}
+export interface InoreaderTagListResponse {
+  tags: InoreaderTag[];
+}
+
 export const SystemStreamIDs = {
   READ: "user/-/state/com.google/read", // Read articles.
   STARRED: "user/-/state/com.google/starred", // Starred articles.
@@ -50,6 +65,7 @@ export const SystemStreamIDs = {
   LIKE: "user/-/state/com.google/like", // Likes articles.
   SAVE_WEB_PAGES: "user/-/state/com.google/saved-web-pages", // Saved web pages.
 };
+
 
 export const inoreader = {
   // Subscription list
@@ -78,7 +94,7 @@ export const inoreader = {
   // User information
   getUserInfo: () => fetch.get(`/reader/api/0/user-info`),
   getStreamPreferenceList: () =>
-    fetch.get(`/reader/api/0/preference/stream/list`),
+    fetch.get<StreamPreferenceListResponse>(`/reader/api/0/preference/stream/list`),
   // Add subscription
   addSubscription: (url: string) =>
     fetch.post(`/reader/api/0/subscription/quickadd`, null, {
@@ -88,29 +104,29 @@ export const inoreader = {
     }),
   // Folder/Tag list
   getFolderOrTagList: (types?: number, counts?: number) =>
-    fetch.get(`/reader/api/0/tag/list`, {
+    fetch.get<InoreaderTagListResponse>(`/reader/api/0/tag/list`, {
       params: {
         types: types,
         counts: counts,
       },
     }),
-  markArticleAsRead: (id: string, asUnread?:boolean) => {
+  markArticleAsRead: (id: string, asUnread?: boolean) => {
     const params = { i: id };
-    if(asUnread){
-      params['r'] = SystemStreamIDs.READ;
-    }else {
-      params['a'] = SystemStreamIDs.READ;
+    if (asUnread) {
+      params["r"] = SystemStreamIDs.READ;
+    } else {
+      params["a"] = SystemStreamIDs.READ;
     }
     return fetch.post(`/reader/api/0/edit-tag`, null, {
       params: params,
     });
   },
-  markArticleAsStar: (id: string, isStar?:boolean) => {
+  markArticleAsStar: (id: string, isStar?: boolean) => {
     const params = { i: id };
-    if(isStar){
-      params['a'] = SystemStreamIDs.STARRED;
-    }else {
-      params['r'] = SystemStreamIDs.STARRED;
+    if (isStar) {
+      params["a"] = SystemStreamIDs.STARRED;
+    } else {
+      params["r"] = SystemStreamIDs.STARRED;
     }
     return fetch.post(`/reader/api/0/edit-tag`, null, {
       params: params,

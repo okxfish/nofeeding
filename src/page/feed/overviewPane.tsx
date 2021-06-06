@@ -1,14 +1,10 @@
-import React, { useContext, useMemo, useCallback } from "react";
+import React, { useContext } from "react";
 import {
-  GroupedList,
-  IGroup,
-  IGroupRenderProps,
-  IGroupHeaderProps,
-  FontIcon,
-  SelectionMode,
   Stack,
   Text,
   Label,
+  INavLink,
+  Nav,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory } from "react-router-dom";
@@ -18,26 +14,47 @@ import { default as get } from "lodash.get";
 import { normalize, schema, NormalizedSchema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
-import { SystemStreamIDs } from "../../api/inoreader";
+import {
+  IdValuePair,
+  SystemStreamIDs,
+} from "../../api/inoreader";
 import { SettingContext } from "./../../context/setting";
+import { StreamPreferenceListResponse } from "./../../api/inoreader";
 
 export interface Props {
   className?: string;
 }
 
-export interface Subscription {
+export interface Sortable {
+  sortid: string;
+}
+export interface Subscription extends Sortable {
   id: string;
   title: string;
   iconUrl?: string;
-  sortId: string;
 }
 
-interface subscriptionEntity {
+export interface InoreaderTag extends Sortable {
+  id: string;
+  type?: "tag" | "folder" | "active_search";
+  unread_count?: number;
+  unseen_count?: number;
+}
+
+interface SubscriptionEntity {
   subscription: { [key: string]: Subscription };
 }
 
-const folder = new schema.Entity("folder");
+interface Folder extends InoreaderTag {
+  isCollapsed?: boolean;
+}
+
+interface FolderEntity {
+  folder: { [key: string]: Folder };
+}
+
 const subscription = new schema.Entity("subscription", undefined);
+const folder = new schema.Entity("folder");
 
 const listItemClassName =
   "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
@@ -67,7 +84,7 @@ const OverviewPane = ({ className }: Props) => {
     );
 
   const subscriptionsListQuery = useQuery<
-    NormalizedSchema<subscriptionEntity, string[]>
+    NormalizedSchema<SubscriptionEntity, string[]>
   >(
     "home/subscriptionsListQuery",
     async () => {
@@ -75,42 +92,39 @@ const OverviewPane = ({ className }: Props) => {
       const subscriptions = get(subscriptionList, "data.subscriptions");
       const subscriptionsNormalized = normalize<
         Subscription,
-        subscriptionEntity
+        SubscriptionEntity
       >(subscriptions, [subscription]);
       return subscriptionsNormalized;
     },
     {
       refetchOnWindowFocus: false,
-      placeholderData: {
-        entities: { subscription: {} },
-        result: [],
-      },
     }
   );
 
-  const streamPreferencesQuery = useQuery(
+  const streamPreferencesQuery = useQuery<StreamPreferenceListResponse>(
     ["streamPreferences"],
     async () => {
-      return api.inoreader.getStreamPreferenceList();
+      const res = await api.inoreader.getStreamPreferenceList();
+      return res.data;
     },
-    { refetchOnWindowFocus: false, retry: false }
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+    }
   );
 
-  const folderQuery = useQuery(
+  const folderQuery = useQuery<NormalizedSchema<FolderEntity, string[]>>(
     ["home/folderQuery"],
     async () => {
       const res = await api.inoreader.getFolderOrTagList(1, 1);
       const tags = res.data.tags;
-      const folders = tags.filter((tag) => tag.type === "folder");
-      const foldersNormalized = normalize<any>(folders, [folder]);
+      const foldersNormalized = normalize<InoreaderTag, FolderEntity>(tags, [
+        folder,
+      ]);
       return foldersNormalized;
     },
     {
       refetchOnWindowFocus: false,
-      placeholderData: {
-        entities: {},
-        result: [],
-      },
     }
   );
 
@@ -144,130 +158,109 @@ const OverviewPane = ({ className }: Props) => {
     ) : null;
   };
 
-  const groupProps: IGroupRenderProps = {
-    onRenderHeader: (props?: IGroupHeaderProps): JSX.Element | null => {
-      if (props && props.group) {
-        const toggleCollapse = (): void => {
-          setFolderDataById(props.group?.data.id, (folder) => {
-            folder.isCollapsed = !folder.isCollapsed;
-          });
-        };
+  if (
+    !subscriptionsListQuery.data ||
+    !folderQuery.data ||
+    !streamPreferencesQuery.data
+  ) {
+    return null;
+  }
 
-        return (
-          <div
-            className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}
-            onClick={toggleCollapse}
-          >
-            <FontIcon
-              className={`mr-2 transition-all transform ${
-                props.group!.isCollapsed ? "" : "rotate-90"
-              }`}
-              iconName="ChevronRight"
-            />
-            <Text block nowrap>
-              {props.group!.name} ({props.group?.data.unreadCount})
-            </Text>
-          </div>
-        );
-      } else {
-        return null;
+  const createIdTableIndexedBySortid = (tagsById: {
+    [id: string]: Sortable;
+  }): { [sortId: string]: string } => {
+    let result = {};
+    for (const id in tagsById) {
+      if (Object.prototype.hasOwnProperty.call(tagsById, id)) {
+        const tag = tagsById[id];
+        result[tag.sortid] = id;
       }
-    },
-  };
-
-  const getListData = () => {
-    const getSortIdToSubscriptionIdMap = () => {
-      const result = {};
-      const subscriptionsEntities = get(
-        subscriptionsListQuery.data,
-        "entities.subscription",
-        {}
-      );
-      for (const id in subscriptionsEntities) {
-        if (Object.prototype.hasOwnProperty.call(subscriptionsEntities, id)) {
-          const subscription = subscriptionsEntities[id];
-          result[subscription.sortid] = id;
-        }
-      }
-      return result;
-    };
-
-    const streamPreferences = streamPreferencesQuery.data;
-
-    if (!streamPreferences) {
-      return null;
     }
-
-    const sortIdToSubscriptionIdMap = getSortIdToSubscriptionIdMap();
-    const getSubscriptionIdById = (sortId: string): string =>
-      sortIdToSubscriptionIdMap[sortId];
-
-    const subscriptionsIsGroupedMap = {};
-    const subscriptionEntities = get(
-      subscriptionsListQuery,
-      "data.entities.subscription",
-      {}
-    );
-
-    const result = folderQuery.data?.result.reduce(
-      ({ amount, groups, items }: any, folderId: string) => {
-        const foldEntity = get(
-          folderQuery,
-          `data.entities.folder['${folderId}']`
-        );
-        const idPartSplited: any[] = folderId.split("/");
-        const name = idPartSplited[idPartSplited.length - 1];
-
-        const subscriptionOrdering = get(
-          streamPreferences,
-          `data.streamprefs.['${folderId}'][1].value`,
-          null
-        );
-
-        if (!subscriptionOrdering) {
-          return null;
-        }
-
-        const subscriptions = subscriptionOrdering
-          .match(/.{1,8}/g)
-          .map((sortId: string): string => getSubscriptionIdById(sortId))
-          .map((subscriptionId: string): Subscription => {
-            subscriptionsIsGroupedMap[subscriptionId] = true;
-            return subscriptionEntities[subscriptionId];
-          });
-
-        const count = subscriptions.length;
-        items = items.concat(subscriptions);
-
-        groups.push({
-          key: foldEntity?.id,
-          name: name,
-          count: count,
-          startIndex: amount,
-          isCollapsed: foldEntity.isCollapsed,
-          data: {
-            unreadCount: foldEntity.unread_count,
-            id: foldEntity?.id,
-          },
-        });
-        return { amount: amount + count, groups, items };
-      },
-      { amount: 0, groups: [], items: [] }
-    );
-
-    Object.keys(subscriptionsIsGroupedMap)
-      .filter(
-        (subscriptionId: string): boolean =>
-          !subscriptionsIsGroupedMap[subscriptionId]
-      )
-      .forEach((subscriptionId: string): void => {
-        result.items.push(subscriptionEntities[subscriptionId]);
-      });
-
     return result;
   };
 
-  const { groups, items } = getListData();
+  const getIdBySortid = (sortid: string): string => {
+    const subscriptionIdTableIndexBySortid = createIdTableIndexedBySortid(
+      subscriptionsListQuery.data.entities.subscription
+    );
+
+    const tagIdTableIndexBySortid = createIdTableIndexedBySortid(
+      folderQuery.data.entities.folder
+    );
+
+    const sortidToIdMap = {
+      ...subscriptionIdTableIndexBySortid,
+      ...tagIdTableIndexBySortid,
+    };
+    return sortidToIdMap[sortid];
+  };
+
+  const isFeedId = (id: string): boolean => {
+    return id.startsWith("feed/");
+  };
+
+  const getFolderById = (id: string): Folder =>
+    folderQuery.data.entities.folder[id];
+
+  const getSubscriptionById = (id: string): Subscription =>
+    subscriptionsListQuery.data.entities.subscription[id];
+
+  const getStreamPrefById = (id: string): IdValuePair[] => {
+    return streamPreferencesQuery.data.streamprefs[id];
+  };
+
+  const getSortIdString = (streamPref: IdValuePair[]): string => {
+    return streamPref[streamPref.length - 1]?.value;
+  };
+
+  const chunck = (str: string): string[] => {
+    return str.match(/.{1,8}/g) || [];
+  };
+
+  const getTagName = (folderId: string): string => {
+    const slice: string[] = folderId.split("/");
+    return slice[slice.length - 1];
+  };
+
+  const getNavLinks = (id: string):any => {
+    const url = `/feed?streamId=${id}`
+    if (isFeedId(id)) {
+      const subscription = getSubscriptionById(id);
+      return {
+        name: subscription.title,
+        key: id,
+        url: url,
+      };
+    } else {
+      const tag = getFolderById(id);
+      if (tag && tag.type === "tag") {
+        return {
+          name: getTagName(id),
+          key: id,
+          url: url,
+        };
+      } else {
+        const streamPref = getStreamPrefById(id);
+        const sortIdString = getSortIdString(streamPref);
+        const childrenSortIds = chunck(sortIdString);
+        const links = childrenSortIds.map(getIdBySortid).map(getNavLinks);
+        const name = getTagName(id);
+        return {
+          name: name,
+          links: links,
+          key: id,
+          url: url,
+        };
+      }
+    }
+  };
+
+  const handleLinkClick = (e?:React.MouseEvent<HTMLElement>, item?: INavLink) => {
+    e?.preventDefault();
+    history.push({pathname: '/feed', search: `streamId=${item?.key}`});
+  }
+
+  const groups = getNavLinks("user/1006201176/state/com.google/root");
 
   return (
     <Stack className={`${className} min-h-0`}>
@@ -292,14 +285,7 @@ const OverviewPane = ({ className }: Props) => {
         }
       />
       <Label className={`text-lg ${commonPx}`}>Folder</Label>
-      <GroupedList
-        className="flex-1 overflow-y-auto scrollbar-none"
-        items={items || []}
-        onRenderCell={onRenderCell}
-        groupProps={groupProps}
-        selectionMode={SelectionMode.none}
-        groups={groups || []}
-      />
+      <Nav groups={[groups]} onLinkClick={handleLinkClick}/>
     </Stack>
   );
 };
