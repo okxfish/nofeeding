@@ -20,6 +20,7 @@ import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
 import { SettingContext } from "./../../context/setting";
 import { StreamPreferenceListResponse } from "./../../api/inoreader";
+import { UserInfoContext } from "./../../context/userInfo";
 
 export interface Props {
   className?: string;
@@ -56,14 +57,13 @@ interface FolderEntity {
 const subscription = new schema.Entity("subscription", undefined);
 const folder = new schema.Entity("folder");
 
-const listItemClassName =
-  "cursor-pointer items-center h-10 text-base flex hover:bg-gray-50 select-none";
-
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const commonPx = "px-2";
   const queryClient = useQueryClient();
   const { setting, setSetting } = useContext(SettingContext);
+  const userInfo = useContext(UserInfoContext);
+  console.log(userInfo);
 
   const setSubscriptionDataById = (streamId: string, updater: any): void =>
     queryClient.setQueryData(
@@ -272,7 +272,9 @@ const OverviewPane = ({ className }: Props) => {
     history.push({ pathname: "/feed", search: `streamId=${item?.key}` });
   };
 
-  const groups = getNavLinks("user/1006201176/state/com.google/root");
+  const groups = userInfo
+    ? [getNavLinks(`user/${userInfo.userId}/state/com.google/root`)]
+    : [];
 
   return (
     <Stack className={`${className} min-h-0`}>
@@ -298,7 +300,7 @@ const OverviewPane = ({ className }: Props) => {
       />
       <Nav
         styles={{ chevronButton: "bg-transparent" }}
-        groups={[groups]}
+        groups={groups}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}
       />

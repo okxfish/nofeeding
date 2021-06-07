@@ -24,6 +24,8 @@ import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
 import "./style.css";
 import { NeutralColors } from "@fluentui/theme";
+import { useLocation } from "react-router-dom";
+import queryString from "query-string";
 
 const article = new schema.Entity<FeedProps>("article");
 
@@ -35,8 +37,10 @@ const FeedContainer = () => {
   const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
-  const streamId = useSearchParam("streamId") || "";
-  const unreadOnly = useSearchParam("unreadOnly") || "0";
+  const location = useLocation();
+  const qs = queryString.parse(location.search);
+  const streamId = qs.streamId || "";
+  const unreadOnly = qs.unreadOnly || "0";
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
