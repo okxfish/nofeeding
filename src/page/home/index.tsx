@@ -11,6 +11,7 @@ import {
   IChoiceGroupOption,
   Toggle,
   Stack,
+  Modal,
   Separator,
 } from "@fluentui/react";
 import queryString from "query-string";
@@ -21,10 +22,12 @@ import {
   SettingState,
 } from "../../context/setting";
 import produce from "immer";
+import AddFeed from "./AddFeed";
 
 const Home = () => {
   const location = useLocation();
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
+  const [isAddFeedModalOpen, setIsAddFeedModalOpen] = useState<boolean>(false);
   const [isViewSettingPaneOpen, setIsViewSettingPaneOpen] =
     useState<boolean>(false);
   const { height: windowHeight } = useWindowSize();
@@ -114,10 +117,18 @@ const Home = () => {
       <SideBar
         setIsOverViewPaneOpen={setIsOverViewPaneOpen}
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
+        setIsAddFeedModalOpen={setIsAddFeedModalOpen}
       />
       <Switch>
         <Route path={["/feed/:options", "/feed"]} component={FeedPage} />
       </Switch>
+      <Modal
+        isOpen={isAddFeedModalOpen}
+        isBlocking={false}
+        onDismiss={() => setIsAddFeedModalOpen(false)}
+      >
+        <AddFeed onCancel={() => setIsAddFeedModalOpen(false)}/>
+      </Modal>
       <HelfScreenPanel
         isOpen={isOverViewPaneOpen}
         isLightDismiss
@@ -136,7 +147,6 @@ const Home = () => {
         onLightDismissClick={() => setIsViewSettingPaneOpen(false)}
       >
         <Stack
-          // className="divide-y"
           tokens={{
             childrenGap: "s",
           }}

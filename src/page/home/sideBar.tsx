@@ -25,10 +25,12 @@ export interface Props {
   className?: string;
   setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
   setIsViewSettingPaneOpen: React.Dispatch<SetStateAction<boolean>>;
+  setIsAddFeedModalOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const SideBar = ({
   className,
+  setIsAddFeedModalOpen,
   setIsOverViewPaneOpen,
   setIsViewSettingPaneOpen,
 }: Props) => {
@@ -215,6 +217,13 @@ const SideBar = ({
                 >
                   sync
                 </SideBarItem>
+                <SideBarItem
+                  iconProps={{iconName: 'Add'}}
+                  isIconOnly={!isSidePaneOpen}
+                  content=""
+                  onClick={()=>setIsAddFeedModalOpen(true)}
+                  text="Add Feed"
+                />
               </>
             )}
           />
