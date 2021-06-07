@@ -23,7 +23,7 @@ export interface SettingState {
 
 export const initSetting:SettingState = {
   feed: {
-    feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysDisplay,
+    feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysNotDisplay,
   },
   subscription: {
     isIconDisplay: false

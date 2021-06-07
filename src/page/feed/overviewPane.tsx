@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
+import React, { ReactElement, useContext } from "react";
 import {
   Stack,
   Text,
   Label,
   INavLink,
   Nav,
+  IRenderFunction,
+  Icon,
+  INavLinkGroup,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory } from "react-router-dom";
@@ -14,10 +17,7 @@ import { default as get } from "lodash.get";
 import { normalize, schema, NormalizedSchema } from "normalizr";
 import { produce } from "immer";
 import queryString from "query-string";
-import {
-  IdValuePair,
-  SystemStreamIDs,
-} from "../../api/inoreader";
+import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
 import { SettingContext } from "./../../context/setting";
 import { StreamPreferenceListResponse } from "./../../api/inoreader";
 
@@ -128,34 +128,37 @@ const OverviewPane = ({ className }: Props) => {
     }
   );
 
-  const onRenderCell = (
-    nestingDepth?: number,
-    item?: any,
-    itemIndex?: number
-  ): React.ReactNode => {
-    const onClick = (e: any) => {
-      history.push({
-        pathname: "/feed",
-        search: `streamId=${item.id}`,
-      });
-      if (typeof e.stopPropagation === "function") {
-        e.stopPropagation();
+  const onRenderLink: IRenderFunction<INavLink> = (props, defaultRender) => {
+    if (!props) {
+      return null;
+    }
+
+    const iconRender = (): ReactElement | null => {
+      if (props.type === "feed") {
+        if (setting.subscription.isIconDisplay && props.iconUrl) {
+          return <img className="w-4 h-4 mr-2" src={props.iconUrl} alt="" />;
+        } else {
+          return null;
+        }
+      } else {
+        return (
+          <Icon
+            iconName={props.type === "tag" ? "Tag" : "FolderHorizontal"}
+            className="mr-2"
+          />
+        );
       }
     };
-    return item && typeof itemIndex === "number" && itemIndex > -1 ? (
-      <div
-        className={`${listItemClassName} ${commonPx} hover:bg-gray-200 rounded-sm`}
-        style={{ paddingLeft: `${2 * (nestingDepth || 1)}rem` }}
-        onClick={onClick}
-      >
-        {setting.subscription.isIconDisplay && (
-          <img className="w-4 h-4 mr-2" src={item.iconUrl} alt="" />
-        )}
-        <Text block nowrap>
-          {item.title}
+
+    return (
+      <Stack horizontal verticalAlign="center" className="w-full">
+        {iconRender()}
+        <Text block nowrap className="flex-1 text-left">
+          {props.name}
         </Text>
-      </div>
-    ) : null;
+        {props.type !== "feed" ? <span>{props.unreadCount}</span> : null}
+      </Stack>
+    );
   };
 
   if (
@@ -222,14 +225,16 @@ const OverviewPane = ({ className }: Props) => {
     return slice[slice.length - 1];
   };
 
-  const getNavLinks = (id: string):any => {
-    const url = `/feed?streamId=${id}`
+  const getNavLinks = (id: string): any => {
+    const url = `/feed?streamId=${id}`;
     if (isFeedId(id)) {
       const subscription = getSubscriptionById(id);
       return {
         name: subscription.title,
         key: id,
         url: url,
+        type: "feed",
+        iconUrl: subscription.iconUrl,
       };
     } else {
       const tag = getFolderById(id);
@@ -238,6 +243,8 @@ const OverviewPane = ({ className }: Props) => {
           name: getTagName(id),
           key: id,
           url: url,
+          type: "tag",
+          unreadCount: tag.unread_count,
         };
       } else {
         const streamPref = getStreamPrefById(id);
@@ -246,19 +253,24 @@ const OverviewPane = ({ className }: Props) => {
         const links = childrenSortIds.map(getIdBySortid).map(getNavLinks);
         const name = getTagName(id);
         return {
-          name: name,
+          name: name === "root" ? "Feed" : name,
           links: links,
           key: id,
           url: url,
+          type: "folder",
+          unreadCount: tag?.unread_count,
         };
       }
     }
   };
 
-  const handleLinkClick = (e?:React.MouseEvent<HTMLElement>, item?: INavLink) => {
+  const handleLinkClick = (
+    e?: React.MouseEvent<HTMLElement>,
+    item?: INavLink
+  ) => {
     e?.preventDefault();
-    history.push({pathname: '/feed', search: `streamId=${item?.key}`});
-  }
+    history.push({ pathname: "/feed", search: `streamId=${item?.key}` });
+  };
 
   const groups = getNavLinks("user/1006201176/state/com.google/root");
 
@@ -284,8 +296,12 @@ const OverviewPane = ({ className }: Props) => {
           })
         }
       />
-      <Label className={`text-lg ${commonPx}`}>Folder</Label>
-      <Nav groups={[groups]} onLinkClick={handleLinkClick}/>
+      <Nav
+        styles={{ chevronButton: "bg-transparent" }}
+        groups={[groups]}
+        onRenderLink={onRenderLink}
+        onLinkClick={handleLinkClick}
+      />
     </Stack>
   );
 };

@@ -79,6 +79,14 @@ body {
   animation: ms-motion-fadeIn .8s cubic-bezier(0.1, 0.9, 0.2, 1) both;
 }
 
+button.ms-Nav-chevronButton[aria-expanded="false"] i{
+  transform: rotateZ(-90deg);
+}
+
+button.ms-Nav-chevronButton[aria-expanded="true"] i{
+  transform: rotateZ(0);
+}
+
 @keyframes fread-motion-slideUpIn {
   0% {
     transform: translate3d(0, 80%, 0);

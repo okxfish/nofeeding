@@ -66,7 +66,6 @@ export const SystemStreamIDs = {
   SAVE_WEB_PAGES: "user/-/state/com.google/saved-web-pages", // Saved web pages.
 };
 
-
 export const inoreader = {
   // Subscription list
   getSubscriptionList: () => fetch.get(`/reader/api/0/subscription/list`),
