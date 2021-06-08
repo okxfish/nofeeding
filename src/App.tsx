@@ -36,7 +36,8 @@ function App() {
     const res = await api.inoreader.getUserInfo();
     return res.data;
   }, {
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    enabled: !!inoreaderToken
   })
 
   return (
