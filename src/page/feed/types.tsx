@@ -26,6 +26,8 @@ export interface FeedGroup {
 
 export interface FeedProps {
   className?: string;
+  rootClassName?: string;
+  itemClassName?: string;
   data: FeedItem;
   onClick?(item:FeedItem, index:number, e:any):void;
   onStar?(item:FeedItem, index:number, e:any):void;
