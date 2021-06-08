@@ -16,7 +16,7 @@ const HelfScreenPanel: React.FunctionComponent<IPanelProps> = ({
 }) => {
   const defaultStyles: IStyleFunctionOrObject<IPanelStyleProps, IPanelStyles> =
     {
-      overlay: { backgroundColor: "rgba(0, 0, 0, 0.6)", backdropFilter: 'blur(24px)' },
+      overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)"},
       main: [
         `rounded-t-lg ${
           isOpen ? "ms-motion-slideUpIn" : "ms-motion-slideDownOut"

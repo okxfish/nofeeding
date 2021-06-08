@@ -136,7 +136,6 @@ const FeedContainer = () => {
                 {
                   backgroundColor: "rgba(0, 0, 0, 0.85)",
                 },
-                "ms-motion-fadeIn fread-motion",
               ],
             },
           }}
@@ -144,8 +143,6 @@ const FeedContainer = () => {
           styles={{
             main: [
               { maxHeight: "100%", maxWidth: "100%" },
-              isArticleModalOpen ? "ms-motion-scaleDownIn" : "",
-              "fread-motion",
             ],
           }}
         >

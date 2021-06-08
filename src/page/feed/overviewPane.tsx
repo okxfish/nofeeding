@@ -63,7 +63,6 @@ const OverviewPane = ({ className }: Props) => {
   const queryClient = useQueryClient();
   const { setting, setSetting } = useContext(SettingContext);
   const userInfo = useContext(UserInfoContext);
-  console.log(userInfo);
 
   const setSubscriptionDataById = (streamId: string, updater: any): void =>
     queryClient.setQueryData(
