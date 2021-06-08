@@ -2,6 +2,6 @@
   --header-h: 2.5rem;
   --footer-h: 3rem;
   display: grid;
-  grid-template-columns: 3rem 16rem minmax(auto, 28rem) 3fr;
+  grid-template-columns: 3rem 20rem minmax(auto, 32rem) 3fr;
   grid-template-rows: var(--header-h) 1fr var(--footer-h);
 }
