@@ -2,15 +2,13 @@ import React, { ReactElement, useContext } from "react";
 import {
   Stack,
   Text,
-  Label,
   INavLink,
   Nav,
   IRenderFunction,
   Icon,
-  INavLinkGroup,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
@@ -59,6 +57,7 @@ const folder = new schema.Entity("folder");
 
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
+  const location = useLocation();
   const commonPx = "px-2";
   const queryClient = useQueryClient();
   const { setting, setSetting } = useContext(SettingContext);
@@ -152,7 +151,7 @@ const OverviewPane = ({ className }: Props) => {
     return (
       <Stack horizontal verticalAlign="center" className="w-full">
         {iconRender()}
-        <Text block nowrap className="flex-1 text-left">
+        <Text block nowrap className="flex-1 text-left font-medium">
           {props.name}
         </Text>
         {props.type !== "feed" ? <span>{props.unreadCount}</span> : null}
@@ -268,7 +267,11 @@ const OverviewPane = ({ className }: Props) => {
     item?: INavLink
   ) => {
     e?.preventDefault();
-    history.push({ pathname: "/feed", search: `streamId=${item?.key}` });
+    const qs = queryString.parse(location.search);
+    history.push({
+      pathname: "/feed",
+      search: queryString.stringify({ ...qs, streamId: item?.key }),
+    });
   };
 
   const groups = userInfo
@@ -298,10 +301,11 @@ const OverviewPane = ({ className }: Props) => {
         }
       />
       <Nav
-        styles={{ chevronButton: "bg-transparent" }}
+        styles={{ chevronButton: "bg-transparent", link: 'pl-8 pr-6' }}
         groups={groups}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}
+        onRenderGroupHeader={(()=>null)}
       />
     </Stack>
   );

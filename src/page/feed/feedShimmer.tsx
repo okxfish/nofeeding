@@ -51,7 +51,7 @@ const FeedShimmer = ({ number=5 }:Props) => {
 
   return (
     <Shimmer
-      className="mt-4 mx-auto w-11/12"
+      className="pt-4 mx-auto w-11/12"
       customElementsGroup={getCustomElements(number)}
     />
   );

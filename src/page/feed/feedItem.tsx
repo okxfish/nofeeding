@@ -33,6 +33,8 @@ const FeedItem = ({
   itemIndex,
   isSelected,
   className,
+  rootClassName,
+  itemClassName,
   onClick = () => {},
   onRead = () => {},
   onStar = () => {},
@@ -74,6 +76,35 @@ const FeedItem = ({
 
   const nowTime: Dayjs = dayjs();
   const relativePublishedTime: string = data.publishedTime.from(nowTime);
+
+  const actionButtonsElem = (
+    <div>
+        <IconButton
+          className={classnames(
+            "focus:outline-none text-gray-500 hover:text-gray-500",
+            {
+              "text-yellow-300 hover:text-yellow-300": data.isStar,
+            }
+          )}
+          styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+          iconProps={data.isStar ? favoriteStarFillIcon : favoriteStarIcon}
+          title="favorite"
+          ariaLabel="Favorite"
+          onClick={(e) => onStar(data, itemIndex, e)}
+          {...data.starButtonProps}
+        />
+        <IconButton
+          className="focus:outline-none text-gray-500 hover:text-gray-500"
+          styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+          iconProps={data.isRead ? radioBtnOffIcon : radioBtnOnIcon}
+          title="mark as read"
+          ariaLabel="Mark as read"
+          onClick={(e) => onRead(data, itemIndex, e)}
+          {...data.unreadMarkButtonProps}
+        />
+    </div>
+  );
+
   const feedBodyElem: React.ReactElement | null = (
     <Stack
       horizontal={viewType === ViewType.list}
@@ -82,75 +113,47 @@ const FeedItem = ({
         "opacity-40": data.isRead,
       })}
     >
-      <Text
-        className={classnames("text-base", {
-          "mr-2": viewType === ViewType.list,
-          "mb-2": viewType !== ViewType.list,
-        })}
-      >
-        {data.title}
-      </Text>
+      <Stack horizontal>
+        <Text
+          className={classnames("text-base flex-1", {
+            "mr-2": viewType === ViewType.list,
+            "mb-4": viewType !== ViewType.list,
+          })}
+        >
+          {data.title}
+        </Text>
+        {viewType === ViewType.list ? null : actionButtonsElem}
+      </Stack>
       <Text className="flex-1 text-base w-full">{data.summary}</Text>
-      <Stack
-        horizontal
-        verticalAlign="center"
-        className="text-sm text-gray-400"
-      >
-        <Text className="flex-1" block nowrap title={data.sourceName}>
+      <Stack horizontal verticalAlign="center" className="text-gray-400">
+        <Text className="flex-1 text-sm" block nowrap title={data.sourceName}>
           {data.sourceName}
         </Text>
-        <Text className="flex-0" nowrap>
+        <Text className="flex-0 text-sm" nowrap>
           {relativePublishedTime}
         </Text>
       </Stack>
     </Stack>
   );
 
-  const feedFooterElem: React.ReactElement = (
-    <Stack
-      horizontal={viewType === ViewType.list}
-      verticalAlign={viewType === ViewType.list ? "center" : "start"}
-      className="hidden sm:flex"
-    >
-      <IconButton
-        className="focus:outline-none"
-        iconProps={data.isRead ? radioBtnOffIcon : radioBtnOnIcon}
-        title="mark as read"
-        ariaLabel="Mark as read"
-        disabled={false}
-        onClick={(e) => onRead(data, itemIndex, e)}
-        {...data.unreadMarkButtonProps}
-      />
-      <IconButton
-        className={classnames("focus:outline-none", {
-          "text-yellow-300 hover:text-yellow-300": data.isStar,
-        })}
-        iconProps={data.isStar ? favoriteStarFillIcon : favoriteStarIcon}
-        title="favorite"
-        ariaLabel="Favorite"
-        disabled={false}
-        onClick={(e) => onStar(data, itemIndex, e)}
-        {...data.starButtonProps}
-      />
-    </Stack>
-  );
-
   return (
-    <div className={`overflow-x-hidden relative ${className}`}>
+    <div className={`overflow-x-hidden relative ${rootClassName}`}>
       <Stack
         horizontal
         onClick={(e) => onClick(data, itemIndex, e)}
         className={classnames(
-          "relative z-10 p-4 group cursor-pointer select-none hover:bg-blue-50",
+          "relative z-10 group cursor-pointer select-none hover:bg-blue-50",
+          itemClassName,
           {
             "py-1 border-b": viewType === ViewType.list,
+            "py-4": viewType !== ViewType.list,
             "bg-blue-100": isSelected,
           }
         )}
       >
         {feedHeaderRender()}
         {feedBodyElem}
-        {feedFooterElem}
+        {viewType === ViewType.list ? actionButtonsElem : null}
       </Stack>
       {data.isInnerArticleShow ? (
         <ArticlePane className="relative z-10 border-b bg-gray-50" />

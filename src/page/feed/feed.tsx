@@ -109,13 +109,13 @@ const FeedContainer = () => {
         </div>
         <div
           className={classnames(
-            "overflow-scroll scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3",
+            "overflow-scroll scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3 bg-gray-100",
             { "xl:col-span-1": viewType === ViewType.threeway }
           )}
           data-is-scrollable
         >
           <FeedsPane
-            className="h-full transition-all"
+            className="transition-all"
             currenActivedFeedId={currenActivedFeedId}
             setCurrenActivedFeedId={setCurrenActivedFeedId}
             setIsArticleModalOpen={setIsArticleModalOpen}

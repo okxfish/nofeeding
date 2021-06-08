@@ -7,6 +7,7 @@ import {
   IGroupHeaderProps,
   FontIcon,
   IGroup,
+  Stack,
 } from "@fluentui/react";
 
 import { produce } from "immer";
@@ -187,7 +188,7 @@ const FeedsPane = ({
 
   const getGroups = (streamContents: FeedItem[]): IGroup[] => {
     const streamContentsGrouped = groupBy(streamContents, (article) => {
-      return dayjs(dayjs(article.publishedTime).format("YYYY-MM-DD")).fromNow();
+      return dayjs(dayjs(article.publishedTime).format("YYYY-MM-DD")).toNow();
     });
 
     const comparePublishDate = (a, b): number => {
@@ -227,26 +228,47 @@ const FeedsPane = ({
     return result;
   };
 
+  const getRootClassName = () => {
+    let result = `${className} bg-white `;
+    if (viewType !== ViewType.list) {
+      result = result + "max-w-3xl mx-auto";
+    }
+    return result;
+  };
+
+  const paddingHori = viewType === ViewType.threeway ? "px-4" : "px-6";
+
   if (!isEmpty(streamContents)) {
     const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
       if (!props || !props.group) {
         return null;
       }
       return (
-        <div className="flex items-center h-10 px-4 border-b cursor-pointer text-lg text-gray-600 font-bold leading-loose">
-          <div className="flex-1">{props.group!.name}</div>
-          <span className="font-normal">{props.group.count}</span>
-        </div>
+        <Stack
+          horizontal
+          verticalAlign="center"
+          className={`pt-4 pb-2 border-t ${paddingHori}`}
+        >
+          <div className="flex-1 font-bold text-lg text-gray-600">
+            {props.group!.name}
+          </div>
+        </Stack>
       );
     };
 
     const onRenderFooter = (): React.ReactElement | null => {
       return (
-        <div className="flex justify-end px-4 pt-4 pb-6 border-t">
-          <ActionButton className="text-blue-500 text-base mr-0 px-0">
-            mark this group as read
-          </ActionButton>
-        </div>
+        <Stack
+          className={`pt-0 pb-4 w-full ${paddingHori}`}
+          horizontal
+          horizontalAlign="end"
+        >
+          <ActionButton
+            className="text-gray-500 text-base mr-0 px-0"
+            styles={{ label: "m-0" }}
+            text="mark this group as read"
+          />
+        </Stack>
       );
     };
 
@@ -261,6 +283,7 @@ const FeedsPane = ({
       return (
         <FeedItemComponent
           data={item}
+          itemClassName={`${paddingHori}`}
           itemIndex={index}
           isSelected={item.id === currenActivedFeedId}
           onClick={handleArticleItemClick}
@@ -271,17 +294,10 @@ const FeedsPane = ({
     };
 
     return (
-      <div className={`${className} ms-motion-slideUpIn`}>
+      <div className={getRootClassName()}>
         <div className="border-b">
           <SubscriptionInfoCard
-            id="1"
-            name={"Hacker News"}
-            htmlUrl={"Hacker News"}
-            iconUrl={"Hacker News"}
-            xmlUrl={"Hacker News"}
-            orderNumber={100}
-            lastUpdateTime={"3d"}
-            updateCycle={"3d"}
+            rootClassName="px-6"
           />
         </div>
         <GroupedList
@@ -297,7 +313,11 @@ const FeedsPane = ({
     );
   } else {
     if (streamContentQuery.isFetching) {
-      return <FeedShimmer />;
+      return (
+        <div className={`${getRootClassName()} h-full`}>
+          <FeedShimmer />
+        </div>
+      );
     } else {
       return (
         <div className="text-center p-24 text-gray-300">
