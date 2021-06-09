@@ -3,10 +3,17 @@ import {
   DirectionalHint,
   IContextualMenuProps,
   IIconProps,
+  Stack,
   Toggle,
 } from "@fluentui/react";
-import { NeutralColors } from '@fluentui/theme'
-import React, { SetStateAction, useCallback, useContext, useEffect, useState } from "react";
+import { NeutralColors } from "@fluentui/theme";
+import React, {
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarButton";
@@ -23,6 +30,7 @@ const viewIcon: IIconProps = { iconName: "View" };
 
 export interface Props {
   className?: string;
+  toggleOverviewPane(): void;
   setIsOverViewPaneOpen: React.Dispatch<SetStateAction<boolean>>;
   setIsViewSettingPaneOpen: React.Dispatch<SetStateAction<boolean>>;
   setIsAddFeedModalOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -30,6 +38,7 @@ export interface Props {
 
 const SideBar = ({
   className,
+  toggleOverviewPane,
   setIsAddFeedModalOpen,
   setIsOverViewPaneOpen,
   setIsViewSettingPaneOpen,
@@ -68,7 +77,7 @@ const SideBar = ({
   const handleProfileClick = async () => {};
 
   const handleHamburgerMenuBtnClick = () => {
-    toggleSidePane();
+    toggleOverviewPane();
   };
 
   const menuProps: IContextualMenuProps = {
@@ -141,64 +150,50 @@ const SideBar = ({
   };
 
   const handleMouseLeave = useCallback(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       if (isSidePaneOpen) {
-        setIsSidePaneOpen(false)
+        setIsSidePaneOpen(false);
       }
-    }, 300)
-  },[isSidePaneOpen])
+    }, 300);
+  }, [isSidePaneOpen]);
 
   return (
-    <div
-      className={classnames(
-        "flex items-center col-start-1 z-50 transition-all",
-        "justify-between col-span-4 row-start-3 row-span-1",
-        "sm:flex-col sm:justify-start sm:col-span-1 sm:row-start-1 sm:row-span-3",
-        {
-          "sm:w-48 col-span-2 ms-depth-64": isSidePaneOpen,
-          "sm:w-full": !isSidePaneOpen,
-        },
-        className
-      )}
+    <Stack
+      className={classnames("z-50 w-12", className)}
       onMouseLeave={handleMouseLeave}
       style={{
         backgroundColor: NeutralColors.gray30,
       }}
     >
       <SideBarItem
+        title="meun"
         className="hidden sm:block"
         iconProps={isSidePaneOpen ? cancelIcon : globalNavButtonIcon}
-        isIconOnly={!isSidePaneOpen}
-        text=" "
         onClick={handleHamburgerMenuBtnClick}
       />
       <SideBarItem
+        title="home"
         className={pathname === "/feed" ? "hidden sm:block" : ""}
         iconProps={homeIcon}
-        isIconOnly={!isSidePaneOpen}
         onClick={handleFeedClick}
-        text="Feed"
       />
       <SideBarItem
+        title="filter"
         className="block sm:hidden"
         iconProps={filterIcon}
-        isIconOnly={true}
         onClick={handleFilterClick}
-        text="Filter"
       />
       <SideBarItem
+        title="view setting"
         className="hidden sm:block"
         iconProps={viewIcon}
         menuProps={menuProps}
-        isIconOnly={!isSidePaneOpen}
-        text="View"
       />
       <SideBarItem
+        title="view setting"
         className="block sm:hidden"
         iconProps={viewIcon}
         onClick={() => setIsViewSettingPaneOpen(true)}
-        isIconOnly={!isSidePaneOpen}
-        text="View"
       />
       <div className="hidden sm:block flex-1 flex-col w-full">
         <Switch>
@@ -208,21 +203,16 @@ const SideBar = ({
               <>
                 <SideBarItem
                   iconProps={syncIcon}
-                  isIconOnly={!isSidePaneOpen}
-                  content=""
+                  title="sync feed"
                   styles={{
                     icon: isLoaddingFeeds ? "fr-spin" : "",
                   }}
                   onClick={handleSyncClick}
-                >
-                  sync
-                </SideBarItem>
+                />
                 <SideBarItem
-                  iconProps={{iconName: 'Add'}}
-                  isIconOnly={!isSidePaneOpen}
-                  content=""
-                  onClick={()=>setIsAddFeedModalOpen(true)}
-                  text="Add Feed"
+                  title="subscript new feed "
+                  iconProps={{ iconName: "Add" }}
+                  onClick={() => setIsAddFeedModalOpen(true)}
                 />
               </>
             )}
@@ -231,15 +221,12 @@ const SideBar = ({
       </div>
       <SideBarItem
         className="hidden sm:block"
+        title="account"
         iconProps={contactIcon}
-        isIconOnly={!isSidePaneOpen}
         menuProps={profileMenuProps}
-        content=""
         onClick={handleProfileClick}
-      >
-        profile
-      </SideBarItem>
-    </div>
+      />
+    </Stack>
   );
 };
 

@@ -26,12 +26,14 @@ export interface Props {
   currenActivedFeedId: string;
   setCurrenActivedFeedId: React.Dispatch<React.SetStateAction<string>>;
   setIsArticleModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setCurrenActivedFeedIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const FeedsPane = ({
   className,
   currenActivedFeedId,
   setCurrenActivedFeedId,
+  setCurrenActivedFeedIndex,
   setIsArticleModalOpen,
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
@@ -139,21 +141,15 @@ const FeedsPane = ({
     }
   );
 
-  const markAsRead = useCallback(
-    (articleId: string): void => {
-      markAsReadMutation.mutate({ id: articleId });
-    },
-    [markAsReadMutation]
-  );
-
   const handleArticleItemClick = useCallback(
     (item: FeedItem, index: number, e: any): void => {
       const articleId = item.id;
       setCurrenActivedFeedId(articleId);
+      setCurrenActivedFeedIndex(index);
       displayArticle(articleId);
-      markAsRead(articleId);
+      markAsReadMutation.mutate({ id: articleId, asUnread: false });
     },
-    [displayArticle, markAsRead, setCurrenActivedFeedId]
+    [displayArticle, markAsReadMutation, setCurrenActivedFeedId, setCurrenActivedFeedIndex]
   );
 
   const handleArticleItemStar = useCallback(
@@ -296,14 +292,14 @@ const FeedsPane = ({
     return (
       <div className={getRootClassName()}>
         <div className="border-b">
-          <SubscriptionInfoCard
-            rootClassName="px-6"
-          />
+          <SubscriptionInfoCard rootClassName="px-6" />
         </div>
         <GroupedList
           items={streamContents}
           onRenderCell={onRenderCell}
           groups={getGroups(streamContents)}
+          onShouldVirtualize={()=>false}
+          usePageCache={true}
           groupProps={{
             onRenderHeader: onRenderHeader,
             onRenderFooter: onRenderFooter,

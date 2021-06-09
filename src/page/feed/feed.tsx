@@ -29,12 +29,18 @@ import queryString from "query-string";
 
 const article = new schema.Entity<FeedProps>("article");
 
+export interface Props {
+  isOverViewPaneOpen: boolean;
+}
+
 interface ArticleEntity {
   article: { [key: string]: FeedProps };
 }
 
-const FeedContainer = () => {
+const FeedContainer = ({ isOverViewPaneOpen }) => {
   const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
+  const [currenActivedFeedIndex, setCurrenActivedFeedIndex] =
+    useState<number>(-1);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
   const location = useLocation();
@@ -100,29 +106,31 @@ const FeedContainer = () => {
   return (
     <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
-        <div className="flex items-center justify-between z-30 row-start-1 row-span-1 col-start-1 col-span-4 border-b border-gray-200 sm:hidden"></div>
-        <div
-          className="hidden sm:block row-start-1 row-span-3 col-start-1 col-span-4 sm:col-span-1 sm:col-start-2 border-r overflow-y-scroll scrollbar-none"
-          style={{ backgroundColor: NeutralColors.gray10 }}
-        >
-          <OverviewPane className="" />
-        </div>
         <div
           className={classnames(
-            "overflow-scroll scrollbar h-full col-start-1 col-span-4 row-start-2 row-span-1 sm:col-start-3 sm:col-span-2 sm:row-start-1 sm:row-span-3 bg-gray-100",
-            { "xl:col-span-1": viewType === ViewType.threeway }
+            "hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all",
+            {
+              "w-0": isOverViewPaneOpen,
+            }
           )}
+          style={{ backgroundColor: NeutralColors.gray10 }}
+        >
+          <OverviewPane />
+        </div>
+        <div
+          className="overflow-scroll scrollbar h-full bg-gray-100 max-w-xl w-full"
           data-is-scrollable
         >
           <FeedsPane
             className="transition-all"
             currenActivedFeedId={currenActivedFeedId}
             setCurrenActivedFeedId={setCurrenActivedFeedId}
+            setCurrenActivedFeedIndex={setCurrenActivedFeedIndex}
             setIsArticleModalOpen={setIsArticleModalOpen}
           />
         </div>
         {viewType === ViewType.threeway && (
-          <div className="hidden col-start-4 col-span-1 row-start-1 row-span-3 xl:block xl:col-start-4 xl:col-span-1">
+          <div className="hidden xl:block">
             <ArticlePane className="h-full" />
           </div>
         )}
@@ -130,20 +138,9 @@ const FeedContainer = () => {
           className=""
           isOpen={isArticleModalOpen}
           onDismiss={() => setIsArticleModalOpen(false)}
-          overlay={{
-            styles: {
-              root: [
-                {
-                  backgroundColor: "rgba(0, 0, 0, 0.85)",
-                },
-              ],
-            },
-          }}
           isBlocking={false}
           styles={{
-            main: [
-              { maxHeight: "100%", maxWidth: "100%" },
-            ],
+            main: [{ maxHeight: "100%" }],
           }}
         >
           <ArticlePane

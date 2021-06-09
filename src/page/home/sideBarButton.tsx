@@ -1,22 +1,15 @@
 import React from "react";
 import {
-  DefaultButton,
+  IconButton,
   IButtonProps,
   IButtonStyles,
   mergeStyleSets,
 } from "@fluentui/react";
 import { NeutralColors } from "@fluentui/theme";
 
-export interface Props extends IButtonProps {
-  isIconOnly?: boolean;
-}
+export interface Props extends IButtonProps {}
 
-const SideBarItem = ({
-  className = "",
-  isIconOnly,
-  styles,
-  ...rest
-}: Props) => {
+const SideBarItem = ({ className = "", styles, ...rest }: Props) => {
   const defaultStyles: IButtonStyles = {
     root: [
       {
@@ -33,26 +26,19 @@ const SideBarItem = ({
       outlineOffset: "1",
     },
     rootExpanded: {
-      backgroundColor: 'white'
+      backgroundColor: "white",
     },
     rootHovered: {
       backgroundColor: NeutralColors.gray50,
     },
-    textContainer: [{
-      display: isIconOnly ? "none" : "flex",
-    },
-    'ml-2'
-  ],
     label: {
       fontWeight: "normal",
     },
-    menuIcon:[
-      isIconOnly ? "hidden" : "",
-    ] ,
+    menuIcon: "hidden",
   };
 
   return (
-    <DefaultButton
+    <IconButton
       className={`${className}`}
       styles={mergeStyleSets(defaultStyles, styles)}
       {...rest}

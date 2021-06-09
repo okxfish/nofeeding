@@ -37,6 +37,7 @@ const Home = () => {
   const history = useHistory();
 
   const closeOverviewPane = (): void => setIsOverViewPaneOpen(false);
+  const toggleOverviewPane = (): void => setIsOverViewPaneOpen((isOverViewPaneOpen)=>!isOverViewPaneOpen);
 
   // 切换当前的订阅源的时候关闭订阅源选择菜单
   useEffect(() => {
@@ -110,24 +111,24 @@ const Home = () => {
   }, [qs, history]);
 
   return (
-    <div
-      className="home__layout overflow-hidden"
+    <Stack
+      horizontal
+      className="overflow-hidden w-full"
       style={{ height: windowHeight }}
     >
       <SideBar
+      toggleOverviewPane={toggleOverviewPane}
         setIsOverViewPaneOpen={setIsOverViewPaneOpen}
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
         setIsAddFeedModalOpen={setIsAddFeedModalOpen}
       />
-      <Switch>
-        <Route path={["/feed/:options", "/feed"]} component={FeedPage} />
-      </Switch>
+      <FeedPage isOverViewPaneOpen={isOverViewPaneOpen}/>
       <Modal
         isOpen={isAddFeedModalOpen}
         isBlocking={false}
         onDismiss={() => setIsAddFeedModalOpen(false)}
       >
-        <AddFeed onCancel={() => setIsAddFeedModalOpen(false)}/>
+        <AddFeed onCancel={() => setIsAddFeedModalOpen(false)} />
       </Modal>
       <HelfScreenPanel
         isOpen={isOverViewPaneOpen}
@@ -180,7 +181,7 @@ const Home = () => {
           />
         </Stack>
       </HelfScreenPanel>
-    </div>
+    </Stack>
   );
 };
 
