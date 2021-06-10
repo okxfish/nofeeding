@@ -44,8 +44,8 @@ const FeedContainer = ({ isOverViewPaneOpen }) => {
   const { viewType } = useContext(ViewTypeContext);
   const location = useLocation();
   const qs = queryString.parse(location.search);
-  const streamId = qs.streamId || "";
-  const unreadOnly = qs.unreadOnly || "0";
+  const streamId = qs.streamId;
+  const unreadOnly = qs.unreadOnly;
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -83,8 +83,9 @@ const FeedContainer = ({ isOverViewPaneOpen }) => {
     NormalizedSchema<ArticleEntity, string[]>
   >(
     streamContentQueryKey,
-    async ({ queryKey: [key, streamId, unreadOnly] }) => {
-      const exclude = unreadOnly === "1" ? SystemStreamIDs.READ : "";
+    async ({ queryKey: [key, streamId='', unreadOnly='0'] }) => {
+      console.info(streamContentQueryKey, 'is fetching')
+      const exclude = unreadOnly ? SystemStreamIDs.READ : "";
       const { data } = await api.inoreader.getStreamContents(String(streamId), {
         exclude: exclude,
       });

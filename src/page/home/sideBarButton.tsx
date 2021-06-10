@@ -1,4 +1,3 @@
-import React from "react";
 import {
   IconButton,
   IButtonProps,
@@ -9,7 +8,8 @@ import { NeutralColors } from "@fluentui/theme";
 
 export interface Props extends IButtonProps {}
 
-const SideBarItem = ({ className = "", styles, ...rest }: Props) => {
+// 侧边栏按钮，封装了一些样式
+const sideBarButton = ({ className = "", styles, ...rest }: Props) => {
   const defaultStyles: IButtonStyles = {
     root: [
       {
@@ -46,4 +46,4 @@ const SideBarItem = ({ className = "", styles, ...rest }: Props) => {
   );
 };
 
-export default SideBarItem;
+export default sideBarButton;

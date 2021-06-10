@@ -86,6 +86,7 @@ const OverviewPane = ({ className }: Props) => {
   >(
     "home/subscriptionsListQuery",
     async () => {
+      console.info('fetching subscriptionList')
       const subscriptionList = await api.inoreader.getSubscriptionList();
       const subscriptions = get(subscriptionList, "data.subscriptions");
       const subscriptionsNormalized = normalize<
