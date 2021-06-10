@@ -26,6 +26,9 @@ import {
   SettingState,
 } from "../../context/setting";
 import { produce } from "immer";
+import { useQueryClient } from "react-query";
+import { ArticleEntity } from "../feed/feed";
+import { NormalizedSchema } from "normalizr";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
@@ -56,12 +59,14 @@ const SideBar = ({
   const { setting, setSetting } = useContext(SettingContext);
   const { setViewType } = useContext(ViewTypeContext);
   const userInfo = useContext(UserInfoContext);
+  const queryClient = useQueryClient();
   const history = useHistory();
   const location = useLocation();
   const qs = queryString.parse(location.search);
-
+  const { streamId, unreadOnly } = qs;
+  const streamContentQuery = queryClient.getQueryData<any>(["feed/streamContentQuery", streamId, unreadOnly]);
   const thumbnailDisplay = setting.feed.feedThumbnailDisplayType;
-
+console.log(streamId, unreadOnly, streamContentQuery)
   useEffect(() => {
     let timeout;
     if (isLoaddingFeeds) {
@@ -119,7 +124,7 @@ const SideBar = ({
         key: "UnreadOnly",
         text: "unread only",
         iconProps: {
-          iconName: qs.unreadOnly === '1' ? 'CheckboxComposite' : "Checkbox",
+          iconName: qs.unreadOnly === "1" ? "CheckboxComposite" : "Checkbox",
         },
         onClick: () => {
           const newSearch = {
@@ -183,7 +188,7 @@ const SideBar = ({
     items: [
       {
         key: "userName",
-        text: userInfo.userName,
+        text: userInfo?.userName,
         iconProps: { iconName: "Contact" },
       },
       {
@@ -251,7 +256,7 @@ const SideBar = ({
                   iconProps={syncIcon}
                   title="sync feed"
                   styles={{
-                    icon: isLoaddingFeeds ? "fr-spin" : "",
+                    icon: streamContentQuery?.isFetching ? "fr-spin" : "",
                   }}
                   onClick={handleSyncClick}
                 />

@@ -32,7 +32,7 @@ export interface Props {
   isOverViewPaneOpen: boolean;
 }
 
-interface ArticleEntity {
+export interface ArticleEntity {
   article: { [key: string]: FeedProps };
 }
 
@@ -113,7 +113,7 @@ const FeedContainer = ({ isOverViewPaneOpen }) => {
         </div>
         <div
           className={classnames(
-            "overflow-scroll scrollbar h-full bg-gray-100 w-112 transition-all",
+            "overflow-scroll scrollbar h-full bg-gray-100 w-128 transition-all",
             {
               "flex-1": viewType !== ViewType.threeway,
             }

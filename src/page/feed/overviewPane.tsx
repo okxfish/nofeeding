@@ -40,15 +40,15 @@ export interface InoreaderTag extends Sortable {
   unseen_count?: number;
 }
 
-interface SubscriptionEntity {
+export interface SubscriptionEntity {
   subscription: { [key: string]: Subscription };
 }
 
-interface Folder extends InoreaderTag {
+export interface Folder extends InoreaderTag {
   isCollapsed?: boolean;
 }
 
-interface FolderEntity {
+export interface FolderEntity {
   folder: { [key: string]: Folder };
 }
 

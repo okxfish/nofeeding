@@ -30,7 +30,7 @@ const Home = () => {
   const [isAddFeedModalOpen, setIsAddFeedModalOpen] = useState<boolean>(false);
   const [isViewSettingPaneOpen, setIsViewSettingPaneOpen] =
     useState<boolean>(false);
-  const { height: windowHeight } = useWindowSize();
+  const { height: windowHeight, width } = useWindowSize();
   const { viewType, setViewType } = useContext(ViewTypeContext);
   const { setting, setSetting } = useContext(SettingContext);
   const history = useHistory();
@@ -38,6 +38,12 @@ const Home = () => {
   const closeOverviewPane = (): void => setIsOverViewPaneOpen(false);
   const toggleOverviewPane = (): void =>
     setIsOverViewPaneOpen((isOverViewPaneOpen) => !isOverViewPaneOpen);
+
+    useEffect(()=>{
+      if (viewType === ViewType.threeway && width < 1280) {
+        setViewType(ViewType.card)
+      }
+    },[viewType, width, setViewType]);
 
   // 切换当前的订阅源的时候关闭订阅源选择菜单
   useEffect(() => {

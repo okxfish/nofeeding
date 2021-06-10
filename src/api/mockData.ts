@@ -1,5 +1,6 @@
 import Mock from "mockjs";
 import { IdValuePair } from "../api/inoreader";
+import MockAdapter from "axios-mock-adapter";
 import { Sortable } from "../page/feed/overviewPane";
 
 const Random = Mock.Random;
@@ -55,9 +56,9 @@ export interface Feed {
 }
 
 const createSubscription = (
-  id:string,
-  sortid:string,
-  type:string,
+  id: string,
+  sortid: string,
+  type: string,
   { url, iconUrl, title }
 ): Subscription => {
   return {
@@ -103,9 +104,7 @@ const generateSystemTagId = (userId: string, name: string): string =>
 const isVaildSystemTagId = (id: string): boolean =>
   /user\/\d{6,10}\/state\/com.google\/.*/.test(id);
 
-const generateFeedId = (id): string =>
-  `tag:google.com,2005:reader/item/${id}`;
-
+const generateFeedId = (id): string => `tag:google.com,2005:reader/item/${id}`;
 
 const createTag = (
   id,
@@ -127,7 +126,7 @@ const _getTags = (number: number): Tag[] => {
   for (let index = 0; index < number; index++) {
     const title = Random.word();
     const idSeed = Random.id();
-    const sortId = idSeed.slice(0, 8);
+    const sortId = idSeed.slice(idSeed.length - 8, idSeed.length);
     const tagId = generateTagId(USER_ID, title);
     const type = Random.pick(["folder", "tag"]);
     result.push(createTag(tagId, sortId, type));
@@ -142,7 +141,7 @@ const _getSubscriptions = (number: number): Subscription[] => {
     const title = Random.word();
     const id = Random.id();
     const url = `https://www.${title}.com/feed`;
-    const sortId = id.slice(0, 8);
+    const sortId = id.slice(id.length - 8, id.length);
     const streamId = generateStreamId(url);
     const type = Random.pick(["folder, tag"]);
     result.push(
@@ -179,16 +178,15 @@ const createFeed = (): Feed => {
       htmlUrl: "https://space.bilibili.com/15982391/dynamic",
       streamId:
         "feed/http://47.115.60.250:1200/bilibili/user/dynamic/15982391?filter=%E5%81%A5%E5%BA%B7%E6%97%A5%E5%8E%86",
-      title: Random.title(1,3),
+      title: Random.title(1, 3),
     },
     published: 1623291108,
     summary: {
-      content:
-        Random.paragraph(),
+      content: Random.paragraph(),
       direction: "ltr",
     },
     timestampUsec: "1623293901496534",
-    title: Random.title(1,6),
+    title: Random.title(1, 6),
     updated: 0,
   };
 };
@@ -216,7 +214,36 @@ for (let index = 0; index < tags.length; index++) {
   streamprefs[tag.id] = streampref;
 }
 
-export const getTags = () => tags;
-export const getSubscriptions = () => subscriptions;
-export const getStreamprefs = () => streamprefs;
-export const getFeeds = () => feeds;
+export const mockSetup = (axios) => {
+  const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
+
+  mock.onGet(/^.*user-info$/).reply(200, {
+    isBloggerUser: false,
+    isMultiLoginEnabled: false,
+    signupTimeSec: 1516257049,
+    userEmail: "1119548217@qq.com",
+    userId: USER_ID,
+    userName: "1119548217",
+    userProfileId: USER_ID,
+  });
+
+  mock.onGet(/^.*subscription\/list/).reply(200, {
+    subscriptions: subscriptions,
+  });
+
+  mock.onGet(/^.*tag\/list/).reply(200, {
+    tags: tags,
+  });
+
+  mock.onGet(/^.*stream\/contents/).reply(200, {
+    items: feeds,
+  });
+
+  mock.onGet(/^.*preference\/stream\/list/).reply(200, {
+    streamprefs: streamprefs,
+  });
+
+  mock.onPost(/^.*edit-tag/).reply(200, "ok");
+
+  return mock;
+};
