@@ -33,11 +33,11 @@ const Home = () => {
   const { height: windowHeight } = useWindowSize();
   const { viewType, setViewType } = useContext(ViewTypeContext);
   const { setting, setSetting } = useContext(SettingContext);
-
   const history = useHistory();
 
   const closeOverviewPane = (): void => setIsOverViewPaneOpen(false);
-  const toggleOverviewPane = (): void => setIsOverViewPaneOpen((isOverViewPaneOpen)=>!isOverViewPaneOpen);
+  const toggleOverviewPane = (): void =>
+    setIsOverViewPaneOpen((isOverViewPaneOpen) => !isOverViewPaneOpen);
 
   // 切换当前的订阅源的时候关闭订阅源选择菜单
   useEffect(() => {
@@ -117,12 +117,12 @@ const Home = () => {
       style={{ height: windowHeight }}
     >
       <SideBar
-      toggleOverviewPane={toggleOverviewPane}
+        toggleOverviewPane={toggleOverviewPane}
         setIsOverViewPaneOpen={setIsOverViewPaneOpen}
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
         setIsAddFeedModalOpen={setIsAddFeedModalOpen}
       />
-      <FeedPage isOverViewPaneOpen={isOverViewPaneOpen}/>
+      <FeedPage isOverViewPaneOpen={isOverViewPaneOpen} />
       <Modal
         isOpen={isAddFeedModalOpen}
         isBlocking={false}

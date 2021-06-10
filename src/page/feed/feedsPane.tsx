@@ -224,14 +224,6 @@ const FeedsPane = ({
     return result;
   };
 
-  const getRootClassName = () => {
-    let result = `${className} bg-white `;
-    if (viewType !== ViewType.list) {
-      result = result + "max-w-3xl mx-auto";
-    }
-    return result;
-  };
-
   const paddingHori = viewType === ViewType.threeway ? "px-4" : "px-6";
 
   if (!isEmpty(streamContents)) {
@@ -245,7 +237,7 @@ const FeedsPane = ({
           verticalAlign="center"
           className={`pt-4 pb-2 border-t ${paddingHori}`}
         >
-          <div className="flex-1 font-bold text-lg text-gray-600">
+          <div className="flex-1 font-bold text-xl text-gray-600">
             {props.group!.name}
           </div>
         </Stack>
@@ -290,7 +282,7 @@ const FeedsPane = ({
     };
 
     return (
-      <div className={getRootClassName()}>
+      <div className={className}>
         <div className="border-b">
           <SubscriptionInfoCard rootClassName="px-6" />
         </div>
@@ -310,7 +302,7 @@ const FeedsPane = ({
   } else {
     if (streamContentQuery.isFetching) {
       return (
-        <div className={`${getRootClassName()} h-full`}>
+        <div className={`${className} h-full`}>
           <FeedShimmer />
         </div>
       );

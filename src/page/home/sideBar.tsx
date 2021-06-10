@@ -19,6 +19,13 @@ import { ViewType, ViewTypeContext } from "../../context/viewType";
 import SideBarItem from "./sideBarButton";
 import classnames from "classnames";
 import queryString from "query-string";
+import { UserInfoContext } from "./../../context/userInfo";
+import {
+  FeedThumbnailDisplayType,
+  SettingContext,
+  SettingState,
+} from "../../context/setting";
+import { produce } from "immer";
 
 const globalNavButtonIcon: IIconProps = { iconName: "GlobalNavButton" };
 const filterIcon: IIconProps = { iconName: "Filter" };
@@ -46,6 +53,14 @@ const SideBar = ({
   const [isSidePaneOpen, setIsSidePaneOpen] = useState<boolean>(false);
   const [isLoaddingFeeds, setIsLoaddingFeeds] = useState<boolean>(false);
   const { pathname } = useLocation();
+  const { setting, setSetting } = useContext(SettingContext);
+  const { setViewType } = useContext(ViewTypeContext);
+  const userInfo = useContext(UserInfoContext);
+  const history = useHistory();
+  const location = useLocation();
+  const qs = queryString.parse(location.search);
+
+  const thumbnailDisplay = setting.feed.feedThumbnailDisplayType;
 
   useEffect(() => {
     let timeout;
@@ -55,10 +70,13 @@ const SideBar = ({
     return () => clearTimeout(timeout);
   }, [isLoaddingFeeds]);
 
-  const { setViewType } = useContext(ViewTypeContext);
-
-  const history = useHistory();
-  const location = useLocation();
+  const setThumbnailDisplay = (e, item): void => {
+    setSetting(
+      produce<SettingState>((draft) => {
+        draft.feed.feedThumbnailDisplayType = item?.key;
+      })
+    );
+  };
 
   const toggleSidePane = (): void => setIsSidePaneOpen(!isSidePaneOpen);
 
@@ -76,39 +94,62 @@ const SideBar = ({
 
   const handleProfileClick = async () => {};
 
-  const handleHamburgerMenuBtnClick = () => {
-    toggleOverviewPane();
-  };
+  const handleHamburgerMenuBtnClick = () => {};
+
+  const getThumbnailSwitchMenuItem = (key, text) => ({
+    key,
+    text,
+    iconProps: {
+      iconName: thumbnailDisplay === key ? "RadioBtnOn" : "RadioBtnOff",
+    },
+    onClick: setThumbnailDisplay,
+  });
 
   const menuProps: IContextualMenuProps = {
     alignTargetEdge: true,
     directionalHint: DirectionalHint.rightTopEdge,
     items: [
       {
+        key: "Feed",
+        itemType: ContextualMenuItemType.Header,
+        onRenderIcon: () => null,
+        text: "Feed",
+      },
+      {
         key: "UnreadOnly",
-        onRender: () => {
-          const qs = queryString.parse(location.search);
-          qs["unreadOnly"] = qs["unreadOnly"] === "1" ? "0" : "1";
-          const onChange = () => {
-            history.push({
-              pathname: "/feed",
-              search: queryString.stringify(qs),
-            });
+        text: "unread only",
+        iconProps: {
+          iconName: qs.unreadOnly === '1' ? 'CheckboxComposite' : "Checkbox",
+        },
+        onClick: () => {
+          const newSearch = {
+            ...qs,
+            unreadOnly: qs.unreadOnly === "0" ? "1" : "0",
           };
-
-          return (
-            <div>
-              <Toggle
-                className="p-2 pb-0"
-                label="Unread Only"
-                inlineLabel
-                onChange={onChange}
-                checked={qs["unreadOnly"] === "0"}
-              />
-            </div>
-          );
+          history.push({
+            pathname: "/feed",
+            search: queryString.stringify(newSearch),
+          });
         },
       },
+      {
+        key: "Thumbnail",
+        itemType: ContextualMenuItemType.Header,
+        onRenderIcon: () => null,
+        text: "Thumbnail",
+      },
+      getThumbnailSwitchMenuItem(
+        FeedThumbnailDisplayType.alwaysDisplay,
+        "aways"
+      ),
+      getThumbnailSwitchMenuItem(
+        FeedThumbnailDisplayType.alwaysNotDisplay,
+        "aways not"
+      ),
+      getThumbnailSwitchMenuItem(
+        FeedThumbnailDisplayType.displayWhenThumbnaillExist,
+        "auto"
+      ),
       {
         key: "Views",
         itemType: ContextualMenuItemType.Header,
@@ -140,6 +181,11 @@ const SideBar = ({
     alignTargetEdge: true,
     directionalHint: DirectionalHint.rightTopEdge,
     items: [
+      {
+        key: "userName",
+        text: userInfo.userName,
+        iconProps: { iconName: "Contact" },
+      },
       {
         key: "logoff",
         text: "logoff",

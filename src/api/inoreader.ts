@@ -1,11 +1,10 @@
 import { fetch } from "./index";
-import { InoreaderTag } from '../page/feed/overviewPane'
+import { InoreaderTag } from "../page/feed/overviewPane";
 
 export enum TextDirection {
   ltr = "ltr",
   rtl = "rtl",
 }
-
 export interface StreamContentItem {
   alternate: { href: string; type: string }[];
   annotations: any[];
@@ -46,7 +45,7 @@ export interface StreamContentsResponse {
 export interface IdValuePair {
   id: string;
   value: string;
-} 
+}
 
 export interface StreamPreferenceListResponse {
   streamprefs: {
@@ -93,7 +92,9 @@ export const inoreader = {
   // User information
   getUserInfo: () => fetch.get(`/reader/api/0/user-info`),
   getStreamPreferenceList: () =>
-    fetch.get<StreamPreferenceListResponse>(`/reader/api/0/preference/stream/list`),
+    fetch.get<StreamPreferenceListResponse>(
+      `/reader/api/0/preference/stream/list`
+    ),
   // Add subscription
   addSubscription: (url: string) =>
     fetch.post(`/reader/api/0/subscription/quickadd`, null, {

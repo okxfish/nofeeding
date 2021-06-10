@@ -1,6 +1,38 @@
 import { default as axios } from "axios";
 import { auth } from "./auth";
 import { inoreader } from "./inoreader";
+import MockAdapter from "axios-mock-adapter";
+import { getStreamprefs, getSubscriptions, getTags, getFeeds } from './mockData';
+
+const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
+
+mock.onGet(/^.*user-info$/).reply(200, {
+  isBloggerUser: false,
+  isMultiLoginEnabled: false,
+  signupTimeSec: 1516257049,
+  userEmail: "1119548217@qq.com",
+  userId: "1006201176",
+  userName: "1119548217",
+  userProfileId: "1006201176",
+});
+
+mock.onGet(/^.*subscription\/list/).reply(200, {
+  subscriptions: getSubscriptions()
+});
+
+mock.onGet(/^.*tag\/list/).reply(200, {
+  tags: getTags()
+});
+
+mock.onGet(/^.*stream\/contents/).reply(200, {
+  items: getFeeds()
+});
+
+mock.onGet(/^.*preference\/stream\/list/).reply(200, {
+  streamprefs: getStreamprefs()
+});
+
+mock.onPost(/^.*edit-tag/).reply(200, 'ok');
 
 export const INOREADER_AUTH_URL =
   process.env.NODE_ENV === "development"
@@ -55,5 +87,19 @@ fetch.interceptors.response.use(
 );
 
 const api = { auth, inoreader };
+
+// Mock.mock('http://localhost:8080/www.innoreader.com/reader/api/0/user-info', "GET", () => {
+//   debugger
+//   console.log('Mock.mock(/^.*user-info$/, "GET"');
+//   return createResponse({
+//     isBloggerUser: false,
+//     isMultiLoginEnabled: false,
+//     signupTimeSec: 1516257049,
+//     userEmail: "1119548217@qq.com",
+//     userId: "fuckyou",
+//     userName: "1119548217",
+//     userProfileId: "1006201176",
+//   });
+// });
 
 export { api as default, fetch };

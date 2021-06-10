@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useContext } from "react";
-import { useSearchParam } from "../../utils/useSearchParma";
 import { useQuery } from "react-query";
 
 import { ArticleContext } from "../../context/article";
@@ -107,22 +106,24 @@ const FeedContainer = ({ isOverViewPaneOpen }) => {
     <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
         <div
-          className={classnames(
-            "hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all",
-            {
-              "w-0": isOverViewPaneOpen,
-            }
-          )}
+          className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72"
           style={{ backgroundColor: NeutralColors.gray10 }}
         >
           <OverviewPane />
         </div>
         <div
-          className="overflow-scroll scrollbar h-full bg-gray-100 max-w-xl w-full"
+          className={classnames(
+            "overflow-scroll scrollbar h-full bg-gray-100 w-112 transition-all",
+            {
+              "flex-1": viewType !== ViewType.threeway,
+            }
+          )}
           data-is-scrollable
         >
           <FeedsPane
-            className="transition-all"
+            className={classnames(" bg-white", {
+              "max-w-3xl mx-auto": viewType !== ViewType.list,
+            })}
             currenActivedFeedId={currenActivedFeedId}
             setCurrenActivedFeedId={setCurrenActivedFeedId}
             setCurrenActivedFeedIndex={setCurrenActivedFeedIndex}
@@ -130,7 +131,7 @@ const FeedContainer = ({ isOverViewPaneOpen }) => {
           />
         </div>
         {viewType === ViewType.threeway && (
-          <div className="hidden xl:block">
+          <div className="flex-1" style={{minWidth: '32rem'}}>
             <ArticlePane className="h-full" />
           </div>
         )}

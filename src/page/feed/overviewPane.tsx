@@ -116,6 +116,7 @@ const OverviewPane = ({ className }: Props) => {
     async () => {
       const res = await api.inoreader.getFolderOrTagList(1, 1);
       const tags = res.data.tags;
+      console.log(tags);
       const foldersNormalized = normalize<InoreaderTag, FolderEntity>(tags, [
         folder,
       ]);
@@ -197,7 +198,7 @@ const OverviewPane = ({ className }: Props) => {
   };
 
   const isFeedId = (id: string): boolean => {
-    return id.startsWith("feed/");
+    return !!id && id.startsWith("feed/");
   };
 
   const getFolderById = (id: string): Folder =>
