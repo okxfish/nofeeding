@@ -6,6 +6,7 @@ import {
   Nav,
   IRenderFunction,
   Icon,
+  INavLinkGroup,
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory, useLocation } from "react-router-dom";
@@ -19,9 +20,14 @@ import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
 import { SettingContext } from "./../../context/setting";
 import { StreamPreferenceListResponse } from "./../../api/inoreader";
 import { UserInfoContext } from "./../../context/userInfo";
+import { Tag } from "../../api/mockData";
 
 export interface Props {
   className?: string;
+}
+
+export interface KeyValuePair<T> {
+  [key: string]: T;
 }
 
 export interface Sortable {
@@ -86,7 +92,6 @@ const OverviewPane = ({ className }: Props) => {
   >(
     "home/subscriptionsListQuery",
     async () => {
-      console.info('fetching subscriptionList')
       const subscriptionList = await api.inoreader.getSubscriptionList();
       const subscriptions = get(subscriptionList, "data.subscriptions");
       const subscriptionsNormalized = normalize<
@@ -117,7 +122,6 @@ const OverviewPane = ({ className }: Props) => {
     async () => {
       const res = await api.inoreader.getFolderOrTagList(1, 1);
       const tags = res.data.tags;
-      console.log(tags);
       const foldersNormalized = normalize<InoreaderTag, FolderEntity>(tags, [
         folder,
       ]);
@@ -169,101 +173,6 @@ const OverviewPane = ({ className }: Props) => {
     return null;
   }
 
-  const createIdTableIndexedBySortid = (tagsById: {
-    [id: string]: Sortable;
-  }): { [sortId: string]: string } => {
-    let result = {};
-    for (const id in tagsById) {
-      if (Object.prototype.hasOwnProperty.call(tagsById, id)) {
-        const tag = tagsById[id];
-        result[tag.sortid] = id;
-      }
-    }
-    return result;
-  };
-
-  const getIdBySortid = (sortid: string): string => {
-    const subscriptionIdTableIndexBySortid = createIdTableIndexedBySortid(
-      subscriptionsListQuery.data.entities.subscription
-    );
-
-    const tagIdTableIndexBySortid = createIdTableIndexedBySortid(
-      folderQuery.data.entities.folder
-    );
-
-    const sortidToIdMap = {
-      ...subscriptionIdTableIndexBySortid,
-      ...tagIdTableIndexBySortid,
-    };
-    return sortidToIdMap[sortid];
-  };
-
-  const isFeedId = (id: string): boolean => {
-    return !!id && id.startsWith("feed/");
-  };
-
-  const getFolderById = (id: string): Folder =>
-    folderQuery.data.entities.folder[id];
-
-  const getSubscriptionById = (id: string): Subscription =>
-    subscriptionsListQuery.data.entities.subscription[id];
-
-  const getStreamPrefById = (id: string): IdValuePair[] => {
-    return streamPreferencesQuery.data.streamprefs[id];
-  };
-
-  const getSortIdString = (streamPref: IdValuePair[]): string => {
-    return streamPref[streamPref.length - 1]?.value;
-  };
-
-  const chunck = (str: string): string[] => {
-    return str.match(/.{1,8}/g) || [];
-  };
-
-  const getTagName = (folderId: string): string => {
-    const slice: string[] = folderId.split("/");
-    return slice[slice.length - 1];
-  };
-
-  const getNavLinks = (id: string): any => {
-    const url = `/feed?streamId=${id}`;
-    if (isFeedId(id)) {
-      const subscription = getSubscriptionById(id);
-      return {
-        name: subscription.title,
-        key: id,
-        url: url,
-        type: "feed",
-        iconUrl: subscription.iconUrl,
-      };
-    } else {
-      const tag = getFolderById(id);
-      if (tag && tag.type === "tag") {
-        return {
-          name: getTagName(id),
-          key: id,
-          url: url,
-          type: "tag",
-          unreadCount: tag.unread_count,
-        };
-      } else {
-        const streamPref = getStreamPrefById(id);
-        const sortIdString = getSortIdString(streamPref);
-        const childrenSortIds = chunck(sortIdString);
-        const links = childrenSortIds.map(getIdBySortid).map(getNavLinks);
-        const name = getTagName(id);
-        return {
-          name: name === "root" ? "Feed" : name,
-          links: links,
-          key: id,
-          url: url,
-          type: "folder",
-          unreadCount: tag?.unread_count,
-        };
-      }
-    }
-  };
-
   const handleLinkClick = (
     e?: React.MouseEvent<HTMLElement>,
     item?: INavLink
@@ -276,9 +185,180 @@ const OverviewPane = ({ className }: Props) => {
     });
   };
 
-  const groups = userInfo
-    ? [getNavLinks(`user/${userInfo.userId}/state/com.google/root`)]
-    : [];
+  const getIdBySortidCurry = ({
+    subscriptionById,
+    tagsById,
+  }: {
+    subscriptionById: {
+      [key: string]: Subscription;
+    };
+    tagsById: {
+      [key: string]: Folder;
+    };
+  }) => {
+    const createIdTableIndexedBySortid = (tagsById: {
+      [id: string]: Sortable;
+    }): { [sortId: string]: string } => {
+      let result = {};
+      for (const id in tagsById) {
+        if (Object.prototype.hasOwnProperty.call(tagsById, id)) {
+          const tag = tagsById[id];
+          result[tag.sortid] = id;
+        }
+      }
+      return result;
+    };
+
+    const subscriptionIdTableIndexBySortid =
+      createIdTableIndexedBySortid(subscriptionById);
+
+    const tagIdTableIndexBySortid = createIdTableIndexedBySortid(tagsById);
+
+    const sortidToIdMap = {
+      ...subscriptionIdTableIndexBySortid,
+      ...tagIdTableIndexBySortid,
+    };
+
+    return (sortid: string) => sortidToIdMap[sortid];
+  };
+
+  const createLinkUrl = ((search: string) => {
+    const queryObject = queryString.parse(search);
+    return (id: string) => {
+      return `/feed?${queryString.stringify({
+        ...queryObject,
+        streamId: id,
+      })}`;
+    };
+  })(location.search);
+
+  const getLinks = (streamPref): any[] => {
+    const getSortIdString = (streamPref: IdValuePair[]): string => {
+      return streamPref[streamPref.length - 1]?.value;
+    };
+
+    const chunck = (str: string): string[] => {
+      return str.match(/.{1,8}/g) || [];
+    };
+
+    const sortIdString = getSortIdString(streamPref);
+    const childrenSortIds = chunck(sortIdString);
+    const links = childrenSortIds;
+    return links;
+  };
+
+  const getTagNameFromId = (tagId: string): string => {
+    const slice: string[] = tagId.split("/");
+    return slice[slice.length - 1];
+  };
+
+  const createLink = (subscription: Subscription): INavLink => {
+    return {
+      name: subscription.title,
+      key: subscription.id,
+      url: createLinkUrl(subscription.id),
+      type: "feed",
+      iconUrl: subscription.iconUrl,
+    };
+  };
+
+  const createTagLink = (tag: Tag): INavLink => {
+    return {
+      name: getTagNameFromId(tag.id),
+      key: tag.id,
+      url: createLinkUrl(tag.id),
+      type: "tag",
+      unreadCount: tag.unread_count,
+    };
+  };
+
+  const createFolderLink = (tag: Tag, links: INavLink[], id?:string): INavLink => {
+    if (!tag && id) {
+      const name = getTagNameFromId(id);
+      return {
+        name,
+        key: id,
+        links: links,
+        url: createLinkUrl(id),
+      }
+    } else {
+      const name = getTagNameFromId(tag.id);
+      return {
+        name: name,
+        links: links,
+        key: tag.id,
+        url: createLinkUrl(tag.id),
+        type: "folder",
+        unreadCount: tag?.unread_count,
+      };
+    }
+  };
+
+  const getNavLinkGroupProps = (
+    rootStreamId: string,
+    {
+      subscriptionById,
+      tagsById,
+      streamPrefById,
+    }: {
+      subscriptionById: KeyValuePair<Subscription>;
+      tagsById: KeyValuePair<Folder>;
+      streamPrefById: KeyValuePair<IdValuePair[]>;
+    }
+  ): INavLinkGroup | null => {
+    if (!subscriptionById || !tagsById || !streamPrefById) {
+      return null;
+    }
+
+    const getIdBySortid = getIdBySortidCurry({ subscriptionById, tagsById });
+
+    const _getNavLinkGroupProps = (id: string): any => {
+      const isFeedId = (id: string): boolean => {
+        return !!id && id.startsWith("feed/");
+      };
+
+      if (isFeedId(id)) {
+        const subscription = subscriptionById[id];
+        return createLink(subscription);
+      } else {
+        const tag = tagsById[id];
+        if (tag && tag.type === "tag") {
+          return createTagLink(tag);
+        } else {
+          const links = getLinks(streamPrefById[id])
+            .map(getIdBySortid)
+            .map(_getNavLinkGroupProps);
+          
+          return createFolderLink(tag, links, id );
+        }
+      }
+    };
+
+    return _getNavLinkGroupProps(rootStreamId);
+  };
+
+  const group = getNavLinkGroupProps(
+    `user/${userInfo?.userId}/state/com.google/root`,
+    {
+      subscriptionById: get(
+        subscriptionsListQuery,
+        "data.entities.subscription"
+      ),
+      tagsById: get(folderQuery, "data.entities.folder"),
+      streamPrefById: get(streamPreferencesQuery, "data.streamprefs"),
+    }
+  );
+
+  const handleAllFeedClick = () => history.push("/feed");
+
+  const handleStarFeedClick = () =>
+    history.push({
+      pathname: "/feed",
+      search: queryString.stringify({
+        streamId: SystemStreamIDs.STARRED,
+        unreadOnly: "0",
+      }),
+    });
 
   return (
     <Stack className={`${className} min-h-0`}>
@@ -286,28 +366,20 @@ const OverviewPane = ({ className }: Props) => {
         className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
         text="all"
-        onClick={() => history.push("/feed")}
+        onClick={handleAllFeedClick}
       />
       <OverviewCell
         className={commonPx}
         iconProps={{ iconName: "FavoriteStar" }}
         text="star"
-        onClick={() =>
-          history.push({
-            pathname: "/feed",
-            search: queryString.stringify({
-              streamId: SystemStreamIDs.STARRED,
-              unreadOnly: "0",
-            }),
-          })
-        }
+        onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "bg-transparent", link: 'pl-8 pr-6' }}
-        groups={groups}
+        styles={{ chevronButton: "bg-transparent", link: "pl-8 pr-6" }}
+        groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}
-        onRenderGroupHeader={(()=>null)}
+        onRenderGroupHeader={() => null}
       />
     </Stack>
   );

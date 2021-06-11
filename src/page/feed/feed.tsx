@@ -28,15 +28,11 @@ import queryString from "query-string";
 
 const article = new schema.Entity<FeedProps>("article");
 
-export interface Props {
-  isOverViewPaneOpen: boolean;
-}
-
 export interface ArticleEntity {
   article: { [key: string]: FeedProps };
 }
 
-const FeedContainer = ({ isOverViewPaneOpen }) => {
+const FeedContainer = () => {
   const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
   const [currenActivedFeedIndex, setCurrenActivedFeedIndex] =
     useState<number>(-1);

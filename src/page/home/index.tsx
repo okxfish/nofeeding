@@ -9,7 +9,6 @@ import ViewSettingPane from "./viewSettingPane";
 import SideBar from "./sideBar";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
-import "./style.css";
 
 const Home = () => {
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
@@ -38,7 +37,7 @@ const Home = () => {
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
         setIsAddFeedModalOpen={setIsAddFeedModalOpen}
       />
-      <FeedPage isOverViewPaneOpen={isOverViewPaneOpen} />
+      <FeedPage />
       <Modal
         isOpen={isAddFeedModalOpen}
         isBlocking={false}
