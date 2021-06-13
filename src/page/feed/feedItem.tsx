@@ -162,4 +162,4 @@ const FeedItem = ({
   );
 };
 
-export default FeedItem;
+export default React.memo(FeedItem);

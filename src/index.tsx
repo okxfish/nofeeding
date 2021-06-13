@@ -8,6 +8,7 @@ import { default as dayjs } from "dayjs";
 import { default as relativeTime } from "dayjs/plugin/relativeTime";
 import { default as localizedFormat } from "dayjs/plugin/localizedFormat";
 import 'dayjs/locale/zh-cn' // 导入本地化语言
+import Test from "./Test";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);

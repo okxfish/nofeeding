@@ -11,12 +11,13 @@ import Oauth from "./page/oauth/index";
 import { ViewType, ViewTypeContext } from "./context/viewType";
 import { initSetting, SettingContext } from "./context/setting";
 import { UserInfoContext } from "./context/userInfo";
-import { default as api } from './api';
+import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
-import { useQuery } from 'react-query';
+import { useQuery } from "react-query";
 
 import "./App.css";
 import "./style/utils.css";
+import Test from "./Test";
 
 const CallBackOnUnmount = ({ cb }) => {
   useEffect(() => () => cb(), [cb]);
@@ -32,13 +33,34 @@ function App() {
   const [setting, setSetting] = useState(initSetting);
   const inoreaderToken = useInoreaderToken();
 
-  const userInfoQuery = useQuery(['userInfo', inoreaderToken], async ()=>{
-    const res = await api.inoreader.getUserInfo();
-    return res.data;
-  }, {
-    refetchOnWindowFocus: false,
-    enabled: !!inoreaderToken
-  })
+  const userInfoQuery = useQuery(
+    ["userInfo", inoreaderToken],
+    async () => {
+      const res = await api.inoreader.getUserInfo();
+      return res.data;
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!inoreaderToken,
+    }
+  );
+
+  const loaddingAnimationRender = () => {
+    return (
+      <CSSTransition
+        in={isLoading}
+        timeout={{
+          exit: 400,
+        }}
+        unmountOnExit
+        className="fixed top-0 left-0 w-screen h-screen flex flex-col items-center pt-32 z-50 full-screen-loading__animation-wrapper"
+      >
+        <div className="full-screen-loading__wrapper">
+          <BookFilp />
+        </div>
+      </CSSTransition>
+    );
+  };
 
   return (
     <div className="App">
@@ -46,19 +68,7 @@ function App() {
         <UserInfoContext.Provider value={userInfoQuery.data}>
           <ViewTypeContext.Provider value={{ viewType, setViewType }}>
             <Router>
-              <CSSTransition
-                in={isLoading}
-                timeout={{
-                  exit: 400,
-                }}
-                unmountOnExit
-                className="fixed top-0 left-0 w-screen h-screen flex flex-col items-center pt-32 z-50 full-screen-loading__animation-wrapper"
-              >
-                <div className="full-screen-loading__wrapper">
-                  <BookFilp />
-                  {/* <div className="mt-4 text-sm">loading...</div> */}
-                </div>
-              </CSSTransition>
+              {/* {loaddingAnimationRender()} */}
               <Suspense
                 fallback={<CallBackOnUnmount cb={() => setIsLoading(false)} />}
               >

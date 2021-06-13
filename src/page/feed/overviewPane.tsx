@@ -232,7 +232,7 @@ const OverviewPane = ({ className }: Props) => {
     };
   })(location.search);
 
-  const getLinks = (streamPref): any[] => {
+  const getLinks = (streamPref:IdValuePair[]): any[] => {
     const getSortIdString = (streamPref: IdValuePair[]): string => {
       return streamPref[streamPref.length - 1]?.value;
     };

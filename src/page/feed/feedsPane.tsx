@@ -1,4 +1,4 @@
-import { default as React, useCallback, useContext } from "react";
+import { default as React, useCallback, useContext, useEffect } from "react";
 import { FeedContext } from "../../context/feed";
 
 import {
@@ -8,7 +8,10 @@ import {
   FontIcon,
   IGroup,
   Stack,
+  Spinner,
+  SpinnerSize,
 } from "@fluentui/react";
+import InfiniteScroll from "react-infinite-scroller";
 
 import { produce } from "immer";
 import FeedItemComponent from "./feedItem";
@@ -17,12 +20,13 @@ import { default as api } from "../../api";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { isEmpty, get, groupBy } from "lodash";
 import { useQueryClient, useMutation } from "react-query";
-import dayjs from "dayjs";
 import { useUpdateEffect } from "react-use";
+import dayjs from "dayjs";
 import FeedShimmer from "./feedShimmer";
 import SubscriptionInfoCard from "./subscriptionInfoCard";
 export interface Props {
   className?: string;
+  getScrollParent(): any;
   currenActivedFeedId: string;
   setCurrenActivedFeedId: React.Dispatch<React.SetStateAction<string>>;
   setIsArticleModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,28 +35,18 @@ export interface Props {
 
 const FeedsPane = ({
   className,
+  getScrollParent,
   currenActivedFeedId,
   setCurrenActivedFeedId,
   setCurrenActivedFeedIndex,
   setIsArticleModalOpen,
 }: Props) => {
   const { viewType } = useContext(ViewTypeContext);
-  const queryClient = useQueryClient();
-  const { streamContentQuery, streamContentQueryKey } = useContext(FeedContext);
-
-  const setArticleDataById = useCallback(
-    (articleId: string, updater: any): void =>
-      queryClient.setQueryData(
-        streamContentQueryKey,
-        produce((data) => {
-          const article = get(data, `entities.article['${articleId}']`);
-          if (typeof article !== "undefined") {
-            updater(article);
-          }
-        })
-      ),
-    [queryClient, streamContentQueryKey]
-  );
+  const {
+    streamContentQuery,
+    streamContentData,
+    setArticleDataById,
+  } = useContext(FeedContext);
 
   const openArticleInner = useCallback(
     (articleId: string) => {
@@ -75,16 +69,13 @@ const FeedsPane = ({
     [currenActivedFeedId, setArticleDataById]
   );
 
-  const closeArticleInner = useCallback(
-    (articleId: string) => {
-      if (articleId !== "") {
-        setArticleDataById(articleId, (article) => {
-          article.isInnerArticleShow = false;
-        });
-      }
-    },
-    [setArticleDataById]
-  );
+  const closeArticleInner = (articleId: string) => {
+    if (articleId !== "") {
+      setArticleDataById(articleId, (article) => {
+        article.isInnerArticleShow = false;
+      });
+    }
+  };
 
   const displayArticle = useCallback(
     (articleId) => {
@@ -149,7 +140,12 @@ const FeedsPane = ({
       displayArticle(articleId);
       markAsReadMutation.mutate({ id: articleId, asUnread: false });
     },
-    [displayArticle, markAsReadMutation, setCurrenActivedFeedId, setCurrenActivedFeedIndex]
+    [
+      displayArticle,
+      markAsReadMutation,
+      setCurrenActivedFeedId,
+      setCurrenActivedFeedIndex,
+    ]
   );
 
   const handleArticleItemStar = useCallback(
@@ -176,11 +172,7 @@ const FeedsPane = ({
     if (viewType !== ViewType.list) {
       closeArticleInner(currenActivedFeedId);
     }
-  }, [viewType, closeArticleInner, currenActivedFeedId]);
-
-  const streamContents = streamContentQuery.data?.result.map(
-    (feedId) => streamContentQuery.data?.entities.article[feedId]
-  );
+  }, [viewType, currenActivedFeedId]);
 
   const getGroups = (streamContents: FeedItem[]): IGroup[] => {
     const streamContentsGrouped = groupBy(streamContents, (article) => {
@@ -226,7 +218,7 @@ const FeedsPane = ({
 
   const paddingHori = viewType === ViewType.threeway ? "px-4" : "px-6";
 
-  if (!isEmpty(streamContents)) {
+  if (!isEmpty(streamContentData)) {
     const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
       if (!props || !props.group) {
         return null;
@@ -282,22 +274,40 @@ const FeedsPane = ({
     };
 
     return (
-      <div className={className}>
+      <InfiniteScroll
+        getScrollParent={getScrollParent}
+        className={className}
+        initialLoad={false}
+        loadMore={streamContentQuery.fetchNextPage}
+        useWindow={false}
+        hasMore={
+          streamContentQuery.hasNextPage && !streamContentQuery.isFetching
+        }
+      >
         <div className="border-b">
           <SubscriptionInfoCard rootClassName="px-6" />
         </div>
         <GroupedList
-          items={streamContents}
+          items={streamContentData}
           onRenderCell={onRenderCell}
-          groups={getGroups(streamContents)}
-          onShouldVirtualize={()=>false}
+          groups={getGroups(streamContentData)}
+          onShouldVirtualize={() => false}
           usePageCache={true}
           groupProps={{
             onRenderHeader: onRenderHeader,
             onRenderFooter: onRenderFooter,
           }}
         />
-      </div>
+        <div>
+          {streamContentQuery.isFetching ? (
+            <Spinner
+              label="loading"
+              size={SpinnerSize.large}
+              styles={{ root: "m-auto h-32", circle: "border-2" }}
+            />
+          ) : null}
+        </div>
+      </InfiniteScroll>
     );
   } else {
     if (streamContentQuery.isFetching) {
@@ -317,4 +327,4 @@ const FeedsPane = ({
   }
 };
 
-export default FeedsPane;
+export default React.memo(FeedsPane);

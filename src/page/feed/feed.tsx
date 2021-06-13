@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useContext } from "react";
-import { useQuery } from "react-query";
+import React, {useRef, useMemo, useState, useContext } from "react";
+import { useQuery, useInfiniteQuery, useQueryClient } from "react-query";
 
 import { ArticleContext } from "../../context/article";
 import { FeedContext } from "../../context/feed";
@@ -26,10 +26,19 @@ import { NeutralColors } from "@fluentui/theme";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
+import { produce } from "immer";
+
 const article = new schema.Entity<FeedProps>("article");
 
-export interface ArticleEntity {
-  article: { [key: string]: FeedProps };
+interface ArticleEntitySchema {
+  article: {
+    [key: string]: any;
+  };
+}
+
+interface InfiniteNormalizedArticles
+  extends NormalizedSchema<ArticleEntitySchema, string[]> {
+  continuation: string;
 }
 
 const FeedContainer = () => {
@@ -38,7 +47,9 @@ const FeedContainer = () => {
     useState<number>(-1);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
+  const scrollParentRef = useRef<any>(null);
   const location = useLocation();
+  const queryClient = useQueryClient();
   const qs = queryString.parse(location.search);
   const streamId = qs.streamId;
   const unreadOnly = qs.unreadOnly;
@@ -48,8 +59,8 @@ const FeedContainer = () => {
     [streamId, unreadOnly]
   );
 
-  const resolveStreamContent = (data: StreamContentsResponse) => {
-    const transformedData: FeedItem[] = data.items.map((item, index) => {
+  const resolveResponse = (data: StreamContentsResponse):FeedItem[] => {
+    return data.items.map((item, index) => {
       const publishedTime: Dayjs = dayjs.unix(item.published);
       const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
       return {
@@ -67,40 +78,94 @@ const FeedContainer = () => {
         isInnerArticleShow: false,
       };
     });
-    const normalizeData = normalize<FeedProps, ArticleEntity, string[]>(
-      transformedData,
-      [article]
-    );
-    return normalizeData;
   };
 
   // 从服务器获取 feed 流，并且将响应数据转换成组件的状态，将数据范式化
-  const streamContentQuery = useQuery<
-    NormalizedSchema<ArticleEntity, string[]>
-  >(
+  const streamContentQuery = useInfiniteQuery<InfiniteNormalizedArticles>(
     streamContentQueryKey,
-    async ({ queryKey: [key, streamId='', unreadOnly='0'] }) => {
-      console.info(streamContentQueryKey, 'is fetching')
-      const exclude = unreadOnly ? SystemStreamIDs.READ : "";
-      const { data } = await api.inoreader.getStreamContents(String(streamId), {
+    async ({
+      queryKey: [key, streamId = "", unreadOnly = "0"],
+      pageParam = "",
+    }): Promise<InfiniteNormalizedArticles> => {
+      const exclude = unreadOnly === "1" ? SystemStreamIDs.READ : "";
+      const res = await api.inoreader.getStreamContents(String(streamId), {
         exclude: exclude,
+        continuation: pageParam,
       });
-      return resolveStreamContent(data);
+
+      const newNormalizedArticles = normalize<any, ArticleEntitySchema>(
+        resolveResponse(res.data),
+        [article]
+      );
+      return {
+        ...newNormalizedArticles,
+        continuation: res.data.continuation,
+      };
     },
     {
-      placeholderData: { entities: { article: {} }, result: [] },
       refetchOnWindowFocus: false,
+      retry: false,
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.continuation;
+      },
     }
   );
 
-  const activedArticle: FeedItem | null = get(
-    streamContentQuery.data,
-    `entities.article['${currenActivedFeedId}']`,
-    null
+  const getArticleById = (id: string, data: any) => {
+    if (typeof data === "undefined" || !Array.isArray(data.pages)) {
+      return null;
+    }
+
+    const pageResult = data.pages.find((page) => {
+      if (page.entities.article) {
+        return id in page.entities.article;
+      }else {
+        return false
+      }
+    });
+
+    if (pageResult) {
+      return pageResult.entities.article[id];
+    } else {
+      return null;
+    }
+  };
+
+  const setArticleDataById = (id, updater) => {
+    queryClient.setQueryData(
+      streamContentQueryKey,
+      produce((data) => {
+        const article = getArticleById(id, data);
+        if (article) {
+          updater(article);
+        }
+      })
+    );
+  };
+
+  let streamContentData: any[] = [];
+
+  if (streamContentQuery.data) {
+    streamContentData = streamContentQuery.data.pages
+      .map((pages, index) => {
+        const {
+          entities: { article },
+          result,
+        } = pages;
+        return result.map((id) => ({
+          ...article[id],
+        }));
+      })
+      .reduce((acc, cur) => [...acc, ...cur], []);
+  }
+
+  const activedArticle: FeedItem | null = getArticleById(
+    currenActivedFeedId,
+    streamContentQuery.data
   );
 
   return (
-    <FeedContext.Provider value={{ streamContentQuery, streamContentQueryKey }}>
+    <FeedContext.Provider value={{ streamContentQuery, streamContentData, setArticleDataById, streamContentQueryKey }}>
       <ArticleContext.Provider value={activedArticle}>
         <div
           className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72"
@@ -109,6 +174,7 @@ const FeedContainer = () => {
           <OverviewPane />
         </div>
         <div
+        ref={scrollParentRef}
           className={classnames(
             "overflow-scroll scrollbar h-full bg-gray-100 w-128 transition-all",
             {
@@ -121,6 +187,7 @@ const FeedContainer = () => {
             className={classnames(" bg-white", {
               "max-w-3xl mx-auto": viewType !== ViewType.list,
             })}
+            getScrollParent={()=>scrollParentRef.current}
             currenActivedFeedId={currenActivedFeedId}
             setCurrenActivedFeedId={setCurrenActivedFeedId}
             setCurrenActivedFeedIndex={setCurrenActivedFeedIndex}
@@ -128,7 +195,7 @@ const FeedContainer = () => {
           />
         </div>
         {viewType === ViewType.threeway && (
-          <div className="flex-1" style={{minWidth: '32rem'}}>
+          <div className="flex-1" style={{ minWidth: "32rem" }}>
             <ArticlePane className="h-full" />
           </div>
         )}

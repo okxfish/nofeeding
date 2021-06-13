@@ -4,7 +4,7 @@ import { inoreader } from "./inoreader";
 import { mockSetup } from './mockData';
 
 if(process.env.NODE_ENV === "development"){
-  mockSetup(axios);
+  // mockSetup(axios);
 }
 
 export const INOREADER_AUTH_URL =

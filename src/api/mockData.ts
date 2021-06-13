@@ -200,7 +200,6 @@ const _getFeeds = (number: number) => {
 };
 
 const tags = _getTags(10);
-const feeds = _getFeeds(10);
 const rootTagId = generateSystemTagId(USER_ID, "root");
 const streamprefs = {};
 streamprefs[rootTagId] = createStreampref("", true);
@@ -213,6 +212,20 @@ for (let index = 0; index < tags.length; index++) {
   streamprefs[rootTagId][0].value += tag.sortid;
   streamprefs[tag.id] = streampref;
 }
+
+const generatePagesFeed = (count:number, pageSize: number) => {
+  const result = {};
+  for (let index = 0; index < count; index++) {
+    const next = (index === count - 1) ? '' : (index + 1); 
+    result[String(index)] = {
+      continuation: String(next),
+      items: _getFeeds(pageSize)
+    }
+  }
+  return result;
+}
+
+const pagesFeed = generatePagesFeed(10, 10);
 
 export const mockSetup = (axios) => {
   const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
@@ -235,8 +248,12 @@ export const mockSetup = (axios) => {
     tags: tags,
   });
 
-  mock.onGet(/^.*stream\/contents/).reply(200, {
-    items: feeds,
+  mock.onGet(/^.*stream\/contents/).reply((config) => {
+    console.log('pagesFeed', pagesFeed);
+    return [
+      200,
+      pagesFeed[config.params.c || 0],
+    ];
   });
 
   mock.onGet(/^.*preference\/stream\/list/).reply(200, {
