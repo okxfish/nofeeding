@@ -24,11 +24,10 @@ export interface FeedGroup {
   children: any[];
 }
 
-export interface FeedProps {
+export interface FeedProps extends FeedItem{
   className?: string;
   rootClassName?: string;
   itemClassName?: string;
-  data: FeedItem;
   onClick?(item:FeedItem, index:number, e:any):void;
   onStar?(item:FeedItem, index:number, e:any):void;
   onRead?(item:FeedItem, index:number, e:any):void;

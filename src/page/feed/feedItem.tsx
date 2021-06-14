@@ -9,7 +9,7 @@ import {
   IButtonProps,
 } from "@fluentui/react";
 import classnames from "classnames";
-import { FeedProps } from "./types";
+import { FeedProps, FeedItem } from "./types";
 import ArticlePane from "./articlePane";
 import { ViewType, ViewTypeContext } from "../../context/viewType";
 import { default as dayjs, Dayjs } from "dayjs";
@@ -28,8 +28,21 @@ const favoriteStarFillIcon: IIconProps = { iconName: "FavoriteStarFill" };
 const radioBtnOffIcon: IIconProps = { iconName: "RadioBtnOff" };
 const radioBtnOnIcon: IIconProps = { iconName: "RadioBtnOn" };
 
-const FeedItem = ({
-  data,
+const FeedItemComponent = ({
+  id,
+  title,
+  summary,
+  thumbnailSrc,
+  content,
+  url,
+  sourceName,
+  sourceID,
+  publishedTime,
+  isRead,
+  isStar,
+  isInnerArticleShow,
+  starButtonProps,
+  unreadMarkButtonProps,
   itemIndex,
   isSelected,
   className,
@@ -42,6 +55,21 @@ const FeedItem = ({
   const { viewType } = useContext(ViewTypeContext);
   const { setting } = useContext(SettingContext);
 
+  const data: FeedItem = {
+    id,
+    title,
+    summary,
+    thumbnailSrc,
+    content,
+    url,
+    sourceName,
+    sourceID,
+    publishedTime,
+    isRead,
+    isStar,
+    isInnerArticleShow,
+  };
+
   const feedHeaderRender = (): React.ReactElement | null => {
     if (viewType === ViewType.list) {
       return null;
@@ -50,12 +78,12 @@ const FeedItem = ({
     const thumbnaillElem: React.ReactElement = (
       <div
         className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
-          data.isRead ? "opacity-40" : ""
+          isRead ? "opacity-40" : ""
         }`}
       >
         <Image
           className="mr-3  select-none"
-          src={data.thumbnailSrc}
+          src={thumbnailSrc}
           maximizeFrame={true}
           imageFit={ImageFit.cover}
         />
@@ -66,7 +94,7 @@ const FeedItem = ({
       case FeedThumbnailDisplayType.alwaysDisplay:
         return thumbnaillElem;
       case FeedThumbnailDisplayType.displayWhenThumbnaillExist:
-        return data.thumbnailSrc ? thumbnaillElem : null;
+        return thumbnailSrc ? thumbnaillElem : null;
       case FeedThumbnailDisplayType.alwaysNotDisplay:
         return null;
       default:
@@ -75,33 +103,33 @@ const FeedItem = ({
   };
 
   const nowTime: Dayjs = dayjs();
-  const relativePublishedTime: string = data.publishedTime.from(nowTime);
+  const relativePublishedTime: string = publishedTime.from(nowTime);
 
   const actionButtonsElem = (
     <div>
-        <IconButton
-          className={classnames(
-            "focus:outline-none text-gray-500 hover:text-gray-500",
-            {
-              "text-yellow-300 hover:text-yellow-300": data.isStar,
-            }
-          )}
-          styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
-          iconProps={data.isStar ? favoriteStarFillIcon : favoriteStarIcon}
-          title="favorite"
-          ariaLabel="Favorite"
-          onClick={(e) => onStar(data, itemIndex, e)}
-          {...data.starButtonProps}
-        />
-        <IconButton
-          className="focus:outline-none text-gray-500 hover:text-gray-500"
-          styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
-          iconProps={data.isRead ? radioBtnOffIcon : radioBtnOnIcon}
-          title="mark as read"
-          ariaLabel="Mark as read"
-          onClick={(e) => onRead(data, itemIndex, e)}
-          {...data.unreadMarkButtonProps}
-        />
+      <IconButton
+        className={classnames(
+          "focus:outline-none text-gray-500 hover:text-gray-500",
+          {
+            "text-yellow-300 hover:text-yellow-300": isStar,
+          }
+        )}
+        styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+        iconProps={isStar ? favoriteStarFillIcon : favoriteStarIcon}
+        title="favorite"
+        ariaLabel="Favorite"
+        onClick={(e) => onStar(data, itemIndex, e)}
+        {...starButtonProps}
+      />
+      <IconButton
+        className="focus:outline-none text-gray-500 hover:text-gray-500"
+        styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+        iconProps={isRead ? radioBtnOffIcon : radioBtnOnIcon}
+        title="mark as read"
+        ariaLabel="Mark as read"
+        onClick={(e) => onRead(data, itemIndex, e)}
+        {...unreadMarkButtonProps}
+      />
     </div>
   );
 
@@ -110,7 +138,7 @@ const FeedItem = ({
       horizontal={viewType === ViewType.list}
       verticalAlign={viewType === ViewType.list ? "center" : "stretch"}
       className={classnames("flex-1 overflow-hidden", {
-        "opacity-40": data.isRead,
+        "opacity-40": isRead,
       })}
     >
       <Stack horizontal>
@@ -120,14 +148,14 @@ const FeedItem = ({
             "mb-4": viewType !== ViewType.list,
           })}
         >
-          {data.title}
+          {title}
         </Text>
         {viewType === ViewType.list ? null : actionButtonsElem}
       </Stack>
-      <Text className="flex-1 text-base w-full">{data.summary}</Text>
+      <Text className="flex-1 text-base w-full">{summary}</Text>
       <Stack horizontal verticalAlign="center" className="text-gray-400">
-        <Text className="flex-1 text-sm" block nowrap title={data.sourceName}>
-          {data.sourceName}
+        <Text className="flex-1 text-sm" block nowrap title={sourceName}>
+          {sourceName}
         </Text>
         <Text className="flex-0 text-sm" nowrap>
           {relativePublishedTime}
@@ -155,11 +183,24 @@ const FeedItem = ({
         {feedBodyElem}
         {viewType === ViewType.list ? actionButtonsElem : null}
       </Stack>
-      {data.isInnerArticleShow ? (
+      {isInnerArticleShow ? (
         <ArticlePane className="relative z-10 border-b bg-gray-50" />
       ) : null}
     </div>
   );
 };
 
-export default React.memo(FeedItem);
+export default React.memo(
+  FeedItemComponent,
+  (prevProps, nextProps): boolean => {
+    if (
+      prevProps.onClick !== nextProps.onClick ||
+      prevProps.onRead !== nextProps.onRead ||
+      prevProps.onStar !== nextProps.onStar
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+);

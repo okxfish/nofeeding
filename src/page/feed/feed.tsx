@@ -43,8 +43,6 @@ interface InfiniteNormalizedArticles
 
 const FeedContainer = () => {
   const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
-  const [currenActivedFeedIndex, setCurrenActivedFeedIndex] =
-    useState<number>(-1);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
   const { viewType } = useContext(ViewTypeContext);
   const scrollParentRef = useRef<any>(null);
@@ -190,7 +188,6 @@ const FeedContainer = () => {
             getScrollParent={()=>scrollParentRef.current}
             currenActivedFeedId={currenActivedFeedId}
             setCurrenActivedFeedId={setCurrenActivedFeedId}
-            setCurrenActivedFeedIndex={setCurrenActivedFeedIndex}
             setIsArticleModalOpen={setIsArticleModalOpen}
           />
         </div>

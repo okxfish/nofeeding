@@ -225,7 +225,7 @@ const generatePagesFeed = (count:number, pageSize: number) => {
   return result;
 }
 
-const pagesFeed = generatePagesFeed(10, 10);
+const pagesFeed = generatePagesFeed(1, 100);
 
 export const mockSetup = (axios) => {
   const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
