@@ -9,11 +9,9 @@ import {
 import { IconButton, IIconProps, FontIcon, Text } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
-import { ViewType } from "../../context/viewType";
-import { ArticleContext } from "../../context/article";
-
+import { ArticleContext, SettingContext } from "../../context";
+import { ViewType } from "../../context/setting";
 import "./style.css";
-import { SettingContext } from "../../context/setting";
 
 export interface Props {
   className?: string;

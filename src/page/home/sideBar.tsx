@@ -14,14 +14,13 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import SideBarItem from "./sideBarButton";
 
-import { ViewType } from "../../context/viewType";
-import { UserInfoContext } from "./../../context/userInfo";
-import {
-  FeedThumbnailDisplayType,
-  SettingContext,
-} from "../../context/setting";
+import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
 import { CHANGE_VIEW_TYPE } from "../../App";
-import { DispatchContext } from "../../context/app";
+import {
+  DispatchContext,
+  UserInfoContext,
+  SettingContext,
+} from "../../context";
 
 const filterIcon: IIconProps = { iconName: "Filter" };
 const syncIcon: IIconProps = { iconName: "Sync" };

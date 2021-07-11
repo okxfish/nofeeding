@@ -3,7 +3,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { FeedContext } from "../../context/feed";
+import { FeedContext } from "../../context";
 import { IGroup } from "@fluentui/react";
 import { FeedItem } from "./types";
 import { groupBy } from "lodash";

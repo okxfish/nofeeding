@@ -10,16 +10,14 @@ import {
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory, useLocation } from "react-router-dom";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { default as api } from "../../api";
 import { default as get } from "lodash.get";
 import { normalize, schema, NormalizedSchema } from "normalizr";
-import { produce } from "immer";
 import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
-import { SettingContext } from "./../../context/setting";
 import { StreamPreferenceListResponse } from "./../../api/inoreader";
-import { UserInfoContext } from "./../../context/userInfo";
+import { SettingContext, UserInfoContext } from "./../../context";
 import { Tag } from "../../api/mockData";
 
 export interface Props {

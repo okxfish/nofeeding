@@ -8,19 +8,19 @@ import {
 import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import Oauth from "./page/oauth/index";
-import { ViewType } from "./context/viewType";
-import {
-  CurrenActivedFeedIdContext,
-  DispatchContext,
-  StoreContext,
-} from "./context/app";
 import {
   FeedThumbnailDisplayType,
   initSetting,
-  SettingContext,
   SettingState,
+  ViewType,
 } from "./context/setting";
-import { UserInfoContext } from "./context/userInfo";
+import {
+  UserInfoContext,
+  CurrenActivedFeedIdContext,
+  DispatchContext,
+  StoreContext,
+  SettingContext,
+} from "./context";
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";

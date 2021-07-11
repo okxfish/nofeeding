@@ -1,9 +1,4 @@
-import React, {
-  useContext,
-  useCallback,
-  useRef,
-  useEffect,
-} from "react";
+import React, { useContext, useCallback, useRef, useEffect } from "react";
 import {
   Text,
   IconButton,
@@ -17,15 +12,14 @@ import classnames from "classnames";
 import { FeedProps } from "./types";
 import ArticlePane from "./articlePane";
 import { useMutation } from "react-query";
-import { ViewType } from "../../context/viewType";
 import { default as dayjs, Dayjs } from "dayjs";
-import {
-  FeedThumbnailDisplayType,
-  SettingContext,
-} from "../../context/setting";
+import { ViewType, FeedThumbnailDisplayType } from "../../context/setting";
 import { CHANGE_SELECTED_ARTICLE, OPEN_AIRTICLE_MODAL } from "../../App";
-import { SetFeedItemContext } from "../../context/feed";
-import { DispatchContext } from "../../context/app";
+import {
+  SettingContext,
+  SetFeedItemContext,
+  DispatchContext,
+} from "../../context";
 
 export interface Props extends FeedProps {
   itemIndex: number;

@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import produce from "immer";
 import {
   ChoiceGroup,
   IChoiceGroupOption,
@@ -8,16 +7,12 @@ import {
   Separator,
 } from "@fluentui/react";
 
-import {
-  FeedThumbnailDisplayType,
-  SettingContext,
-} from "../../context/setting";
-import { ViewType } from "../../context/viewType";
+import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
 
-import queryString from "query-string";
 import { useHistory, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import { CHANGE_VIEW_TYPE } from "../../App";
-import { DispatchContext } from "../../context/app";
+import { SettingContext, DispatchContext } from "../../context";
 
 const ViewSettingPane = () => {
   const {

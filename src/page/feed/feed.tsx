@@ -1,10 +1,6 @@
 import React, { useRef, useMemo, useContext, useCallback } from "react";
 import { useInfiniteQuery, useQueryClient } from "react-query";
 
-import { ArticleContext } from "../../context/article";
-import { FeedContext, SetFeedItemContext } from "../../context/feed";
-import { ViewType } from "../../context/viewType";
-
 import { FeedItem, FeedProps } from "./types";
 
 import { filterImgSrcfromHtmlStr } from "./utils";
@@ -20,15 +16,24 @@ import { Modal } from "@fluentui/react";
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
-import "./style.css";
 import { NeutralColors } from "@fluentui/theme";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
 import { produce } from "immer";
 import { CLOSE_AIRTICLE_MODAL } from "../../App";
-import { SettingContext } from "../../context/setting";
-import { CurrenActivedFeedIdContext, DispatchContext, StoreContext } from "./../../context/app";
+import { ViewType } from "../../context/setting";
+import {
+  CurrenActivedFeedIdContext,
+  DispatchContext,
+  StoreContext,
+  SettingContext,
+  FeedContext,
+  SetFeedItemContext,
+  ArticleContext,
+} from "./../../context";
+
+import "./style.css";
 
 const article = new schema.Entity<FeedProps>("article");
 

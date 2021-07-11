@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useWindowSize } from "react-use";
 import { Stack, Modal } from "@fluentui/react";
-import { ViewType } from "../../context/viewType";
-import { SettingContext } from "../../context/setting";
+import { ViewType } from "../../context/setting";
 import { default as FeedPage } from "../feed";
 import OverviewPane from "../feed/overviewPane";
 import ViewSettingPane from "./viewSettingPane";
@@ -10,7 +9,7 @@ import SideBar from "./sideBar";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import { CHANGE_VIEW_TYPE } from "../../App";
-import { DispatchContext } from "../../context/app";
+import { DispatchContext, SettingContext } from "../../context";
 
 const Home = () => {
   const {

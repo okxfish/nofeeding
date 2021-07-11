@@ -1,23 +1,22 @@
-import {
-  ActionButton,
-  GroupedList,
-  IGroup,
-  IGroupHeaderProps,
-  Spinner,
-  SpinnerSize,
-} from "office-ui-fabric-react";
 import React, { useContext } from "react";
 import { FeedItem } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import SubscriptionInfoCard from "./subscriptionInfoCard";
 import { isEmpty } from "lodash";
-import { Stack } from "@fluentui/react";
+import {
+  Stack,
+  ActionButton,
+  GroupedList,
+  IGroup,
+  IGroupHeaderProps,
+  Spinner,
+  SpinnerSize,
+  FontIcon,
+} from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
-import { FontIcon } from "@fluentui/react";
-import { ViewType } from "../../context/viewType";
-import { CurrenActivedFeedIdContext } from "./../../context/app";
-import { SettingContext } from "../../context/setting";
+import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
+import { ViewType } from "../../context/setting";
 
 export interface Props {
   className?: string;
