@@ -1,9 +1,9 @@
-import React, {useRef, useMemo, useState, useContext } from "react";
-import { useQuery, useInfiniteQuery, useQueryClient } from "react-query";
+import React, { useRef, useMemo, useContext, useCallback } from "react";
+import { useInfiniteQuery, useQueryClient } from "react-query";
 
 import { ArticleContext } from "../../context/article";
-import { FeedContext } from "../../context/feed";
-import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { FeedContext, SetFeedItemContext } from "../../context/feed";
+import { ViewType } from "../../context/viewType";
 
 import { FeedItem, FeedProps } from "./types";
 
@@ -11,7 +11,6 @@ import { filterImgSrcfromHtmlStr } from "./utils";
 import { default as api } from "../../api";
 import { StreamContentsResponse, SystemStreamIDs } from "../../api/inoreader";
 
-import { get } from "lodash";
 import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
@@ -27,6 +26,9 @@ import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
 import { produce } from "immer";
+import { CLOSE_AIRTICLE_MODAL } from "../../App";
+import { SettingContext } from "../../context/setting";
+import { CurrenActivedFeedIdContext, DispatchContext, StoreContext } from "./../../context/app";
 
 const article = new schema.Entity<FeedProps>("article");
 
@@ -42,9 +44,12 @@ interface InfiniteNormalizedArticles
 }
 
 const FeedContainer = () => {
-  const [currenActivedFeedId, setCurrenActivedFeedId] = useState<string>("");
-  const [isArticleModalOpen, setIsArticleModalOpen] = useState<boolean>(false);
-  const { viewType } = useContext(ViewTypeContext);
+  const { isArticleModalOpen } = useContext(StoreContext);
+  const dispatch = useContext(DispatchContext);
+  const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
+  const {
+    layout: { viewType },
+  } = useContext(SettingContext);
   const scrollParentRef = useRef<any>(null);
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -57,7 +62,7 @@ const FeedContainer = () => {
     [streamId, unreadOnly]
   );
 
-  const resolveResponse = (data: StreamContentsResponse):FeedItem[] => {
+  const resolveResponse = (data: StreamContentsResponse): FeedItem[] => {
     return data.items.map((item, index) => {
       const publishedTime: Dayjs = dayjs.unix(item.published);
       const thumbnailSrc = filterImgSrcfromHtmlStr(item.summary.content);
@@ -117,8 +122,8 @@ const FeedContainer = () => {
     const pageResult = data.pages.find((page) => {
       if (page.entities.article) {
         return id in page.entities.article;
-      }else {
-        return false
+      } else {
+        return false;
       }
     });
 
@@ -129,17 +134,20 @@ const FeedContainer = () => {
     }
   };
 
-  const setArticleDataById = (id, updater) => {
-    queryClient.setQueryData(
-      streamContentQueryKey,
-      produce((data) => {
-        const article = getArticleById(id, data);
-        if (article) {
-          updater(article);
-        }
-      })
-    );
-  };
+  const setArticleDataById = useCallback(
+    (id, updater) => {
+      queryClient.setQueryData(
+        streamContentQueryKey,
+        produce((data) => {
+          const article = getArticleById(id, data);
+          if (article) {
+            updater(article);
+          }
+        })
+      );
+    },
+    [queryClient, streamContentQueryKey]
+  );
 
   let streamContentData: any[] = [];
 
@@ -162,57 +170,64 @@ const FeedContainer = () => {
     streamContentQuery.data
   );
 
+  const getScrollParent = useCallback(() => scrollParentRef.current, []);
+
   return (
-    <FeedContext.Provider value={{ streamContentQuery, streamContentData, setArticleDataById, streamContentQueryKey }}>
-      <ArticleContext.Provider value={activedArticle}>
-        <div
-          className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72"
-          style={{ backgroundColor: NeutralColors.gray10 }}
-        >
-          <OverviewPane />
-        </div>
-        <div
-        ref={scrollParentRef}
-          className={classnames(
-            "overflow-scroll scrollbar h-full bg-gray-100 w-128 transition-all",
-            {
-              "flex-1": viewType !== ViewType.threeway,
-            }
-          )}
-          data-is-scrollable
-        >
-          <FeedsPane
-            className={classnames(" bg-white", {
-              "max-w-3xl mx-auto": viewType !== ViewType.list,
-            })}
-            getScrollParent={()=>scrollParentRef.current}
-            currenActivedFeedId={currenActivedFeedId}
-            setCurrenActivedFeedId={setCurrenActivedFeedId}
-            setIsArticleModalOpen={setIsArticleModalOpen}
-          />
-        </div>
-        {viewType === ViewType.threeway && (
-          <div className="flex-1" style={{ minWidth: "32rem" }}>
-            <ArticlePane className="h-full" />
+    <FeedContext.Provider
+      value={{
+        streamContentQuery,
+        streamContentData,
+        streamContentQueryKey,
+      }}
+    >
+      <SetFeedItemContext.Provider value={setArticleDataById}>
+        <ArticleContext.Provider value={activedArticle}>
+          <div
+            className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72"
+            style={{ backgroundColor: NeutralColors.gray10 }}
+          >
+            <OverviewPane />
           </div>
-        )}
-        <Modal
-          className=""
-          isOpen={isArticleModalOpen}
-          onDismiss={() => setIsArticleModalOpen(false)}
-          isBlocking={false}
-          styles={{
-            main: [{ maxHeight: "100%" }],
-          }}
-        >
-          <ArticlePane
-            className="article-modal h-screen w-screen"
-            closeModal={() => setIsArticleModalOpen(false)}
-          />
-        </Modal>
-      </ArticleContext.Provider>
+          <div
+            ref={scrollParentRef}
+            className={classnames(
+              "overflow-scroll scrollbar h-full bg-gray-100 w-128 transition-all",
+              {
+                "flex-1": viewType !== ViewType.threeway,
+              }
+            )}
+            data-is-scrollable
+          >
+            <FeedsPane
+              className={classnames(" bg-white", {
+                "max-w-3xl mx-auto": viewType !== ViewType.list,
+              })}
+              getScrollParent={getScrollParent}
+            />
+          </div>
+          {viewType === ViewType.threeway && (
+            <div className="flex-1" style={{ minWidth: "32rem" }}>
+              <ArticlePane className="h-full" />
+            </div>
+          )}
+          <Modal
+            className=""
+            isOpen={isArticleModalOpen}
+            onDismiss={() => dispatch({ type: CLOSE_AIRTICLE_MODAL })}
+            isBlocking={false}
+            styles={{
+              main: [{ maxHeight: "100%" }],
+            }}
+          >
+            <ArticlePane
+              className="article-modal h-screen w-screen"
+              closeModal={() => dispatch({ type: CLOSE_AIRTICLE_MODAL })}
+            />
+          </Modal>
+        </ArticleContext.Provider>
+      </SetFeedItemContext.Provider>
     </FeedContext.Provider>
   );
 };
 
-export default FeedContainer;
+export default React.memo(FeedContainer);

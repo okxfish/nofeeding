@@ -1,29 +1,35 @@
 import { useState, useEffect, useContext } from "react";
 import { useWindowSize } from "react-use";
 import { Stack, Modal } from "@fluentui/react";
-import { ViewType, ViewTypeContext } from "../../context/viewType";
-
+import { ViewType } from "../../context/viewType";
+import { SettingContext } from "../../context/setting";
 import { default as FeedPage } from "../feed";
 import OverviewPane from "../feed/overviewPane";
 import ViewSettingPane from "./viewSettingPane";
 import SideBar from "./sideBar";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
+import { CHANGE_VIEW_TYPE } from "../../App";
+import { DispatchContext } from "../../context/app";
 
 const Home = () => {
+  const {
+    layout: { viewType },
+  } = useContext(SettingContext);
+  const dispatch = useContext(DispatchContext);
+
   const [isOverViewPaneOpen, setIsOverViewPaneOpen] = useState<boolean>(false);
   const [isAddFeedModalOpen, setIsAddFeedModalOpen] = useState<boolean>(false);
   const [isViewSettingPaneOpen, setIsViewSettingPaneOpen] =
     useState<boolean>(false);
 
   const { height: windowHeight, width } = useWindowSize();
-  const { viewType, setViewType } = useContext(ViewTypeContext);
 
   useEffect(() => {
     if (viewType === ViewType.threeway && width < 1280) {
-      setViewType(ViewType.card);
+      dispatch({ type: CHANGE_VIEW_TYPE, viewType: ViewType.card });
     }
-  }, [viewType, width, setViewType]);
+  }, [viewType, width, dispatch]);
 
   return (
     <Stack

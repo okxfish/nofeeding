@@ -1,4 +1,9 @@
-import React, { useContext } from "react";
+import React, {
+  useContext,
+  useCallback,
+  useRef,
+  useEffect,
+} from "react";
 import {
   Text,
   IconButton,
@@ -6,17 +11,21 @@ import {
   IIconProps,
   Image,
   Stack,
-  IButtonProps,
 } from "@fluentui/react";
+import { default as api } from "../../api";
 import classnames from "classnames";
-import { FeedProps, FeedItem } from "./types";
+import { FeedProps } from "./types";
 import ArticlePane from "./articlePane";
-import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { useMutation } from "react-query";
+import { ViewType } from "../../context/viewType";
 import { default as dayjs, Dayjs } from "dayjs";
 import {
   FeedThumbnailDisplayType,
   SettingContext,
 } from "../../context/setting";
+import { CHANGE_SELECTED_ARTICLE, OPEN_AIRTICLE_MODAL } from "../../App";
+import { SetFeedItemContext } from "../../context/feed";
+import { DispatchContext } from "../../context/app";
 
 export interface Props extends FeedProps {
   itemIndex: number;
@@ -41,33 +50,99 @@ const FeedItemComponent = ({
   isRead,
   isStar,
   isInnerArticleShow,
-  starButtonProps,
-  unreadMarkButtonProps,
   itemIndex,
   isSelected,
   className,
   rootClassName,
   itemClassName,
-  onClick = () => {},
-  onRead = () => {},
-  onStar = () => {},
 }: Props) => {
-  const { viewType } = useContext(ViewTypeContext);
-  const { setting } = useContext(SettingContext);
+  const hooksRef = useRef<any>(null);
+  const dispatch = useContext(DispatchContext);
+  const {
+    layout: { viewType },
+    feed: { feedThumbnailDisplayType },
+  } = useContext(SettingContext);
+  const setArticleDataById = useContext(SetFeedItemContext);
 
-  const data: FeedItem = {
-    id,
-    title,
-    summary,
-    thumbnailSrc,
-    content,
-    url,
-    sourceName,
-    sourceID,
-    publishedTime,
-    isRead,
-    isStar,
-    isInnerArticleShow,
+  const markAsReadMutation = useMutation(
+    ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
+      api.inoreader.markArticleAsRead(id, asUnread),
+    {
+      onSuccess: (data, { id, asUnread }) => {
+        setArticleDataById(id, (article) => {
+          article.isRead = !asUnread;
+        });
+      },
+    }
+  );
+
+  // 文章标星
+  const markAsStarMutation = useMutation(
+    ({ id, isStar }: { id: string; isStar?: boolean }): any =>
+      api.inoreader.markArticleAsStar(id, isStar),
+    {
+      onSuccess: (data, { id, isStar }) => {
+        setArticleDataById(id, (article) => {
+          article.isStar = isStar;
+        });
+      },
+    }
+  );
+
+  // 检查哪个 hook 发生了变化
+  useEffect(() => {
+    if (hooksRef.current !== null) {
+      console.log(
+        "has viewType change",
+        hooksRef.current.viewType !== viewType
+      );
+      console.log(`**${id}==================`);
+      console.log(
+        "has markAsStarMutation change",
+        hooksRef.current.markAsStarMutation !== markAsStarMutation
+      );
+      console.log(
+        "has markAsReadMutation change",
+        hooksRef.current.markAsReadMutation !== markAsReadMutation
+      );
+      console.log(
+        "has setArticleDataById change",
+        hooksRef.current.setArticleDataById !== setArticleDataById
+      );
+    }
+
+    hooksRef.current = {
+      viewType,
+      setArticleDataById,
+      markAsStarMutation,
+      markAsReadMutation,
+    };
+  });
+
+  // 标记文章已读/未读
+  const onClick = useCallback(() => {
+    const articleId = id;
+    dispatch({ type: CHANGE_SELECTED_ARTICLE, articleId });
+    if (viewType === ViewType.card) {
+      dispatch({ type: OPEN_AIRTICLE_MODAL });
+    }
+    markAsReadMutation.mutate({ id, asUnread: false });
+  }, [viewType, id, dispatch, markAsReadMutation]);
+
+  // 点击标星按钮
+  const onStar = (e: any): void => {
+    if (e) {
+      e.stopPropagation();
+    }
+    markAsStarMutation.mutate({ id, isStar: !isStar });
+  };
+
+  // 点击标记已读/未读按钮
+  const onRead = (e: any): void => {
+    if (e) {
+      e.stopPropagation();
+    }
+    markAsReadMutation.mutate({ id, asUnread: isRead });
   };
 
   const feedHeaderRender = (): React.ReactElement | null => {
@@ -90,7 +165,7 @@ const FeedItemComponent = ({
       </div>
     );
 
-    switch (setting.feed.feedThumbnailDisplayType) {
+    switch (feedThumbnailDisplayType) {
       case FeedThumbnailDisplayType.alwaysDisplay:
         return thumbnaillElem;
       case FeedThumbnailDisplayType.displayWhenThumbnaillExist:
@@ -118,8 +193,8 @@ const FeedItemComponent = ({
         iconProps={isStar ? favoriteStarFillIcon : favoriteStarIcon}
         title="favorite"
         ariaLabel="Favorite"
-        onClick={(e) => onStar(data, itemIndex, e)}
-        {...starButtonProps}
+        onClick={onStar}
+        disabled={markAsStarMutation.isLoading}
       />
       <IconButton
         className="focus:outline-none text-gray-500 hover:text-gray-500"
@@ -127,8 +202,8 @@ const FeedItemComponent = ({
         iconProps={isRead ? radioBtnOffIcon : radioBtnOnIcon}
         title="mark as read"
         ariaLabel="Mark as read"
-        onClick={(e) => onRead(data, itemIndex, e)}
-        {...unreadMarkButtonProps}
+        onClick={onRead}
+        disabled={markAsReadMutation.isLoading}
       />
     </div>
   );
@@ -168,7 +243,7 @@ const FeedItemComponent = ({
     <div className={`overflow-x-hidden relative ${rootClassName}`}>
       <Stack
         horizontal
-        onClick={(e) => onClick(data, itemIndex, e)}
+        onClick={onClick}
         className={classnames(
           "relative z-10 group cursor-pointer select-none hover:bg-blue-50",
           itemClassName,
@@ -192,15 +267,28 @@ const FeedItemComponent = ({
 
 export default React.memo(
   FeedItemComponent,
-  (prevProps, nextProps): boolean => {
+  (prevProps: Props, nextProps: Props) => {
     if (
-      prevProps.onClick !== nextProps.onClick ||
-      prevProps.onRead !== nextProps.onRead ||
-      prevProps.onStar !== nextProps.onStar
+      prevProps.id === nextProps.id &&
+      prevProps.title === nextProps.title &&
+      prevProps.summary === nextProps.summary &&
+      prevProps.thumbnailSrc === nextProps.thumbnailSrc &&
+      prevProps.content === nextProps.content &&
+      prevProps.url === nextProps.url &&
+      prevProps.sourceName === nextProps.sourceName &&
+      prevProps.sourceID === nextProps.sourceID &&
+      prevProps.publishedTime === nextProps.publishedTime &&
+      prevProps.isRead === nextProps.isRead &&
+      prevProps.isStar === nextProps.isStar &&
+      prevProps.isInnerArticleShow === nextProps.isInnerArticleShow &&
+      prevProps.itemIndex === nextProps.itemIndex &&
+      prevProps.isSelected === nextProps.isSelected &&
+      prevProps.className === nextProps.className &&
+      prevProps.rootClassName === nextProps.rootClassName &&
+      prevProps.itemClassName === nextProps.itemClassName
     ) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 );

@@ -1,5 +1,12 @@
 import React from "react";
 
+export enum ViewType {
+  list = 'LIST',
+  magazine = 'MAGZ',
+  threeway = '3WAY',
+  card = 'CARD',
+}
+
 export enum FeedThumbnailDisplayType {
   alwaysNotDisplay = "ALWAYS_NOT_DISPLAY",
   displayWhenThumbnaillExist = "DISPLAY_WHEN_THUMBNAIL_EXIST",
@@ -17,7 +24,9 @@ export interface subscriptionSetting {
 export interface SettingState {
   feed: FeedSetting;
   subscription: subscriptionSetting;
-  layout: {};
+  layout: {
+    viewType: ViewType;
+  };
   theme: {};
 }
 
@@ -28,15 +37,11 @@ export const initSetting:SettingState = {
   subscription: {
     isIconDisplay: false
   },
-  layout: {},
+  layout: {
+    viewType: ViewType.card
+  },
   theme: {},
 };
 
 export const SettingContext =
-  React.createContext<{
-    setting: SettingState;
-    setSetting: React.Dispatch<React.SetStateAction<SettingState>>;
-  }>({
-    setting:initSetting,
-    setSetting: ()=>{}
-  });
+  React.createContext<SettingState>(initSetting);

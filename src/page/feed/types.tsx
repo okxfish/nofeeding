@@ -1,6 +1,5 @@
 
 import { Dayjs } from 'dayjs';
-import { IButtonProps } from 'office-ui-fabric-react';
 export interface FeedItem {
   id: string;
   title: string;
@@ -14,8 +13,6 @@ export interface FeedItem {
   isRead?: boolean;
   isStar?: boolean;
   isInnerArticleShow?: boolean;
-  starButtonProps?: IButtonProps;
-  unreadMarkButtonProps?: IButtonProps;
 }
 
 export interface FeedGroup {
@@ -28,7 +25,7 @@ export interface FeedProps extends FeedItem{
   className?: string;
   rootClassName?: string;
   itemClassName?: string;
-  onClick?(item:FeedItem, index:number, e:any):void;
-  onStar?(item:FeedItem, index:number, e:any):void;
-  onRead?(item:FeedItem, index:number, e:any):void;
+  // onClick?(item:FeedItem, index:number, e:any):void;
+  // onStar?(item:FeedItem, index:number, e:any):void;
+  // onRead?(item:FeedItem, index:number, e:any):void;
 }

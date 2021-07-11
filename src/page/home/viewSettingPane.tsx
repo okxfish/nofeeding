@@ -11,20 +11,23 @@ import {
 import {
   FeedThumbnailDisplayType,
   SettingContext,
-  SettingState,
 } from "../../context/setting";
-import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { ViewType } from "../../context/viewType";
 
 import queryString from "query-string";
 import { useHistory, useLocation } from "react-router-dom";
+import { CHANGE_VIEW_TYPE } from "../../App";
+import { DispatchContext } from "../../context/app";
 
 const ViewSettingPane = () => {
-  const { setting, setSetting } = useContext(SettingContext);
-  const { viewType, setViewType } = useContext(ViewTypeContext);
-
+  const {
+    layout: { viewType },
+    feed: { feedThumbnailDisplayType },
+  } = useContext(SettingContext);
+  const dispatch = useContext(DispatchContext);
   const history = useHistory();
   const location = useLocation();
-  
+
   const qs = queryString.parse(location.search);
   const { unreadOnly } = qs;
 
@@ -81,18 +84,17 @@ const ViewSettingPane = () => {
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     option?: IChoiceGroupOption
   ) => {
-    setSetting(
-      produce<SettingState>((draft) => {
-        draft.feed.feedThumbnailDisplayType = option?.key;
-      })
-    );
+    dispatch({
+      type: "CHANGE_THUMBNAIL_DISPLAY_TYPE",
+      displayType: option?.key,
+    });
   };
 
   const onViewTypeChange = (
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     option?: IChoiceGroupOption
   ) => {
-    setViewType(option?.key);
+    dispatch({ type: CHANGE_VIEW_TYPE, viewType: option?.key });
   };
 
   return (
@@ -112,7 +114,7 @@ const ViewSettingPane = () => {
       {viewType !== ViewType.list && (
         <>
           <ChoiceGroup
-            selectedKey={setting.feed.feedThumbnailDisplayType}
+            selectedKey={feedThumbnailDisplayType}
             options={feedThumbnaillOptions}
             onChange={onfeedThumbnaillDisplayTypeChange}
             label="Feed Thumbnail"

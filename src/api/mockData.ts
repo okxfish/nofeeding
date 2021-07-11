@@ -225,7 +225,7 @@ const generatePagesFeed = (count:number, pageSize: number) => {
   return result;
 }
 
-const pagesFeed = generatePagesFeed(1, 100);
+const pagesFeed = generatePagesFeed(5, 20);
 
 export const mockSetup = (axios) => {
   const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
@@ -249,7 +249,6 @@ export const mockSetup = (axios) => {
   });
 
   mock.onGet(/^.*stream\/contents/).reply((config) => {
-    console.log('pagesFeed', pagesFeed);
     return [
       200,
       pagesFeed[config.params.c || 0],

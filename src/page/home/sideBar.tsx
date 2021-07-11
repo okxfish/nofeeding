@@ -7,7 +7,6 @@ import {
   Stack,
 } from "@fluentui/react";
 import { NeutralColors } from "@fluentui/theme";
-import { produce } from "immer";
 import queryString from "query-string";
 
 import { useQueryClient } from "react-query";
@@ -15,13 +14,14 @@ import { useHistory, useLocation } from "react-router-dom";
 
 import SideBarItem from "./sideBarButton";
 
-import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { ViewType } from "../../context/viewType";
 import { UserInfoContext } from "./../../context/userInfo";
 import {
   FeedThumbnailDisplayType,
   SettingContext,
-  SettingState,
 } from "../../context/setting";
+import { CHANGE_VIEW_TYPE } from "../../App";
+import { DispatchContext } from "../../context/app";
 
 const filterIcon: IIconProps = { iconName: "Filter" };
 const syncIcon: IIconProps = { iconName: "Sync" };
@@ -41,8 +41,10 @@ const SideBar = ({
   setIsOverViewPaneOpen,
   setIsViewSettingPaneOpen,
 }: Props) => {
-  const { setting, setSetting } = useContext(SettingContext);
-  const { setViewType } = useContext(ViewTypeContext);
+  const {
+    feed: { feedThumbnailDisplayType },
+  } = useContext(SettingContext);
+  const dispatch = useContext(DispatchContext);
   const userInfo = useContext(UserInfoContext);
 
   const queryClient = useQueryClient();
@@ -59,18 +61,12 @@ const SideBar = ({
     unreadOnly,
   ];
 
-  const thumbnailDisplay = setting.feed.feedThumbnailDisplayType;
-
   const setThumbnailDisplay = (e, item): void => {
-    setSetting(
-      produce<SettingState>((draft) => {
-        draft.feed.feedThumbnailDisplayType = item?.key;
-      })
-    );
+    dispatch({ type: "CHANGE_THUMBNAIL_DISPLAY_TYPE", displayType: item?.key });
   };
 
   const handleViewTypeMenuItemClick = (e, item): void => {
-    setViewType(item.key);
+    dispatch({ type: CHANGE_VIEW_TYPE, viewType: item.key });
   };
 
   const handleLogoffMenuItemClick = (e, item): void => {
@@ -101,14 +97,14 @@ const SideBar = ({
   };
 
   const handleViewSettingClick = () => {
-    setIsViewSettingPaneOpen(true)
+    setIsViewSettingPaneOpen(true);
   };
 
   const getThumbnailSwitchMenuItemProps = (key, text) => ({
     key,
     text,
     iconProps: {
-      iconName: thumbnailDisplay === key ? "RadioBtnOn" : "RadioBtnOff",
+      iconName: feedThumbnailDisplayType === key ? "RadioBtnOn" : "RadioBtnOff",
     },
     onClick: setThumbnailDisplay,
   });
@@ -197,7 +193,7 @@ const SideBar = ({
   return (
     <Stack
       className={className}
-      style={{ backgroundColor: NeutralColors.gray30}}
+      style={{ backgroundColor: NeutralColors.gray30 }}
     >
       <SideBarItem
         title="filter"

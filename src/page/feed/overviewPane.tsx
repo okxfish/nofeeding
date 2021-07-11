@@ -65,27 +65,8 @@ const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const location = useLocation();
   const commonPx = "px-2";
-  const queryClient = useQueryClient();
-  const { setting, setSetting } = useContext(SettingContext);
+  const setting = useContext(SettingContext);
   const userInfo = useContext(UserInfoContext);
-
-  const setSubscriptionDataById = (streamId: string, updater: any): void =>
-    queryClient.setQueryData(
-      ["home/subscriptionsListQuery"],
-      produce((data) => {
-        const subscription = get(data, `entities.subscription['${streamId}']`);
-        updater(subscription);
-      })
-    );
-
-  const setFolderDataById = (folderId: string, updater: any): void =>
-    queryClient.setQueryData(
-      ["home/folderQuery"],
-      produce((data) => {
-        const folder = get(data, `entities.folder['${folderId}']`);
-        updater(folder);
-      })
-    );
 
   const subscriptionsListQuery = useQuery<
     NormalizedSchema<SubscriptionEntity, string[]>
@@ -385,4 +366,4 @@ const OverviewPane = ({ className }: Props) => {
   );
 };
 
-export default OverviewPane;
+export default React.memo(OverviewPane);

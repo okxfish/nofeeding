@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, useReducer, Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -8,8 +8,18 @@ import {
 import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import Oauth from "./page/oauth/index";
-import { ViewType, ViewTypeContext } from "./context/viewType";
-import { initSetting, SettingContext } from "./context/setting";
+import { ViewType } from "./context/viewType";
+import {
+  CurrenActivedFeedIdContext,
+  DispatchContext,
+  StoreContext,
+} from "./context/app";
+import {
+  FeedThumbnailDisplayType,
+  initSetting,
+  SettingContext,
+  SettingState,
+} from "./context/setting";
 import { UserInfoContext } from "./context/userInfo";
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
@@ -17,7 +27,6 @@ import { useQuery } from "react-query";
 
 import "./App.css";
 import "./style/utils.css";
-import Test from "./Test";
 
 const CallBackOnUnmount = ({ cb }) => {
   useEffect(() => () => cb(), [cb]);
@@ -27,10 +36,70 @@ const CallBackOnUnmount = ({ cb }) => {
 const Login = lazy(() => import("./page/login"));
 const Home = lazy(() => import("./page/home"));
 
+export const OPEN_AIRTICLE_MODAL = "OPEN_AIRTICLE_MODAL";
+export const CLOSE_AIRTICLE_MODAL = "CLOSE_AIRTICLE_MODAL";
+export const CHANGE_SELECTED_ARTICLE = "CHANGE_SELECTED_ARTICLE";
+export const CHANGE_VIEW_TYPE = "CHANGE_VIEW_TYPE";
+
+interface Store {
+  currenActivedFeedId: string;
+  isArticleModalOpen: boolean;
+  setting: SettingState;
+}
+
+type Action =
+  | { type: "CHANGE_SELECTED_ARTICLE"; articleId: string }
+  | { type: "CHANGE_VIEW_TYPE"; viewType: ViewType }
+  | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
+  | {
+      type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
+      displayType: FeedThumbnailDisplayType;
+    };
+
+const reducer = (prevState: Store, action: Action) => {
+  switch (action.type) {
+    case "CHANGE_SELECTED_ARTICLE":
+      return { ...prevState, currenActivedFeedId: action.articleId };
+    case "CHANGE_VIEW_TYPE":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          layout: {
+            ...prevState.setting.layout,
+            viewType: action.viewType,
+          },
+        },
+      };
+    case "OPEN_AIRTICLE_MODAL":
+      return { ...prevState, isArticleModalOpen: true };
+    case "CLOSE_AIRTICLE_MODAL":
+      return { ...prevState, isArticleModalOpen: false };
+    case "CHANGE_THUMBNAIL_DISPLAY_TYPE":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          feed: {
+            ...prevState.setting.feed,
+            feedThumbnailDisplayType: action.displayType,
+          },
+        },
+      };
+    default:
+      return { ...prevState };
+  }
+};
+
 function App() {
+  const [store, dispatch] = useReducer(reducer, undefined, () => {
+    return {
+      currenActivedFeedId: "",
+      isArticleModalOpen: false,
+      setting: initSetting,
+    };
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [viewType, setViewType] = useState(ViewType.magazine);
-  const [setting, setSetting] = useState(initSetting);
   const inoreaderToken = useInoreaderToken();
 
   const userInfoQuery = useQuery(
@@ -62,36 +131,44 @@ function App() {
     );
   };
 
+  const { currenActivedFeedId, setting } = store;
+
   return (
     <div className="App">
-      <SettingContext.Provider value={{ setting, setSetting }}>
-        <UserInfoContext.Provider value={userInfoQuery.data}>
-          <ViewTypeContext.Provider value={{ viewType, setViewType }}>
-            <Router>
-              {/* {loaddingAnimationRender()} */}
-              <Suspense
-                fallback={<CallBackOnUnmount cb={() => setIsLoading(false)} />}
-              >
-                <Switch>
-                  <Route path="/oauth" component={Oauth} />
-                  <Route path="/login" component={Login} />
-                  <Route
-                    path={["/feed", "/setting"]}
-                    render={() => {
-                      if (inoreaderToken) {
-                        return <Home />;
-                      } else {
-                        return <Redirect path="/" to="/login" />;
-                      }
-                    }}
-                  />
-                  <Redirect path="/" to="/feed" />
-                </Switch>
-              </Suspense>
-            </Router>
-          </ViewTypeContext.Provider>
-        </UserInfoContext.Provider>
-      </SettingContext.Provider>
+      <StoreContext.Provider value={store}>
+        <DispatchContext.Provider value={dispatch}>
+          <CurrenActivedFeedIdContext.Provider value={currenActivedFeedId}>
+            <SettingContext.Provider value={setting}>
+              <UserInfoContext.Provider value={userInfoQuery.data}>
+                <Router>
+                  {loaddingAnimationRender()}
+                  <Suspense
+                    fallback={
+                      <CallBackOnUnmount cb={() => setIsLoading(false)} />
+                    }
+                  >
+                    <Switch>
+                      <Route path="/oauth" component={Oauth} />
+                      <Route path="/login" component={Login} />
+                      <Route
+                        path={["/feed", "/setting"]}
+                        render={() => {
+                          if (inoreaderToken) {
+                            return <Home />;
+                          } else {
+                            return <Redirect path="/" to="/login" />;
+                          }
+                        }}
+                      />
+                      <Redirect path="/" to="/feed" />
+                    </Switch>
+                  </Suspense>
+                </Router>
+              </UserInfoContext.Provider>
+            </SettingContext.Provider>
+          </CurrenActivedFeedIdContext.Provider>
+        </DispatchContext.Provider>
+      </StoreContext.Provider>
     </div>
   );
 }

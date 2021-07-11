@@ -6,7 +6,7 @@ import {
   Spinner,
   SpinnerSize,
 } from "office-ui-fabric-react";
-import React from "react";
+import React, { useContext } from "react";
 import { FeedItem } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
@@ -16,6 +16,8 @@ import { Stack } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
 import { FontIcon } from "@fluentui/react";
 import { ViewType } from "../../context/viewType";
+import { CurrenActivedFeedIdContext } from "./../../context/app";
+import { SettingContext } from "../../context/setting";
 
 export interface Props {
   className?: string;
@@ -24,12 +26,6 @@ export interface Props {
   hasNextPage: boolean;
   isFetching: boolean;
   fetchNextPage(): any;
-  currenActivedFeedId: string;
-  viewType: ViewType;
-  getScrollParent(): any;
-  handleArticleItemClick(item: FeedItem, index: number, e: any): any;
-  handleArticleItemRead(item: FeedItem, index: number, e: any): any;
-  handleArticleItemStar(item: FeedItem, index: number, e: any): any;
   getScrollParent(): any;
 }
 
@@ -41,12 +37,12 @@ const FeedPaneComponent = ({
   isFetching,
   fetchNextPage,
   getScrollParent,
-  viewType,
-  currenActivedFeedId,
-  handleArticleItemClick,
-  handleArticleItemRead,
-  handleArticleItemStar,
 }: Props) => {
+  const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
+  const {
+    layout: { viewType },
+  } = useContext(SettingContext);
+
   const paddingHori = viewType === ViewType.threeway ? "px-4" : "px-6";
 
   if (!isEmpty(items)) {
@@ -94,12 +90,10 @@ const FeedPaneComponent = ({
       return (
         <FeedItemComponent
           {...item}
+          key={item.id}
           itemClassName={`${paddingHori}`}
           itemIndex={index}
           isSelected={item.id === currenActivedFeedId}
-          onClick={handleArticleItemClick}
-          onStar={handleArticleItemStar}
-          onRead={handleArticleItemRead}
         />
       );
     };
@@ -119,7 +113,6 @@ const FeedPaneComponent = ({
           items={items}
           onRenderCell={onRenderCell}
           groups={groups}
-          onShouldVirtualize={() => false}
           usePageCache={true}
           groupProps={{
             onRenderHeader: onRenderHeader,
@@ -155,4 +148,18 @@ const FeedPaneComponent = ({
   }
 };
 
-export default React.memo(FeedPaneComponent);
+export default React.memo(FeedPaneComponent, (prevProps, nextProps) => {
+  if (
+    prevProps.className !== nextProps.className ||
+    prevProps.items !== nextProps.items ||
+    prevProps.groups !== nextProps.groups ||
+    prevProps.hasNextPage !== nextProps.hasNextPage ||
+    prevProps.isFetching !== nextProps.isFetching ||
+    prevProps.fetchNextPage !== nextProps.fetchNextPage ||
+    prevProps.getScrollParent !== nextProps.getScrollParent
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+});

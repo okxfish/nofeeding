@@ -9,10 +9,11 @@ import {
 import { IconButton, IIconProps, FontIcon, Text } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
-import { ViewType, ViewTypeContext } from "../../context/viewType";
+import { ViewType } from "../../context/viewType";
 import { ArticleContext } from "../../context/article";
 
 import "./style.css";
+import { SettingContext } from "../../context/setting";
 
 export interface Props {
   className?: string;
@@ -27,8 +28,10 @@ const backIcon: IIconProps = { iconName: "Back" };
 const ArticlePane = forwardRef(
   ({ className, style, closeModal }: Props, ref) => {
     const article: FeedItem | null = useContext(ArticleContext);
+    const {
+      layout: { viewType },
+    } = useContext(SettingContext);
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
-    const { viewType } = useContext(ViewTypeContext);
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
     const rootNodeRef = useRef<any>(null);
 
