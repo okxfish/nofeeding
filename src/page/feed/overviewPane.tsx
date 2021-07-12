@@ -85,7 +85,7 @@ const OverviewPane = ({ className }: Props) => {
   );
 
   const streamPreferencesQuery = useQuery<StreamPreferenceListResponse>(
-    ["streamPreferences"],
+    "streamPreferences",
     async () => {
       const res = await api.inoreader.getStreamPreferenceList();
       return res.data;
@@ -97,7 +97,7 @@ const OverviewPane = ({ className }: Props) => {
   );
 
   const folderQuery = useQuery<NormalizedSchema<FolderEntity, string[]>>(
-    ["home/folderQuery"],
+    "home/folderQuery",
     async () => {
       const res = await api.inoreader.getFolderOrTagList(1, 1);
       const tags = res.data.tags;

@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@fluentui/react";
 import React from "react";
-import { useMutation } from "react-query";
+import { QueryKey, useMutation, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 
 export interface Props {
@@ -16,11 +16,23 @@ export interface Props {
 }
 
 const AddFeed = (props: Props) => {
+  const queryClient = useQueryClient();
+
   const addFeedMutation = useMutation(
     (feedUrl: string) => api.inoreader.addSubscription(feedUrl),
     {
       onSuccess: () => {
         alert("Success");
+        queryClient.refetchQueries({
+          predicate: (query) => {
+            const keys: QueryKey[] = [
+              "home/subscriptionsListQuery",
+              "streamPreferences",
+              "home/folderQuery",
+            ];
+            return keys.includes(query.queryKey);
+          },
+        });
       },
       onError: (error) => {
         alert("Failed");
