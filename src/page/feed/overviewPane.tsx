@@ -59,6 +59,11 @@ export interface FolderEntity {
 const subscription = new schema.Entity("subscription", undefined);
 const folder = new schema.Entity("folder");
 
+export const getTagNameFromId = (tagId: string): string => {
+  const slice: string[] = tagId.split("/");
+  return slice[slice.length - 1];
+};
+
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const location = useLocation();
@@ -224,11 +229,6 @@ const OverviewPane = ({ className }: Props) => {
     const childrenSortIds = chunck(sortIdString);
     const links = childrenSortIds;
     return links;
-  };
-
-  const getTagNameFromId = (tagId: string): string => {
-    const slice: string[] = tagId.split("/");
-    return slice[slice.length - 1];
   };
 
   const createLink = (subscription: Subscription): INavLink => {
