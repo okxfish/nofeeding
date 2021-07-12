@@ -1,24 +1,37 @@
 import { default as axios } from "axios";
 import { auth } from "./auth";
 import { inoreader } from "./inoreader";
-import { mockSetup } from './mockData';
+import { mockSetup } from "./mockData";
 
-if(process.env.NODE_ENV === "development"){
+interface ServerConfig {
+  inoreaderAuthUrl: string;
+  inoreaderServerUrl: string;
+  corsProxyUrl: string;
+}
+
+const devConfig: ServerConfig = {
+  inoreaderAuthUrl: "http://localhost:3777/",
+  inoreaderServerUrl: "www.innoreader.com",
+  corsProxyUrl: "http://localhost:8080",
+};
+
+const prdConfig: ServerConfig = {
+  inoreaderAuthUrl: "https://helloo.world/",
+  inoreaderServerUrl: "www.innoreader.com",
+  corsProxyUrl: "https://helloo.world/cors",
+};
+
+let serverConfig: ServerConfig = prdConfig;
+
+if (process.env.NODE_ENV === "development") {
+  serverConfig = devConfig;
   mockSetup(axios);
 }
 
-export const INOREADER_AUTH_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:3777/"
-    : "https://helloo.world/";
-export const INOREADER_SERVER_URL = "www.innoreader.com";
-export const CORS_PROXY_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8080"
-    : "https://helloo.world/cors";
+export const INOREADER_AUTH_URL = serverConfig.inoreaderAuthUrl;
 
 const fetch = axios.create({
-  baseURL: `${CORS_PROXY_URL}/${INOREADER_SERVER_URL}`,
+  baseURL: `${serverConfig.corsProxyUrl}/${serverConfig.inoreaderServerUrl}`,
   timeout: 60 * 60 * 1000,
 });
 
