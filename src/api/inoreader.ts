@@ -96,10 +96,12 @@ export const inoreader = {
       `/reader/api/0/preference/stream/list`
     ),
   // Add subscription
-  addSubscription: (url: string) =>
-    fetch.post(`/reader/api/0/subscription/quickadd`, null, {
+  addSubscription: (url: string, folder?: string) =>
+    fetch.get(`/reader/api/0/subscription/edit`, {
       params: {
-        quickadd: url,
+        ac: 'subscribe',
+        s: url,
+        a: folder || '',
       },
     }),
   // Folder/Tag list
