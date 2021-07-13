@@ -5,9 +5,6 @@ import {
   IButtonStyles,
   mergeStyleSets,
 } from "@fluentui/react";
-import {
-  NeutralColors
-} from "@fluentui/theme";
 
 export interface Props extends IButtonProps {}
 
@@ -22,7 +19,7 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
         paddingRight: 0,
         minWidth: "0",
         textAlign:'left',
-        color: NeutralColors.gray180,
+        color: 'currentColor',
         backgroundColor: "transparent",
       },
       "h-10 text-base",
@@ -32,9 +29,6 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
     },
     rootExpanded: {
       backgroundColor: 'white'
-    },
-    rootHovered: {
-      backgroundColor: NeutralColors.gray30,
     },
     icon: {
       margin: '0',

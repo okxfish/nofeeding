@@ -16,7 +16,6 @@ import { Modal } from "@fluentui/react";
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
 import OverviewPane from "./overviewPane";
-import { NeutralColors } from "@fluentui/theme";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
@@ -188,15 +187,14 @@ const FeedContainer = () => {
       <SetFeedItemContext.Provider value={setArticleDataById}>
         <ArticleContext.Provider value={activedArticle}>
           <div
-            className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72"
-            style={{ backgroundColor: NeutralColors.gray10 }}
+            className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72 bg-white bg-opacity-30"
           >
             <OverviewPane />
           </div>
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-scroll scrollbar h-full bg-gray-100 w-full sm:w-128 transition-all",
+              "overflow-scroll scrollbar h-full w-full sm:w-128 transition-all",
               {
                 "flex-1": viewType !== ViewType.threeway,
               }
@@ -204,7 +202,7 @@ const FeedContainer = () => {
             data-is-scrollable
           >
             <FeedsPane
-              className={classnames(" bg-white", {
+              className={classnames("bg-white bg-opacity-50", {
                 "max-w-3xl mx-auto": viewType !== ViewType.list,
               })}
               getScrollParent={getScrollParent}

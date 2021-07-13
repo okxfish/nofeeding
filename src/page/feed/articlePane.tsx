@@ -45,7 +45,7 @@ const ArticlePane = forwardRef(
 
     if (article === null) {
       return (
-        <div className="text-center p-24 text-gray-300">
+        <div className="text-center p-24 text-gray-400">
           <FontIcon iconName="ReadingMode" className="text-7xl" />
           <div className="font-semibold text-3xl">No Article Here</div>
         </div>

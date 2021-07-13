@@ -178,7 +178,7 @@ const FeedItemComponent = ({
     <div>
       <IconButton
         className={classnames(
-          "focus:outline-none text-gray-500 hover:text-gray-500",
+          "focus:outline-none",
           {
             "text-yellow-300 hover:text-yellow-300": isStar,
           }
@@ -191,7 +191,7 @@ const FeedItemComponent = ({
         disabled={markAsStarMutation.isLoading}
       />
       <IconButton
-        className="focus:outline-none text-gray-500 hover:text-gray-500"
+        className="focus:outline-none"
         styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
         iconProps={isRead ? radioBtnOffIcon : radioBtnOnIcon}
         title="mark as read"
@@ -239,12 +239,12 @@ const FeedItemComponent = ({
         horizontal
         onClick={onClick}
         className={classnames(
-          "relative z-10 group cursor-pointer select-none hover:bg-blue-50",
+          "relative z-10 group cursor-pointer select-none hover:bg-white hover:bg-opacity-50",
           itemClassName,
           {
             "py-1 border-b": viewType === ViewType.list,
             "py-4": viewType !== ViewType.list,
-            "bg-blue-100": isSelected,
+            "bg-white bg-opacity-80": isSelected,
           }
         )}
       >

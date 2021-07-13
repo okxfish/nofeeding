@@ -55,7 +55,7 @@ const FeedPaneComponent = ({
           verticalAlign="center"
           className={`pt-4 pb-2 border-t ${paddingHori}`}
         >
-          <div className="flex-1 font-bold text-xl text-gray-600">
+          <div className="flex-1 font-bold text-xl">
             {props.group!.name}
           </div>
         </Stack>
@@ -70,7 +70,7 @@ const FeedPaneComponent = ({
           horizontalAlign="end"
         >
           <ActionButton
-            className="text-gray-500 text-base mr-0 px-0"
+            className="text-base mr-0 px-0"
             styles={{ label: "m-0" }}
             text="mark this group as read"
           />
@@ -138,7 +138,7 @@ const FeedPaneComponent = ({
       );
     } else {
       return (
-        <div className="text-center p-24 text-gray-300">
+        <div className="text-center p-24 text-gray-400">
           <FontIcon iconName="FangBody" className="text-7xl" />
           <div className="font-semibold text-3xl">Nothing Here</div>
         </div>

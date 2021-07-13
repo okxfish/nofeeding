@@ -4,7 +4,6 @@ import {
   IButtonStyles,
   mergeStyleSets,
 } from "@fluentui/react";
-import { NeutralColors } from "@fluentui/theme";
 
 export interface Props extends IButtonProps {}
 
@@ -13,23 +12,28 @@ const sideBarButton = ({ className = "", styles, ...rest }: Props) => {
   const defaultStyles: IButtonStyles = {
     root: [
       {
-        width: "100%",
-        borderRadius: "0",
         border: "0",
         minWidth: "0",
-        backgroundColor: "transparent",
-        color: NeutralColors.gray180,
+        color: "currentColor",
+        background: "transparent",
       },
-      "h-12 text-base",
+      "w-10 h-10 mx-auto mb-2 rounded-md",
     ],
+    rootHovered: [
+      {
+        background: "rgba(255, 255, 255, 0.5)",
+        color: "currentColor",
+      },
+    ],
+    rootPressed: [{
+      background: "transparent",
+      color: "currentColor",
+    }],
     rootFocused: {
-      outlineOffset: "1",
+      outline: 0,
     },
     rootExpanded: {
       backgroundColor: "white",
-    },
-    rootHovered: {
-      backgroundColor: NeutralColors.gray50,
     },
     label: {
       fontWeight: "normal",

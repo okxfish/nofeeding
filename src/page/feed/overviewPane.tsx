@@ -340,7 +340,7 @@ const OverviewPane = ({ className }: Props) => {
     });
 
   return (
-    <Stack className={`${className} min-h-0`}>
+    <Stack className={`${className} min-h-0 p-2`}>
       <OverviewCell
         className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
@@ -354,7 +354,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "bg-transparent", link: "pl-8 pr-6" }}
+        styles={{ chevronButton: "bg-transparent text-current", link: "pl-8 pr-6 text-current", compositeLink: 'text-current hover:bg-white' }}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}

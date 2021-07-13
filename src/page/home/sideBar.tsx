@@ -6,7 +6,6 @@ import {
   IIconProps,
   Stack,
 } from "@fluentui/react";
-import { NeutralColors } from "@fluentui/theme";
 import queryString from "query-string";
 
 import { useQueryClient } from "react-query";
@@ -34,12 +33,6 @@ export interface Props {
   setIsViewSettingPaneOpen: React.Dispatch<SetStateAction<boolean>>;
   setIsAddFeedModalOpen: React.Dispatch<SetStateAction<boolean>>;
 }
-
-const useSelector = (selector: (store: any) => any) => {
-  const store = useContext(StoreContext);
-  const result = useMemo(() => selector(store), [store, selector]);
-  return result;
-};
 
 const SideBar = ({
   className,
@@ -190,8 +183,7 @@ const SideBar = ({
 
   return (
     <Stack
-      className={className}
-      style={{ backgroundColor: NeutralColors.gray30 }}
+      className={`${className} pt-2`}
     >
       <SideBarItem
         title="filter"

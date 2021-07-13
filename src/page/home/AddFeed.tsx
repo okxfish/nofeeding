@@ -8,7 +8,6 @@ import {
   IconButton,
   IDropdownOption,
 } from "@fluentui/react";
-import { NeutralColors } from "@fluentui/theme";
 import { NormalizedSchema } from "normalizr";
 import React, { useState } from "react";
 import { QueryKey, useMutation, useQueryClient } from "react-query";
@@ -107,7 +106,6 @@ const AddFeed = (props: Props) => {
       </div>
       <Stack
         className="px-8 py-6 bg-gray-200"
-        style={{ backgroundColor: NeutralColors.gray20 }}
         horizontal
         horizontalAlign="end"
         verticalAlign="center"
