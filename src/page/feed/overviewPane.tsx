@@ -335,7 +335,7 @@ const OverviewPane = ({ className }: Props) => {
       pathname: "/feed",
       search: queryString.stringify({
         streamId: SystemStreamIDs.STARRED,
-        unreadOnly: "0",
+        unreadOnly: true,
       }),
     });
 

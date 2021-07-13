@@ -15,6 +15,7 @@ export enum FeedThumbnailDisplayType {
 
 export interface FeedSetting {
   feedThumbnailDisplayType?: FeedThumbnailDisplayType | string;
+  unreadOnly: boolean;
 }
 
 export interface subscriptionSetting {
@@ -33,6 +34,7 @@ export interface SettingState {
 export const initSetting:SettingState = {
   feed: {
     feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysNotDisplay,
+    unreadOnly: true,
   },
   subscription: {
     isIconDisplay: false

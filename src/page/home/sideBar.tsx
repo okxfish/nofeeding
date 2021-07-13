@@ -1,4 +1,4 @@
-import React, { SetStateAction, useContext } from "react";
+import React, { SetStateAction, useContext, useMemo } from "react";
 import {
   ContextualMenuItemType,
   DirectionalHint,
@@ -10,12 +10,13 @@ import { NeutralColors } from "@fluentui/theme";
 import queryString from "query-string";
 
 import { useQueryClient } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import SideBarItem from "./sideBarButton";
 
 import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
 import { CHANGE_VIEW_TYPE } from "../../App";
+import { StoreContext } from "./../../context/app";
 import {
   DispatchContext,
   UserInfoContext,
@@ -34,6 +35,12 @@ export interface Props {
   setIsAddFeedModalOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
+const useSelector = (selector: (store: any) => any) => {
+  const store = useContext(StoreContext);
+  const result = useMemo(() => selector(store), [store, selector]);
+  return result;
+};
+
 const SideBar = ({
   className,
   setIsAddFeedModalOpen,
@@ -41,18 +48,17 @@ const SideBar = ({
   setIsViewSettingPaneOpen,
 }: Props) => {
   const {
-    feed: { feedThumbnailDisplayType },
+    feed: { feedThumbnailDisplayType, unreadOnly },
   } = useContext(SettingContext);
   const dispatch = useContext(DispatchContext);
   const userInfo = useContext(UserInfoContext);
 
   const queryClient = useQueryClient();
 
-  const history = useHistory();
   const location = useLocation();
 
   const qs = queryString.parse(location.search);
-  const { streamId, unreadOnly } = qs;
+  const { streamId } = qs;
 
   const streamContentQueryKey = [
     "feed/streamContentQuery",
@@ -73,14 +79,7 @@ const SideBar = ({
   };
 
   const handleUnreadOnlyMenuItemClick = () => {
-    const newSearch = {
-      ...qs,
-      unreadOnly: unreadOnly === "0" ? "1" : "0",
-    };
-    history.push({
-      pathname: "/feed",
-      search: queryString.stringify(newSearch),
-    });
+    dispatch({ type: "TOGGLE_UNREAD_ONLY" });
   };
 
   const handleFilterClick = () => {
@@ -131,7 +130,7 @@ const SideBar = ({
         key: "UnreadOnly",
         text: "unread only",
         iconProps: {
-          iconName: unreadOnly === "1" ? "CheckboxComposite" : "Checkbox",
+          iconName: unreadOnly ? "CheckboxComposite" : "Checkbox",
         },
         onClick: handleUnreadOnlyMenuItemClick,
       },
@@ -230,4 +229,4 @@ const SideBar = ({
   );
 };
 
-export default SideBar;
+export default React.memo(SideBar);

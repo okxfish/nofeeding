@@ -17,14 +17,9 @@ import { SettingContext, DispatchContext } from "../../context";
 const ViewSettingPane = () => {
   const {
     layout: { viewType },
-    feed: { feedThumbnailDisplayType },
+    feed: { feedThumbnailDisplayType, unreadOnly },
   } = useContext(SettingContext);
   const dispatch = useContext(DispatchContext);
-  const history = useHistory();
-  const location = useLocation();
-
-  const qs = queryString.parse(location.search);
-  const { unreadOnly } = qs;
 
   const viewTypeOptions: IChoiceGroupOption[] = [
     {
@@ -66,13 +61,7 @@ const ViewSettingPane = () => {
   ];
 
   const onIsUreadOnlyChange = () => {
-    history.push({
-      pathname: "/feed",
-      search: queryString.stringify({
-        ...qs,
-        unreadOnly: unreadOnly === "1" ? "0" : "1",
-      }),
-    });
+    dispatch({type: 'TOGGLE_UNREAD_ONLY'})
   };
 
   const onfeedThumbnaillDisplayTypeChange = (
@@ -103,7 +92,7 @@ const ViewSettingPane = () => {
         inlineLabel
         styles={{ label: "flex-1 order-none m-0" }}
         onChange={onIsUreadOnlyChange}
-        checked={unreadOnly === "0"}
+        checked={unreadOnly}
       />
       <Separator />
       {viewType !== ViewType.list && (

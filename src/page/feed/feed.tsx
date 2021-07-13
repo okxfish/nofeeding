@@ -54,13 +54,13 @@ const FeedContainer = () => {
   const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
   const {
     layout: { viewType },
+    feed: { unreadOnly },
   } = useContext(SettingContext);
   const scrollParentRef = useRef<any>(null);
   const location = useLocation();
   const queryClient = useQueryClient();
   const qs = queryString.parse(location.search);
   const streamId = qs.streamId;
-  const unreadOnly = qs.unreadOnly;
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -92,10 +92,10 @@ const FeedContainer = () => {
   const streamContentQuery = useInfiniteQuery<InfiniteNormalizedArticles>(
     streamContentQueryKey,
     async ({
-      queryKey: [key, streamId = "", unreadOnly = "0"],
+      queryKey: [key, streamId = "", unreadOnly],
       pageParam = "",
     }): Promise<InfiniteNormalizedArticles> => {
-      const exclude = unreadOnly === "1" ? SystemStreamIDs.READ : "";
+      const exclude = unreadOnly ? SystemStreamIDs.READ : "";
       const res = await api.inoreader.getStreamContents(String(streamId), {
         exclude: exclude,
         continuation: pageParam,
@@ -196,7 +196,7 @@ const FeedContainer = () => {
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-scroll scrollbar h-full bg-gray-100 w-128 transition-all",
+              "overflow-scroll scrollbar h-full bg-gray-100 w-full sm:w-128 transition-all",
               {
                 "flex-1": viewType !== ViewType.threeway,
               }

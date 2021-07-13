@@ -51,6 +51,7 @@ type Action =
   | { type: "CHANGE_SELECTED_ARTICLE"; articleId: string }
   | { type: "CHANGE_VIEW_TYPE"; viewType: ViewType }
   | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
+  | { type: "TOGGLE_UNREAD_ONLY"; }
   | {
       type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
       displayType: FeedThumbnailDisplayType;
@@ -83,6 +84,17 @@ const reducer = (prevState: Store, action: Action) => {
           feed: {
             ...prevState.setting.feed,
             feedThumbnailDisplayType: action.displayType,
+          },
+        },
+      };
+    case "TOGGLE_UNREAD_ONLY":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          feed: {
+            ...prevState.setting.feed,
+            unreadOnly: !prevState.setting.feed.unreadOnly,
           },
         },
       };

@@ -93,7 +93,7 @@ const AddFeed = (props: Props) => {
           <TextField
             name="feedUrl"
             placeholder="rss url here"
-            className="w-96 mb-4"
+            className="w-96 max-w-full mb-4"
             required
           />
           <Label>Folder to store the RSS</Label>

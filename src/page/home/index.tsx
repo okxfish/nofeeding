@@ -33,11 +33,11 @@ const Home = () => {
   return (
     <Stack
       horizontal
-      className="overflow-hidden w-full"
+      className="overflow-hidden w-full flex-col sm:flex-row"
       style={{ height: windowHeight }}
     >
       <SideBar
-        className="z-50 w-12"
+        className="z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first "
         setIsOverViewPaneOpen={setIsOverViewPaneOpen}
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
         setIsAddFeedModalOpen={setIsAddFeedModalOpen}
@@ -48,7 +48,7 @@ const Home = () => {
         isBlocking={false}
         onDismiss={() => setIsAddFeedModalOpen(false)}
       >
-        <AddFeed onCancel={() => setIsAddFeedModalOpen(false)} />
+      <AddFeed onCancel={() => setIsAddFeedModalOpen(false)} />
       </Modal>
       <HelfScreenPanel
         isOpen={isOverViewPaneOpen}

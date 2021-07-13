@@ -83,35 +83,35 @@ const FeedItemComponent = ({
     }
   );
 
-  // 检查哪个 hook 发生了变化
-  useEffect(() => {
-    if (hooksRef.current !== null) {
-      console.log(
-        "has viewType change",
-        hooksRef.current.viewType !== viewType
-      );
-      console.log(`**${id}==================`);
-      console.log(
-        "has markAsStarMutation change",
-        hooksRef.current.markAsStarMutation !== markAsStarMutation
-      );
-      console.log(
-        "has markAsReadMutation change",
-        hooksRef.current.markAsReadMutation !== markAsReadMutation
-      );
-      console.log(
-        "has setArticleDataById change",
-        hooksRef.current.setArticleDataById !== setArticleDataById
-      );
-    }
+  // // 检查哪个 hook 发生了变化
+  // useEffect(() => {
+  //   if (hooksRef.current !== null) {
+  //     console.log(
+  //       "has viewType change",
+  //       hooksRef.current.viewType !== viewType
+  //     );
+  //     console.log(`**${id}==================`);
+  //     console.log(
+  //       "has markAsStarMutation change",
+  //       hooksRef.current.markAsStarMutation !== markAsStarMutation
+  //     );
+  //     console.log(
+  //       "has markAsReadMutation change",
+  //       hooksRef.current.markAsReadMutation !== markAsReadMutation
+  //     );
+  //     console.log(
+  //       "has setArticleDataById change",
+  //       hooksRef.current.setArticleDataById !== setArticleDataById
+  //     );
+  //   }
 
-    hooksRef.current = {
-      viewType,
-      setArticleDataById,
-      markAsStarMutation,
-      markAsReadMutation,
-    };
-  });
+  //   hooksRef.current = {
+  //     viewType,
+  //     setArticleDataById,
+  //     markAsStarMutation,
+  //     markAsReadMutation,
+  //   };
+  // });
 
   // 标记文章已读/未读
   const onClick = useCallback(() => {
