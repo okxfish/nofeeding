@@ -105,7 +105,7 @@ const AddFeed = (props: Props) => {
         </Stack>
       </div>
       <Stack
-        className="px-8 py-6 bg-gray-200"
+        className="px-8 py-6 bg-gray-200 dark:bg-gray-600"
         horizontal
         horizontalAlign="end"
         verticalAlign="center"

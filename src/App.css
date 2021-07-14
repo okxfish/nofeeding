@@ -56,6 +56,19 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i{
 .App {
   background: linear-gradient(160deg, rgba(206,235,241,0), rgba(206,235,241,1)), #F7F7F7;
 }
+
+.dark.App {
+  background: #333333;
+}
+
+
+.article-wrapper {
+  color: #2f2f2f;
+}
+
+.dark .article-wrapper {
+  color: #e8e8e8;
+}
 /* 
 .ms-ContextualMenu-Callout.ms-Callout {
   overflow: hidden;

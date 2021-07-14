@@ -11,6 +11,7 @@ import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ArticleContext, SettingContext } from "../../context";
 import { ViewType } from "../../context/setting";
+import classnames from "classnames";
 import "./style.css";
 
 export interface Props {
@@ -28,6 +29,7 @@ const ArticlePane = forwardRef(
     const article: FeedItem | null = useContext(ArticleContext);
     const {
       layout: { viewType },
+      isDarkMode,
     } = useContext(SettingContext);
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
@@ -56,7 +58,7 @@ const ArticlePane = forwardRef(
       return (
         <div className="flex flex-col h-full overflow-y-hidden">
           {viewType !== ViewType.list && (
-            <div className="flex items-center h-10 border-b mx-6">
+            <div className="flex items-center h-10 mx-6">
               <IconButton
                 className="block lg:hidden"
                 iconProps={backIcon}
@@ -98,7 +100,10 @@ const ArticlePane = forwardRef(
 
     return (
       <div
-        className={`${className} bg-white bg-opacity-80`}
+        className={classnames("bg-opacity-80", className, {
+          "bg-white": !isDarkMode,
+          "bg-black": !isDarkMode,
+        })}
         style={style}
         ref={rootNodeRef}
       >

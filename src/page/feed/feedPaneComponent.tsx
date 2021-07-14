@@ -54,7 +54,7 @@ const FeedPaneComponent = ({
         <Stack
           horizontal
           verticalAlign="center"
-          className={`pt-4 pb-2 border-t ${paddingHori}`}
+          className={`pt-4 pb-2 ${paddingHori}`}
         >
           <div className="flex-1 font-bold text-xl">
             {props.group!.name}
@@ -106,7 +106,7 @@ const FeedPaneComponent = ({
         useWindow={false}
         hasMore={hasNextPage && !isFetching}
       >
-        <div className="border-b">
+        <div>
           <SubscriptionInfoCard rootClassName="px-6" />
         </div>
         <GroupedList

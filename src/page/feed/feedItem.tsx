@@ -177,12 +177,9 @@ const FeedItemComponent = ({
   const actionButtonsElem = (
     <div>
       <IconButton
-        className={classnames(
-          "focus:outline-none",
-          {
-            "text-yellow-300 hover:text-yellow-300": isStar,
-          }
-        )}
+        className={classnames("focus:outline-none", {
+          "text-yellow-300 hover:text-yellow-300": isStar,
+        })}
         styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
         iconProps={isStar ? favoriteStarFillIcon : favoriteStarIcon}
         title="favorite"
@@ -239,12 +236,12 @@ const FeedItemComponent = ({
         horizontal
         onClick={onClick}
         className={classnames(
-          "relative z-10 group cursor-pointer select-none hover:bg-white hover:bg-opacity-50",
+          "relative z-10 group cursor-pointer select-none hover:bg-white hover:bg-opacity-50 dark:hover:bg-black dark:hover:bg-opacity-80",
           itemClassName,
           {
-            "py-1 border-b": viewType === ViewType.list,
+            "py-1": viewType === ViewType.list,
             "py-4": viewType !== ViewType.list,
-            "bg-white bg-opacity-80": isSelected,
+            "bg-white bg-opacity-80 dark:bg-black": isSelected,
           }
         )}
       >
@@ -252,9 +249,7 @@ const FeedItemComponent = ({
         {feedBodyElem}
         {viewType === ViewType.list ? actionButtonsElem : null}
       </Stack>
-      {isInnerArticleShow ? (
-        <ArticlePane className="relative z-10 border-b bg-gray-50" />
-      ) : null}
+      {isInnerArticleShow ? <ArticlePane className="relative z-10" /> : null}
     </div>
   );
 };

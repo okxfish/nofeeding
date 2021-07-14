@@ -25,8 +25,8 @@ import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
 import { ThemeProvider } from "@fluentui/react";
-import { lightTheme, darkTheme } from './theme';
-
+import { lightTheme, darkTheme } from "./theme";
+import classnames from "classnames";
 
 import "./App.css";
 import "./style/utils.css";
@@ -56,6 +56,8 @@ type Action =
   | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
   | { type: "TOGGLE_UNREAD_ONLY" }
   | { type: "TOGGLE_DARK_THEME" }
+  | { type: "CHANGE_TO_DARK_THEME" }
+  | { type: "CHANGE_TO_LIGHT_THEME" }
   | {
       type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
       displayType: FeedThumbnailDisplayType;
@@ -107,7 +109,23 @@ const reducer = (prevState: Store, action: Action) => {
         ...prevState,
         setting: {
           ...prevState.setting,
-          isDarkMode: !prevState.setting.isDarkMode
+          isDarkMode: !prevState.setting.isDarkMode,
+        },
+      };
+    case "CHANGE_TO_DARK_THEME":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          isDarkMode: true,
+        },
+      };
+    case "CHANGE_TO_LIGHT_THEME":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          isDarkMode: false,
         },
       };
     default:
@@ -115,12 +133,25 @@ const reducer = (prevState: Store, action: Action) => {
   }
 };
 
+const getInitSetting = ():SettingState => {
+  let result:SettingState = initSetting;
+  try {
+    const localSetting:string|null = localStorage.getItem('setting');
+    if(localSetting){
+      result =  JSON.parse(localSetting);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return result;
+}
+
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {
     return {
       currenActivedFeedId: "",
       isArticleModalOpen: false,
-      setting: initSetting,
+      setting: getInitSetting(),
     };
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -137,6 +168,14 @@ function App() {
       enabled: !!inoreaderToken,
     }
   );
+
+  useEffect(()=>{
+    try {
+      localStorage.setItem('setting', JSON.stringify(store.setting));
+    } catch (error) {
+      console.error(error);
+    }
+  },[store.setting]);
 
   const loaddingAnimationRender = () => {
     return (
@@ -167,7 +206,9 @@ function App() {
           <CurrenActivedFeedIdContext.Provider value={currenActivedFeedId}>
             <SettingContext.Provider value={setting}>
               <UserInfoContext.Provider value={userInfoQuery.data}>
-                <div className="App">
+                <div
+                  className={classnames("App", { dark: setting.isDarkMode })}
+                >
                   <Router>
                     {loaddingAnimationRender()}
                     <Suspense

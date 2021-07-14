@@ -54,6 +54,7 @@ const FeedContainer = () => {
   const {
     layout: { viewType },
     feed: { unreadOnly },
+    isDarkMode,
   } = useContext(SettingContext);
   const scrollParentRef = useRef<any>(null);
   const location = useLocation();
@@ -187,8 +188,10 @@ const FeedContainer = () => {
       <SetFeedItemContext.Provider value={setArticleDataById}>
         <ArticleContext.Provider value={activedArticle}>
           <div
-            className={classnames('hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 bg-white bg-opacity-30',{
-              'shadow-md': viewType === ViewType.card
+            className={classnames('hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 bg-opacity-30',{
+              'shadow-md': viewType === ViewType.card,
+              'bg-white': !isDarkMode,
+              'bg-black': isDarkMode
             })}
           >
             <OverviewPane />
@@ -204,9 +207,11 @@ const FeedContainer = () => {
             data-is-scrollable
           >
             <FeedsPane
-              className={classnames("bg-white bg-opacity-50", {
+              className={classnames("bg-opacity-50", {
                 "max-w-3xl mx-auto": viewType !== ViewType.list,
                 " shadow-md": viewType === ViewType.card,
+                " bg-white": !isDarkMode,
+                " bg-black": isDarkMode,
               })}
               getScrollParent={getScrollParent}
             />

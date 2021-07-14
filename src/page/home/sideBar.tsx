@@ -42,6 +42,7 @@ const SideBar = ({
 }: Props) => {
   const {
     feed: { feedThumbnailDisplayType, unreadOnly },
+    isDarkMode,
   } = useContext(SettingContext);
   const dispatch = useContext(DispatchContext);
   const userInfo = useContext(UserInfoContext);
@@ -114,6 +115,30 @@ const SideBar = ({
     directionalHint: DirectionalHint.rightTopEdge,
     items: [
       {
+        key: "ThemeHeader",
+        itemType: ContextualMenuItemType.Header,
+        onRenderIcon: () => null,
+        text: "Theme",
+      },
+      {
+        key: "Theme",
+        onRenderContent: () => {
+          return (
+            <div className="flex">
+              <button
+                className="w-6 h-6 bg-gray-900 rounded-full border border-gray-300 mr-2"
+                onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
+              ></button>
+              <button
+                className="w-6 h-6 bg-white rounded-full border border-gray-300"
+                onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
+              ></button>
+            </div>
+          );
+        },
+        onClick: () => {},
+      },
+      {
         key: "Feed",
         itemType: ContextualMenuItemType.Header,
         onRenderIcon: () => null,
@@ -182,9 +207,7 @@ const SideBar = ({
   const streamContentQuery = queryClient.getQueryState(streamContentQueryKey);
 
   return (
-    <Stack
-      className={`${className} pt-2`}
-    >
+    <Stack className={`${className} pt-2`}>
       <SideBarItem
         title="filter"
         className="block sm:hidden"
