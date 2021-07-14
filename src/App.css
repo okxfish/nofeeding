@@ -56,3 +56,24 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i{
 .App {
   background: linear-gradient(160deg, rgba(206,235,241,0), rgba(206,235,241,1)), #F7F7F7;
 }
+/* 
+.ms-ContextualMenu-Callout.ms-Callout {
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.ms-ContextualMenu-Callout .ms-Callout-main {
+  padding: 10px;
+}
+
+.ms-TextField-fieldGroup::after {
+  border-radius: 5px;
+}
+
+.ms-TextField-fieldGroup .ms-TextField-field {
+  border-radius: 5px;
+}
+
+.ms-Dropdown:focus::after {
+  border-radius: 5px;
+} */

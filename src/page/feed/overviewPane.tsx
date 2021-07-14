@@ -12,7 +12,7 @@ import OverviewCell from "./overviewCell";
 import { useHistory, useLocation } from "react-router-dom";
 import { useQuery } from "react-query";
 import { default as api } from "../../api";
-import { default as get } from "lodash.get";
+import { get } from "lodash";
 import { normalize, schema, NormalizedSchema } from "normalizr";
 import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
@@ -354,7 +354,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "bg-transparent text-current", link: "pl-8 pr-6 text-current", compositeLink: 'text-current hover:bg-white' }}
+        styles={{ chevronButton: "bg-transparent", link: "pl-8 pr-6", compositeLink: 'hover:bg-white' }}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}

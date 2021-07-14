@@ -187,7 +187,9 @@ const FeedContainer = () => {
       <SetFeedItemContext.Provider value={setArticleDataById}>
         <ArticleContext.Provider value={activedArticle}>
           <div
-            className="hidden sm:block border-r overflow-y-scroll scrollbar-none transition-all w-72 bg-white bg-opacity-30"
+            className={classnames('hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 bg-white bg-opacity-30',{
+              'shadow-md': viewType === ViewType.card
+            })}
           >
             <OverviewPane />
           </div>
@@ -204,6 +206,7 @@ const FeedContainer = () => {
             <FeedsPane
               className={classnames("bg-white bg-opacity-50", {
                 "max-w-3xl mx-auto": viewType !== ViewType.list,
+                " shadow-md": viewType === ViewType.card,
               })}
               getScrollParent={getScrollParent}
             />

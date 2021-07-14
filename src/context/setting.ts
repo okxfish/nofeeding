@@ -28,7 +28,7 @@ export interface SettingState {
   layout: {
     viewType: ViewType;
   };
-  theme: {};
+  isDarkMode: boolean;
 }
 
 export const initSetting:SettingState = {
@@ -42,7 +42,7 @@ export const initSetting:SettingState = {
   layout: {
     viewType: ViewType.card
   },
-  theme: {},
+  isDarkMode: false,
 };
 
 export const SettingContext =

@@ -13,6 +13,7 @@ import {
   Spinner,
   SpinnerSize,
   FontIcon,
+  Text,
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
 import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
@@ -138,9 +139,9 @@ const FeedPaneComponent = ({
       );
     } else {
       return (
-        <div className="text-center p-24 text-gray-400">
+        <div className="text-center p-24">
           <FontIcon iconName="FangBody" className="text-7xl" />
-          <div className="font-semibold text-3xl">Nothing Here</div>
+          <Text className="font-semibold text-3xl">Nothing Here</Text>
         </div>
       );
     }

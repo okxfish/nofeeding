@@ -24,6 +24,9 @@ import {
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
+import { ThemeProvider } from "@fluentui/react";
+import { lightTheme, darkTheme } from './theme';
+
 
 import "./App.css";
 import "./style/utils.css";
@@ -51,7 +54,8 @@ type Action =
   | { type: "CHANGE_SELECTED_ARTICLE"; articleId: string }
   | { type: "CHANGE_VIEW_TYPE"; viewType: ViewType }
   | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
-  | { type: "TOGGLE_UNREAD_ONLY"; }
+  | { type: "TOGGLE_UNREAD_ONLY" }
+  | { type: "TOGGLE_DARK_THEME" }
   | {
       type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
       displayType: FeedThumbnailDisplayType;
@@ -96,6 +100,14 @@ const reducer = (prevState: Store, action: Action) => {
             ...prevState.setting.feed,
             unreadOnly: !prevState.setting.feed.unreadOnly,
           },
+        },
+      };
+    case "TOGGLE_DARK_THEME":
+      return {
+        ...prevState,
+        setting: {
+          ...prevState.setting,
+          isDarkMode: !prevState.setting.isDarkMode
         },
       };
     default:
@@ -146,42 +158,47 @@ function App() {
   const { currenActivedFeedId, setting } = store;
 
   return (
-    <div className="App">
+    <ThemeProvider
+      applyTo="body"
+      theme={setting.isDarkMode ? darkTheme : lightTheme}
+    >
       <StoreContext.Provider value={store}>
         <DispatchContext.Provider value={dispatch}>
           <CurrenActivedFeedIdContext.Provider value={currenActivedFeedId}>
             <SettingContext.Provider value={setting}>
               <UserInfoContext.Provider value={userInfoQuery.data}>
-                <Router>
-                  {loaddingAnimationRender()}
-                  <Suspense
-                    fallback={
-                      <CallBackOnUnmount cb={() => setIsLoading(false)} />
-                    }
-                  >
-                    <Switch>
-                      <Route path="/oauth" component={Oauth} />
-                      <Route path="/login" component={Login} />
-                      <Route
-                        path={["/feed", "/setting"]}
-                        render={() => {
-                          if (inoreaderToken) {
-                            return <Home />;
-                          } else {
-                            return <Redirect path="/" to="/login" />;
-                          }
-                        }}
-                      />
-                      <Redirect path="/" to="/feed" />
-                    </Switch>
-                  </Suspense>
-                </Router>
+                <div className="App">
+                  <Router>
+                    {loaddingAnimationRender()}
+                    <Suspense
+                      fallback={
+                        <CallBackOnUnmount cb={() => setIsLoading(false)} />
+                      }
+                    >
+                      <Switch>
+                        <Route path="/oauth" component={Oauth} />
+                        <Route path="/login" component={Login} />
+                        <Route
+                          path={["/feed", "/setting"]}
+                          render={() => {
+                            if (inoreaderToken) {
+                              return <Home />;
+                            } else {
+                              return <Redirect path="/" to="/login" />;
+                            }
+                          }}
+                        />
+                        <Redirect path="/" to="/feed" />
+                      </Switch>
+                    </Suspense>
+                  </Router>
+                </div>
               </UserInfoContext.Provider>
             </SettingContext.Provider>
           </CurrenActivedFeedIdContext.Provider>
         </DispatchContext.Provider>
       </StoreContext.Provider>
-    </div>
+    </ThemeProvider>
   );
 }
 

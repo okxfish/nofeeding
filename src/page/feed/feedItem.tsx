@@ -222,7 +222,7 @@ const FeedItemComponent = ({
         {viewType === ViewType.list ? null : actionButtonsElem}
       </Stack>
       <Text className="flex-1 text-base w-full">{summary}</Text>
-      <Stack horizontal verticalAlign="center" className="text-gray-400">
+      <Stack horizontal verticalAlign="center">
         <Text className="flex-1 text-sm" block nowrap title={sourceName}>
           {sourceName}
         </Text>

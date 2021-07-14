@@ -37,7 +37,7 @@ const Home = () => {
       style={{ height: windowHeight }}
     >
       <SideBar
-        className="z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first bg-gray-600 bg-opacity-80 text-current text-white"
+        className="z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first"
         setIsOverViewPaneOpen={setIsOverViewPaneOpen}
         setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
         setIsAddFeedModalOpen={setIsAddFeedModalOpen}

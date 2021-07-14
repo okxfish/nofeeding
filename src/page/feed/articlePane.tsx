@@ -45,9 +45,9 @@ const ArticlePane = forwardRef(
 
     if (article === null) {
       return (
-        <div className="text-center p-24 text-gray-400">
+        <div className="text-center p-24 ">
           <FontIcon iconName="ReadingMode" className="text-7xl" />
-          <div className="font-semibold text-3xl">No Article Here</div>
+          <Text className="font-semibold text-3xl">No Article Here</Text>
         </div>
       );
     }
@@ -81,11 +81,11 @@ const ArticlePane = forwardRef(
                     </Text>
                   </a>
                 </h2>
-                <div className="text-sm font-normal text-gray-400 flex align-middle">
-                  <div className="mr-2">{article?.sourceName}</div>
-                  <div className="mr-2">
+                <div className="text-sm font-normal flex align-middle">
+                  <Text className="mr-2">{article?.sourceName}</Text>
+                  <Text className="mr-2">
                     Publish at {article?.publishedTime.format("YYYY-M-D H:m")}
-                  </div>
+                  </Text>
                 </div>
               </header>
               <div className="article-body">{contentJSX}</div>
@@ -97,7 +97,11 @@ const ArticlePane = forwardRef(
     };
 
     return (
-      <div className={`${className}`} style={style} ref={rootNodeRef}>
+      <div
+        className={`${className} bg-white bg-opacity-80`}
+        style={style}
+        ref={rootNodeRef}
+      >
         {contentRender()}
       </div>
     );
