@@ -45,22 +45,26 @@ body {
   width: 0;
 }
 
-button.ms-Nav-chevronButton[aria-expanded="false"] i{
+button.ms-Nav-chevronButton[aria-expanded="false"] i {
   transform: rotateZ(-90deg);
 }
 
-button.ms-Nav-chevronButton[aria-expanded="true"] i{
+button.ms-Nav-chevronButton[aria-expanded="true"] i {
   transform: rotateZ(0);
 }
 
 .App {
-  background: linear-gradient(160deg, rgba(206,235,241,0), rgba(206,235,241,1)), #F7F7F7;
+  background: linear-gradient(
+      160deg,
+      rgba(206, 235, 241, 0),
+      rgba(206, 235, 241, 1)
+    ),
+    #f7f7f7;
 }
 
-.dark.App {
+.dark .App {
   background: #333333;
 }
-
 
 .article-wrapper {
   color: #2f2f2f;
@@ -90,3 +94,21 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i{
 .ms-Dropdown:focus::after {
   border-radius: 5px;
 } */
+
+/* 可访问性降低，应该根据不同的主题模式调整颜色 */
+button:focus {
+  outline: 2px dashed #666666;
+}
+
+.dark button:focus {
+  outline: 2px dashed #f7f7f7;
+}
+
+
+.ms-ContextualMenu-Callout .ms-Callout-main {
+  padding: 8px;
+}
+
+.ms-ContextualMenu-divider {
+  margin-top: 8px;
+}

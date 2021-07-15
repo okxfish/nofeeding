@@ -354,7 +354,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "bg-transparent", link: "pl-8 pr-6", compositeLink: 'hover:bg-white' }}
+        styles={{ chevronButton: "bg-transparent", link: "pl-8 pr-6", compositeLink: '' }}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}

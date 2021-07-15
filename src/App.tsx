@@ -133,18 +133,18 @@ const reducer = (prevState: Store, action: Action) => {
   }
 };
 
-const getInitSetting = ():SettingState => {
-  let result:SettingState = initSetting;
+const getInitSetting = (): SettingState => {
+  let result: SettingState = initSetting;
   try {
-    const localSetting:string|null = localStorage.getItem('setting');
-    if(localSetting){
-      result =  JSON.parse(localSetting);
+    const localSetting: string | null = localStorage.getItem("setting");
+    if (localSetting) {
+      result = JSON.parse(localSetting);
     }
   } catch (error) {
     console.error(error);
   }
   return result;
-}
+};
 
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {
@@ -169,13 +169,24 @@ function App() {
     }
   );
 
-  useEffect(()=>{
+  useEffect(() => {
+    const bodyElem = document.querySelector("body");
+    if (bodyElem) {
+      if (store.setting.isDarkMode) {
+        bodyElem.classList.add("dark");
+      } else {
+        bodyElem.classList.remove("dark");
+      }
+    }
+  }, [store.setting.isDarkMode]);
+
+  useEffect(() => {
     try {
-      localStorage.setItem('setting', JSON.stringify(store.setting));
+      localStorage.setItem("setting", JSON.stringify(store.setting));
     } catch (error) {
       console.error(error);
     }
-  },[store.setting]);
+  }, [store.setting]);
 
   const loaddingAnimationRender = () => {
     return (
@@ -206,9 +217,7 @@ function App() {
           <CurrenActivedFeedIdContext.Provider value={currenActivedFeedId}>
             <SettingContext.Provider value={setting}>
               <UserInfoContext.Provider value={userInfoQuery.data}>
-                <div
-                  className={classnames("App", { dark: setting.isDarkMode })}
-                >
+                <div className="App">
                   <Router>
                     {loaddingAnimationRender()}
                     <Suspense
