@@ -129,13 +129,13 @@ const SideBar = ({
                 className="w-6 h-6 bg-gray-900 text-white text-xs leading-6 rounded-full border-1 border-gray-300 mr-2"
                 onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
               >
-                L
+                D
               </button>
               <button
                 className="w-6 h-6 bg-white text-gray-900 text-xs leading-6 rounded-full border-1  border-gray-300"
                 onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
               >
-                D
+                L
               </button>
             </div>
           );

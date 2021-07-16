@@ -199,7 +199,7 @@ const FeedContainer = () => {
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-scroll scrollbar h-full w-full sm:w-128 transition-all",
+              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
               {
                 "flex-1": viewType !== ViewType.threeway,
               }
