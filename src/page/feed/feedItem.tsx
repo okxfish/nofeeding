@@ -62,9 +62,14 @@ const FeedItemComponent = ({
     ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
       api.inoreader.markArticleAsRead(id, asUnread),
     {
-      onSuccess: (data, { id, asUnread }) => {
+      onMutate: ({ id, asUnread })=>{
         setArticleDataById(id, (article) => {
           article.isRead = !asUnread;
+        });
+      },
+      onError: (error, { id, asUnread }) => {
+        setArticleDataById(id, (article) => {
+          article.isRead = asUnread;
         });
       },
     }
@@ -75,9 +80,14 @@ const FeedItemComponent = ({
     ({ id, isStar }: { id: string; isStar?: boolean }): any =>
       api.inoreader.markArticleAsStar(id, isStar),
     {
-      onSuccess: (data, { id, isStar }) => {
+      onMutate: ({ id, isStar })=>{
         setArticleDataById(id, (article) => {
           article.isStar = isStar;
+        });
+      },
+      onError: (error, { id, isStar }) => {
+        setArticleDataById(id, (article) => {
+          article.isStar = !isStar;
         });
       },
     }
