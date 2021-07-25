@@ -108,12 +108,16 @@ const Header = () => {
                 className="w-6 h-6 rounded-full border"
                 style={{ backgroundColor: NeutralColors.black }}
                 onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
-              ></button>
+              >
+                D
+              </button>
               <button
                 className="w-6 h-6 rounded-full border"
                 style={{ backgroundColor: NeutralColors.white }}
                 onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
-              ></button>
+              >
+                L
+              </button>
             </div>
           );
         },
