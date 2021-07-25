@@ -15,26 +15,23 @@ const sideBarButton = ({ className = "", styles, ...rest }: Props) => {
         border: "0",
         minWidth: "0",
         color: "currentColor",
-        background: "transparent",
       },
-      "w-10 h-10 mx-auto rounded-md",
+      "w-10 h-10 rounded-md",
     ],
     rootHovered: [
       {
-        background: "transparent",
         color: "currentColor",
       },
     ],
-    rootPressed: [{
-      background: "transparent",
-      color: "currentColor",
-    }],
+    rootPressed: [
+      {
+        color: "currentColor",
+      },
+    ],
     rootFocused: {
       outline: 0,
     },
-    rootExpanded: {
-      backgroundColor: "",
-    },
+    rootExpanded: {},
     label: {
       fontWeight: "normal",
     },

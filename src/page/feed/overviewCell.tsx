@@ -13,7 +13,6 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
     root: [
       {
         width: "100%",
-        borderRadius: "0",
         border: "0",
         paddingLeft: 0,
         paddingRight: 0,
@@ -22,7 +21,7 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
         color: 'currentColor',
         backgroundColor: "transparent",
       },
-      "h-10 text-base",
+      "h-10 text-base rounded-md",
     ],
     rootFocused: {
       outline: "none",

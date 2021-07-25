@@ -23,10 +23,10 @@ const prdConfig: ServerConfig = {
 
 let serverConfig: ServerConfig = prdConfig;
 
-// if (process.env.NODE_ENV === "development") {
-//   serverConfig = devConfig;
-//   mockSetup(axios);
-// }
+if (process.env.NODE_ENV === "development") {
+  serverConfig = devConfig;
+  mockSetup(axios);
+}
 
 export const INOREADER_AUTH_URL = serverConfig.inoreaderAuthUrl;
 

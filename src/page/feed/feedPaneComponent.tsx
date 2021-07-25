@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import { FeedItem } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
-import SubscriptionInfoCard from "./subscriptionInfoCard";
 import { isEmpty } from "lodash";
 import {
   Stack,
@@ -17,7 +16,6 @@ import {
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
 import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
-import { ViewType } from "../../context/setting";
 
 export interface Props {
   className?: string;
@@ -105,9 +103,6 @@ const FeedPaneComponent = ({
         useWindow={false}
         hasMore={hasNextPage && !isFetching}
       >
-        <div>
-          <SubscriptionInfoCard rootClassName="px-6" />
-        </div>
         <GroupedList
           items={items}
           onRenderCell={onRenderCell}

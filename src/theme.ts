@@ -1,9 +1,17 @@
-export const lightTheme = {
+import { PartialTheme, Theme } from "@fluentui/react"
+
+export const lightTheme:PartialTheme | Theme = {
   components: {
     Modal: {
       styles: {
+        main: ['rounded-xl']
       },
     },
+    Callout: {
+      styles: {
+        root: ['rounded-xl']
+      },
+    }
   },
   palette: {
     themePrimary: '#545454',
@@ -34,8 +42,9 @@ export const lightTheme = {
 export const darkTheme = {
   components: {
     Modal: {
-      styles: {
-      },
+      styles: [
+        'rounded-lg'
+      ],
     },
   },
   palette: {

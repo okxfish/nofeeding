@@ -69,17 +69,24 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i{
 .dark .article-wrapper {
   color: #e8e8e8;
 }
-/* 
-.ms-ContextualMenu-Callout.ms-Callout {
-  overflow: hidden;
-  border-radius: 10px;
+
+.ms-Callout.ms-ContextualMenu-Callout {
+  @apply rounded-lg overflow-hidden;
 }
 
-.ms-ContextualMenu-Callout .ms-Callout-main {
+.ms-ContextualMenu-item {
+  @apply mb-1;
+}
+
+.ms-Nav-compositeLink {
+  @apply rounded-md overflow-hidden;
+}
+
+.ms-Callout-main {
   padding: 10px;
 }
 
-.ms-TextField-fieldGroup::after {
+/* .ms-TextField-fieldGroup::after {
   border-radius: 5px;
 }
 
