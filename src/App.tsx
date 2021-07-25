@@ -24,7 +24,7 @@ import {
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
-import { ThemeProvider } from "@fluentui/react";
+import { NeutralColors, ThemeProvider } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
 
@@ -208,6 +208,9 @@ function App() {
               <UserInfoContext.Provider value={userInfoQuery.data}>
                 <div
                   className={classnames("App", { dark: setting.isDarkMode })}
+                  style={{
+                    backgroundColor: setting.isDarkMode ? NeutralColors.gray200 : NeutralColors.gray30
+                  }}
                 >
                   <Router>
                     {loaddingAnimationRender()}

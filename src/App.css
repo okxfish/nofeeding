@@ -54,11 +54,11 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i{
 }
 
 .App {
-  background: linear-gradient(160deg, rgba(206,235,241,0), rgba(206,235,241,1)), #F7F7F7;
+  /* background: linear-gradient(160deg, rgba(206,235,241,0), rgba(206,235,241,1)), #F7F7F7; */
 }
 
 .dark.App {
-  background: #333333;
+  /* background: #333333; */
 }
 
 

@@ -1,7 +1,7 @@
 .scrollbar {
   --width: 0.4rem;
   --foreground-color: #c2c3c7;
-  --background-color: #e5e7eb7a;
+  --background-color: transparent;
 }
 
 .scrollbar-none {

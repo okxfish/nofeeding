@@ -28,7 +28,7 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
       outline: "none",
     },
     rootExpanded: {
-      backgroundColor: 'white'
+      backgroundColor: ''
     },
     icon: {
       margin: '0',

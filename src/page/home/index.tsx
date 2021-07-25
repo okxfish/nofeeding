@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useWindowSize } from "react-use";
-import { Stack, Modal } from "@fluentui/react";
+import { Stack, Modal, NeutralColors, IconButton } from "@fluentui/react";
 import { ViewType } from "../../context/setting";
 import { default as FeedPage } from "../feed";
 import OverviewPane from "../feed/overviewPane";
@@ -14,6 +14,7 @@ import { DispatchContext, SettingContext } from "../../context";
 const Home = () => {
   const {
     layout: { viewType },
+    isDarkMode,
   } = useContext(SettingContext);
   const dispatch = useContext(DispatchContext);
 
@@ -32,23 +33,37 @@ const Home = () => {
 
   return (
     <Stack
-      horizontal
-      className="overflow-hidden w-full flex-col sm:flex-row"
-      style={{ height: windowHeight }}
+      style={{
+        height: windowHeight,
+      }}
+      className="w-full"
     >
-      <SideBar
-        className="z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first"
-        setIsOverViewPaneOpen={setIsOverViewPaneOpen}
-        setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
-        setIsAddFeedModalOpen={setIsAddFeedModalOpen}
-      />
-      <FeedPage />
+      <Stack horizontal className="h-12" style={{flexShrink: 0}}>
+        <IconButton iconProps={{iconName: 'Back'}} className="w-12 h-12"/>
+      </Stack>
+      <Stack
+        className="overflow-y-hidden flex-col sm:flex-row"
+      >
+        <SideBar
+          className="z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first"
+          setIsOverViewPaneOpen={setIsOverViewPaneOpen}
+          setIsViewSettingPaneOpen={setIsViewSettingPaneOpen}
+          setIsAddFeedModalOpen={setIsAddFeedModalOpen}
+        />
+        <Stack
+          horizontal
+          className="overflow-y-hidden flex-1 space-x-2 pr-4"
+          role="main"
+        >
+          <FeedPage />
+        </Stack>
+      </Stack>
       <Modal
         isOpen={isAddFeedModalOpen}
         isBlocking={false}
         onDismiss={() => setIsAddFeedModalOpen(false)}
       >
-      <AddFeed onCancel={() => setIsAddFeedModalOpen(false)} />
+        <AddFeed onCancel={() => setIsAddFeedModalOpen(false)} />
       </Modal>
       <HelfScreenPanel
         isOpen={isOverViewPaneOpen}

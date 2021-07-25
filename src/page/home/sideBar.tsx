@@ -4,6 +4,7 @@ import {
   DirectionalHint,
   IContextualMenuProps,
   IIconProps,
+  NeutralColors,
   Stack,
 } from "@fluentui/react";
 import queryString from "query-string";
@@ -124,13 +125,15 @@ const SideBar = ({
         key: "Theme",
         onRenderContent: () => {
           return (
-            <div className="flex">
+            <div className="flex space-x-2">
               <button
-                className="w-6 h-6 bg-gray-900 rounded-full border border-gray-300 mr-2"
+                className="w-6 h-6 rounded-full border"
+                style={{ backgroundColor: NeutralColors.black }}
                 onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
               ></button>
               <button
-                className="w-6 h-6 bg-white rounded-full border border-gray-300"
+                className="w-6 h-6 rounded-full border"
+                style={{ backgroundColor: NeutralColors.white }}
                 onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
               ></button>
             </div>
@@ -207,7 +210,7 @@ const SideBar = ({
   const streamContentQuery = queryClient.getQueryState(streamContentQueryKey);
 
   return (
-    <Stack className={`${className} pt-2`}>
+    <Stack className={`sm:space-x-2 ${className}`}>
       <SideBarItem
         title="filter"
         className="block sm:hidden"

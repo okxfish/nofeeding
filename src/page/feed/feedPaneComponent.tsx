@@ -43,7 +43,7 @@ const FeedPaneComponent = ({
     layout: { viewType },
   } = useContext(SettingContext);
 
-  const paddingHori = viewType === ViewType.threeway ? "px-4" : "px-6";
+  const paddingHori = 'px-6';
 
   if (!isEmpty(items)) {
     const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
@@ -91,7 +91,6 @@ const FeedPaneComponent = ({
         <FeedItemComponent
           {...item}
           key={item.id}
-          itemClassName={`${paddingHori}`}
           itemIndex={index}
           isSelected={item.id === currenActivedFeedId}
         />
@@ -139,10 +138,10 @@ const FeedPaneComponent = ({
       );
     } else {
       return (
-        <div className="text-center p-24">
+        <Stack className="text-center p-24">
           <FontIcon iconName="FangBody" className="text-7xl" />
-          <Text className="font-semibold text-3xl">Nothing Here</Text>
-        </div>
+          <Text className="font-semibold text-xl">Nothing Here</Text>
+        </Stack>
       );
     }
   }

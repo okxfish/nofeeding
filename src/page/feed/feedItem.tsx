@@ -6,6 +6,7 @@ import {
   IIconProps,
   Image,
   Stack,
+  NeutralColors,
 } from "@fluentui/react";
 import { default as api } from "../../api";
 import classnames from "classnames";
@@ -55,6 +56,7 @@ const FeedItemComponent = ({
   const {
     layout: { viewType },
     feed: { feedThumbnailDisplayType },
+    isDarkMode,
   } = useContext(SettingContext);
   const setArticleDataById = useContext(SetFeedItemContext);
 
@@ -62,7 +64,7 @@ const FeedItemComponent = ({
     ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
       api.inoreader.markArticleAsRead(id, asUnread),
     {
-      onMutate: ({ id, asUnread })=>{
+      onMutate: ({ id, asUnread }) => {
         setArticleDataById(id, (article) => {
           article.isRead = !asUnread;
         });
@@ -80,7 +82,7 @@ const FeedItemComponent = ({
     ({ id, isStar }: { id: string; isStar?: boolean }): any =>
       api.inoreader.markArticleAsStar(id, isStar),
     {
-      onMutate: ({ id, isStar })=>{
+      onMutate: ({ id, isStar }) => {
         setArticleDataById(id, (article) => {
           article.isStar = isStar;
         });
@@ -156,9 +158,14 @@ const FeedItemComponent = ({
 
     const thumbnaillElem: React.ReactElement = (
       <div
-        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-md overflow-hidden bg-gray-300 ${
+        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border-2 ${
           isRead ? "opacity-40" : ""
         }`}
+        style={{
+          backgroundColor: isDarkMode
+            ? NeutralColors.gray130
+            : NeutralColors.gray90,
+        }}
       >
         <Image
           className="mr-3  select-none"
@@ -184,13 +191,18 @@ const FeedItemComponent = ({
   const nowTime: Dayjs = dayjs();
   const relativePublishedTime: string = publishedTime.from(nowTime);
 
+  const iconBtnStyle = {
+    root: "px-0 rounded-md",
+    icon: "mx-0",
+  };
+
   const actionButtonsElem = (
-    <div>
+    <div className="space-x-2">
       <IconButton
         className={classnames("focus:outline-none", {
           "text-yellow-300 hover:text-yellow-300": isStar,
         })}
-        styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+        styles={iconBtnStyle}
         iconProps={isStar ? favoriteStarFillIcon : favoriteStarIcon}
         title="favorite"
         ariaLabel="Favorite"
@@ -199,7 +211,7 @@ const FeedItemComponent = ({
       />
       <IconButton
         className="focus:outline-none"
-        styles={{ root: "px-0 w-auto ml-4", icon: "mx-0" }}
+        styles={iconBtnStyle}
         iconProps={isRead ? radioBtnOffIcon : radioBtnOnIcon}
         title="mark as read"
         ariaLabel="Mark as read"
@@ -241,17 +253,21 @@ const FeedItemComponent = ({
   );
 
   return (
-    <div className={`overflow-x-hidden relative ${rootClassName}`}>
+    <div
+      className={`overflow-x-hidden relative mb-3 mx-6 px-4 rounded-md shadow-sm ${rootClassName} hover:bg-white dark:hover:bg-gray-800 ${
+        isDarkMode ? "ms-bgColor-gray200" : "ms-bgColor-gray10"
+      }`}
+    >
       <Stack
         horizontal
         onClick={onClick}
         className={classnames(
-          "relative z-10 group cursor-pointer select-none hover:bg-white hover:bg-opacity-50 dark:hover:bg-black dark:hover:bg-opacity-80",
+          "relative z-10 group cursor-pointer select-none",
           itemClassName,
           {
             "py-1": viewType === ViewType.list,
             "py-4": viewType !== ViewType.list,
-            "bg-white bg-opacity-80 dark:bg-black": isSelected,
+            "": isSelected,
           }
         )}
       >

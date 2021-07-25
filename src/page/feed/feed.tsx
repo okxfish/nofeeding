@@ -11,7 +11,7 @@ import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 
-import { Modal } from "@fluentui/react";
+import { Modal, NeutralColors } from "@fluentui/react";
 
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
@@ -188,39 +188,53 @@ const FeedContainer = () => {
       <SetFeedItemContext.Provider value={setArticleDataById}>
         <ArticleContext.Provider value={activedArticle}>
           <div
-            className={classnames('hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 bg-opacity-30',{
-              'shadow-md': viewType === ViewType.card,
-              'bg-white': !isDarkMode,
-              'bg-black': isDarkMode
-            })}
+            className={classnames(
+              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 rounded-t-lg border-2",
+            )}
+            style={{
+              backgroundColor: isDarkMode
+                ? NeutralColors.gray210
+                : NeutralColors.gray20,
+            }}
           >
             <OverviewPane />
           </div>
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
+              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-t-lg border-2",
               {
                 "flex-1": viewType !== ViewType.threeway,
               }
             )}
+            style={{
+              backgroundColor: isDarkMode
+                ? NeutralColors.gray210
+                : NeutralColors.gray20,
+            }}
             data-is-scrollable
           >
             <FeedsPane
-              className={classnames("bg-opacity-50", {
-                "max-w-3xl mx-auto": viewType !== ViewType.list,
-                " shadow-md": viewType === ViewType.card,
-                " bg-white": !isDarkMode,
-                " bg-black": isDarkMode,
+              className={classnames("", {
+                "mx-auto": viewType !== ViewType.list,
               })}
               getScrollParent={getScrollParent}
             />
           </div>
           {viewType === ViewType.threeway && (
-            <div className="flex-1" style={{ minWidth: "32rem" }}>
+            <div
+              className="flex-1 rounded-t-lg border-2"
+              style={{
+                minWidth: "32rem",
+                backgroundColor: isDarkMode
+                  ? NeutralColors.gray210
+                  : NeutralColors.gray20,
+              }}
+            >
               <ArticlePane className="h-full" />
             </div>
           )}
+
           <Modal
             className=""
             isOpen={isArticleModalOpen}

@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { IconButton, IIconProps, FontIcon, Text } from "@fluentui/react";
+import { IconButton, IIconProps, FontIcon, Text, Stack } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ArticleContext, SettingContext } from "../../context";
@@ -47,10 +47,10 @@ const ArticlePane = forwardRef(
 
     if (article === null) {
       return (
-        <div className="text-center p-24 ">
+        <Stack className="text-center p-24 ">
           <FontIcon iconName="ReadingMode" className="text-7xl" />
-          <Text className="font-semibold text-3xl">No Article Here</Text>
-        </div>
+          <Text className="font-semibold text-xl">No Article Here</Text>
+        </Stack>
       );
     }
 
@@ -100,10 +100,7 @@ const ArticlePane = forwardRef(
 
     return (
       <div
-        className={classnames("bg-opacity-80", className, {
-          "bg-white": !isDarkMode,
-          "bg-black": !isDarkMode,
-        })}
+        className={classnames("", className)}
         style={style}
         ref={rootNodeRef}
       >
