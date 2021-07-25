@@ -105,14 +105,14 @@ const Header = () => {
           return (
             <div className="flex space-x-2">
               <button
-                className="w-6 h-6 rounded-full border"
+                className="w-6 h-6 rounded-full border flex items-center justify-center text-white"
                 style={{ backgroundColor: NeutralColors.black }}
                 onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
               >
                 D
               </button>
               <button
-                className="w-6 h-6 rounded-full border"
+                className="w-6 h-6 rounded-full border flex items-center justify-center"
                 style={{ backgroundColor: NeutralColors.white }}
                 onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
               >
