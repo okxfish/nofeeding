@@ -14,7 +14,7 @@ import { DispatchContext, SettingContext } from "../../context";
 import { UserInfoContext } from "./../../context/userInfo";
 import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
 import { useQueryClient, useIsFetching } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, Switch, Route } from "react-router-dom";
 import { get } from "lodash";
 import { ModalKeys } from "../../reducer";
 import { getTagNameFromId } from "./../feed/overviewPane";
@@ -210,8 +210,18 @@ const Header = () => {
         className="w-12 h-12"
         onClick={handleBackBtnClick}
       />
-      {iconRender()}
-      <Text className="text-lg">{name}</Text>
+      <Switch>
+        <Route path="/settings" render={()=><Text className="text-lg">Settings</Text>}/>
+        <Route
+          path={["/", "/feed"]}
+          render={() => (
+            <>
+              {iconRender()}
+              <Text className="text-lg">{name}</Text>
+            </>
+          )}
+        />
+      </Switch>
       <div className="flex-1"></div>
       <SideBarButton
         iconProps={{ iconName: "Sync" }}

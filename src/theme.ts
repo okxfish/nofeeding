@@ -72,3 +72,9 @@ export const darkTheme = {
     white: '#333333',
   },
 }
+
+export const getLayerClassNames = (isDarkMode) => ({
+  "rounded-t-lg border-2": true,
+  "ms-bgColor-gray210": isDarkMode,
+  "ms-bgColor-gray20": !isDarkMode,
+});

@@ -13,6 +13,7 @@ import { ViewType } from "../../context/setting";
 import { ModalKeys } from "../../reducer";
 
 const FeedPage = lazy(() => import("../feed"));
+const SettingsPage = lazy(() => import("../settings"));
 
 const Home = () => {
   const {
@@ -132,7 +133,7 @@ const Home = () => {
         >
           <Suspense fallback={() => null}>
             <Switch>
-              <Route path="/settings" render={() => null} />
+              <Route path="/settings" component={SettingsPage} />
               <Route path={["/", "/feed"]} component={FeedPage} />
             </Switch>
           </Suspense>

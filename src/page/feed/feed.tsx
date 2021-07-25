@@ -11,7 +11,7 @@ import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 
-import { Modal, NeutralColors } from "@fluentui/react";
+import { Modal } from "@fluentui/react";
 
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
@@ -30,11 +30,10 @@ import {
   SetFeedItemContext,
   ArticleContext,
 } from "./../../context";
-
 import "./style.css";
+import { getLayerClassNames } from "../../theme";
 
 const article = new schema.Entity<FeedProps>("article");
-
 interface ArticleEntitySchema {
   article: {
     [key: string]: any;
@@ -176,6 +175,8 @@ const FeedContainer = () => {
 
   const getScrollParent = useCallback(() => scrollParentRef.current, []);
 
+  const layerClassNames = getLayerClassNames(isDarkMode);
+
   return (
     <FeedContext.Provider
       value={{
@@ -188,29 +189,21 @@ const FeedContainer = () => {
         <ArticleContext.Provider value={activedArticle}>
           <div
             className={classnames(
-              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 rounded-t-lg border-2",
+              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72",
+              layerClassNames
             )}
-            style={{
-              backgroundColor: isDarkMode
-                ? NeutralColors.gray210
-                : NeutralColors.gray20,
-            }}
           >
             <OverviewPane />
           </div>
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-t-lg border-2",
+              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
               {
                 "flex-1": viewType !== ViewType.threeway,
-              }
+              },
+              layerClassNames
             )}
-            style={{
-              backgroundColor: isDarkMode
-                ? NeutralColors.gray210
-                : NeutralColors.gray20,
-            }}
             data-is-scrollable
           >
             <FeedsPane
@@ -222,12 +215,9 @@ const FeedContainer = () => {
           </div>
           {viewType === ViewType.threeway && (
             <div
-              className="flex-1 rounded-t-lg border-2"
+              className={classnames("flex-1", layerClassNames)} 
               style={{
                 minWidth: "32rem",
-                backgroundColor: isDarkMode
-                  ? NeutralColors.gray210
-                  : NeutralColors.gray20,
               }}
             >
               <ArticlePane className="h-full" />
@@ -237,7 +227,7 @@ const FeedContainer = () => {
           <Modal
             className=""
             isOpen={isArticleModalOpen}
-            onDismiss={() => dispatch({ type: 'CLOSE_AIRTICLE_MODAL' })}
+            onDismiss={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
             isBlocking={false}
             styles={{
               main: [{ maxHeight: "100%" }],
@@ -245,7 +235,7 @@ const FeedContainer = () => {
           >
             <ArticlePane
               className="article-modal h-screen w-screen"
-              closeModal={() => dispatch({ type: 'CLOSE_AIRTICLE_MODAL' })}
+              closeModal={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
             />
           </Modal>
         </ArticleContext.Provider>
