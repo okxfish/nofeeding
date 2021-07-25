@@ -9,12 +9,6 @@ import { CSSTransition } from "react-transition-group";
 import BookFilp from "./component/bookFilp/index";
 import Oauth from "./page/oauth/index";
 import {
-  FeedThumbnailDisplayType,
-  initSetting,
-  SettingState,
-  ViewType,
-} from "./context/setting";
-import {
   UserInfoContext,
   CurrenActivedFeedIdContext,
   DispatchContext,
@@ -27,7 +21,7 @@ import { useQuery } from "react-query";
 import { NeutralColors, ThemeProvider } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
-
+import { getInitSetting, reducer } from "./reducer";
 import "./App.css";
 import "./style/utils.css";
 
@@ -44,113 +38,12 @@ export const CLOSE_AIRTICLE_MODAL = "CLOSE_AIRTICLE_MODAL";
 export const CHANGE_SELECTED_ARTICLE = "CHANGE_SELECTED_ARTICLE";
 export const CHANGE_VIEW_TYPE = "CHANGE_VIEW_TYPE";
 
-interface Store {
-  currenActivedFeedId: string;
-  isArticleModalOpen: boolean;
-  setting: SettingState;
-}
-
-type Action =
-  | { type: "CHANGE_SELECTED_ARTICLE"; articleId: string }
-  | { type: "CHANGE_VIEW_TYPE"; viewType: ViewType }
-  | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
-  | { type: "TOGGLE_UNREAD_ONLY" }
-  | { type: "TOGGLE_DARK_THEME" }
-  | { type: "CHANGE_TO_DARK_THEME" }
-  | { type: "CHANGE_TO_LIGHT_THEME" }
-  | {
-      type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
-      displayType: FeedThumbnailDisplayType;
-    };
-
-const reducer = (prevState: Store, action: Action) => {
-  switch (action.type) {
-    case "CHANGE_SELECTED_ARTICLE":
-      return { ...prevState, currenActivedFeedId: action.articleId };
-    case "CHANGE_VIEW_TYPE":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          layout: {
-            ...prevState.setting.layout,
-            viewType: action.viewType,
-          },
-        },
-      };
-    case "OPEN_AIRTICLE_MODAL":
-      return { ...prevState, isArticleModalOpen: true };
-    case "CLOSE_AIRTICLE_MODAL":
-      return { ...prevState, isArticleModalOpen: false };
-    case "CHANGE_THUMBNAIL_DISPLAY_TYPE":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          feed: {
-            ...prevState.setting.feed,
-            feedThumbnailDisplayType: action.displayType,
-          },
-        },
-      };
-    case "TOGGLE_UNREAD_ONLY":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          feed: {
-            ...prevState.setting.feed,
-            unreadOnly: !prevState.setting.feed.unreadOnly,
-          },
-        },
-      };
-    case "TOGGLE_DARK_THEME":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          isDarkMode: !prevState.setting.isDarkMode,
-        },
-      };
-    case "CHANGE_TO_DARK_THEME":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          isDarkMode: true,
-        },
-      };
-    case "CHANGE_TO_LIGHT_THEME":
-      return {
-        ...prevState,
-        setting: {
-          ...prevState.setting,
-          isDarkMode: false,
-        },
-      };
-    default:
-      return { ...prevState };
-  }
-};
-
-const getInitSetting = ():SettingState => {
-  let result:SettingState = initSetting;
-  try {
-    const localSetting:string|null = localStorage.getItem('setting');
-    if(localSetting){
-      result =  JSON.parse(localSetting);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-  return result;
-}
-
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {
     return {
       currenActivedFeedId: "",
       isArticleModalOpen: false,
+      modals: {},
       setting: getInitSetting(),
     };
   });
@@ -169,13 +62,13 @@ function App() {
     }
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     try {
-      localStorage.setItem('setting', JSON.stringify(store.setting));
+      localStorage.setItem("setting", JSON.stringify(store.setting));
     } catch (error) {
       console.error(error);
     }
-  },[store.setting]);
+  }, [store.setting]);
 
   const loaddingAnimationRender = () => {
     return (
@@ -209,7 +102,9 @@ function App() {
                 <div
                   className={classnames("App", { dark: setting.isDarkMode })}
                   style={{
-                    backgroundColor: setting.isDarkMode ? NeutralColors.gray200 : NeutralColors.gray30
+                    backgroundColor: setting.isDarkMode
+                      ? NeutralColors.gray200
+                      : NeutralColors.gray30,
                   }}
                 >
                   <Router>
@@ -223,7 +118,7 @@ function App() {
                         <Route path="/oauth" component={Oauth} />
                         <Route path="/login" component={Login} />
                         <Route
-                          path={["/feed", "/setting"]}
+                          path="/"
                           render={() => {
                             if (inoreaderToken) {
                               return <Home />;
@@ -232,7 +127,6 @@ function App() {
                             }
                           }}
                         />
-                        <Redirect path="/" to="/feed" />
                       </Switch>
                     </Suspense>
                   </Router>
