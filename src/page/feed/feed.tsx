@@ -20,7 +20,6 @@ import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
 import { produce } from "immer";
-import { CLOSE_AIRTICLE_MODAL } from "../../App";
 import { ViewType } from "../../context/setting";
 import {
   CurrenActivedFeedIdContext,
@@ -238,7 +237,7 @@ const FeedContainer = () => {
           <Modal
             className=""
             isOpen={isArticleModalOpen}
-            onDismiss={() => dispatch({ type: CLOSE_AIRTICLE_MODAL })}
+            onDismiss={() => dispatch({ type: 'CLOSE_AIRTICLE_MODAL' })}
             isBlocking={false}
             styles={{
               main: [{ maxHeight: "100%" }],
@@ -246,7 +245,7 @@ const FeedContainer = () => {
           >
             <ArticlePane
               className="article-modal h-screen w-screen"
-              closeModal={() => dispatch({ type: CLOSE_AIRTICLE_MODAL })}
+              closeModal={() => dispatch({ type: 'CLOSE_AIRTICLE_MODAL' })}
             />
           </Modal>
         </ArticleContext.Provider>

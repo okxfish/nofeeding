@@ -15,7 +15,6 @@ import ArticlePane from "./articlePane";
 import { useMutation } from "react-query";
 import { default as dayjs, Dayjs } from "dayjs";
 import { ViewType, FeedThumbnailDisplayType } from "../../context/setting";
-import { CHANGE_SELECTED_ARTICLE, OPEN_AIRTICLE_MODAL } from "../../App";
 import {
   SettingContext,
   SetFeedItemContext,
@@ -128,9 +127,9 @@ const FeedItemComponent = ({
   // 标记文章已读/未读
   const onClick = useCallback(() => {
     const articleId = id;
-    dispatch({ type: CHANGE_SELECTED_ARTICLE, articleId });
+    dispatch({ type: "CHANGE_SELECTED_ARTICLE", articleId });
     if (viewType === ViewType.card) {
-      dispatch({ type: OPEN_AIRTICLE_MODAL });
+      dispatch({ type: "OPEN_AIRTICLE_MODAL" });
     }
     markAsReadMutation.mutate({ id, asUnread: false });
   }, [viewType, id, dispatch, markAsReadMutation]);

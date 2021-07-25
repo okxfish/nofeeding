@@ -1,17 +1,16 @@
 import { lazy, useEffect, useContext, Suspense } from "react";
 import { useWindowSize } from "react-use";
+import { DispatchContext, SettingContext, StoreContext } from "../../context";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { Stack, Modal } from "@fluentui/react";
 import OverviewPane from "../feed/overviewPane";
 import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
-import { CHANGE_VIEW_TYPE } from "../../App";
-import { DispatchContext, SettingContext, StoreContext } from "../../context";
+import Header from "./Header";
 import SideBarButton from "./sideBarButton";
 import { ViewType } from "../../context/setting";
-import { Route, Switch, useHistory } from "react-router-dom";
 import { ModalKeys } from "../../reducer";
-import Header from './Header';
 
 const FeedPage = lazy(() => import("../feed"));
 
@@ -27,7 +26,7 @@ const Home = () => {
 
   useEffect(() => {
     if (viewType === ViewType.threeway && width < 1280) {
-      dispatch({ type: CHANGE_VIEW_TYPE, viewType: ViewType.card });
+      dispatch({ type: "CHANGE_VIEW_TYPE", viewType: ViewType.card });
     }
   }, [viewType, width, dispatch]);
 

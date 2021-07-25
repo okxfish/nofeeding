@@ -1,7 +1,4 @@
-import {
-  useMemo,
-  useContext,
-} from "react";
+import { useMemo, useContext } from "react";
 import {
   Stack,
   ContextualMenuItemType,
@@ -11,16 +8,15 @@ import {
   Image,
   Text,
 } from "@fluentui/react";
-import queryString from "query-string";
-import { CHANGE_VIEW_TYPE } from "../../App";
-import { DispatchContext, SettingContext } from "../../context";
 import SideBarButton from "./sideBarButton";
+import queryString from "query-string";
+import { DispatchContext, SettingContext } from "../../context";
 import { UserInfoContext } from "./../../context/userInfo";
 import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
 import { useQueryClient, useIsFetching } from "react-query";
 import { useHistory, useLocation } from "react-router-dom";
 import { get } from "lodash";
-import { ModalKeys } from '../../reducer';
+import { ModalKeys } from "../../reducer";
 import { getTagNameFromId } from "./../feed/overviewPane";
 
 const Header = () => {
@@ -76,10 +72,11 @@ const Header = () => {
     iconProps: {
       iconName: feedThumbnailDisplayType === key ? "RadioBtnOn" : "RadioBtnOff",
     },
-    onClick: (e, item)=>dispatch({
-      type: "CHANGE_THUMBNAIL_DISPLAY_TYPE",
-      displayType: item?.key,
-    }),
+    onClick: (e, item) =>
+      dispatch({
+        type: "CHANGE_THUMBNAIL_DISPLAY_TYPE",
+        displayType: item?.key,
+      }),
   });
 
   const getViewTypeMenuItemProps = (key, text, iconName) => ({
@@ -88,7 +85,8 @@ const Header = () => {
     iconProps: {
       iconName: iconName,
     },
-    onClick: (e, item): void => dispatch({ type: CHANGE_VIEW_TYPE, viewType: item.key }),
+    onClick: (e, item): void =>
+      dispatch({ type: "CHANGE_VIEW_TYPE", viewType: item.key }),
   });
 
   const menuProps: IContextualMenuProps = {
@@ -133,7 +131,7 @@ const Header = () => {
         iconProps: {
           iconName: unreadOnly ? "CheckboxComposite" : "Checkbox",
         },
-        onClick: ()=>dispatch({ type: "TOGGLE_UNREAD_ONLY" }),
+        onClick: () => dispatch({ type: "TOGGLE_UNREAD_ONLY" }),
       },
       {
         key: "Thumbnail",
@@ -227,18 +225,24 @@ const Header = () => {
         title="filter"
         className="block sm:hidden"
         iconProps={{ iconName: "Filter" }}
-        onClick={()=>dispatch({type: 'OPEN_MODAL', modalKey: ModalKeys.OverViewPane})}
+        onClick={() =>
+          dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.OverViewPane })
+        }
       />
       <SideBarButton
         title="subscript new feed "
         iconProps={{ iconName: "Add" }}
-        onClick={() => dispatch({type: 'OPEN_MODAL', modalKey: ModalKeys.AddFeedModal})}
+        onClick={() =>
+          dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.AddFeedModal })
+        }
       />
       <SideBarButton
         title="view setting"
         iconProps={{ iconName: "View" }}
         menuProps={menuProps}
-        onClick={()=>dispatch({type: 'OPEN_MODAL', modalKey: ModalKeys.ViewSettingPane})}
+        onClick={() =>
+          dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.ViewSettingPane })
+        }
       />
       <SideBarButton
         title="account"

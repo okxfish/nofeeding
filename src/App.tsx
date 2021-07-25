@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, Suspense, lazy } from "react";
+import { useState, useEffect, useReducer, Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -18,10 +18,10 @@ import {
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
+import { getInitSetting, reducer } from "./reducer";
 import { NeutralColors, ThemeProvider } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
-import { getInitSetting, reducer } from "./reducer";
 import "./App.css";
 import "./style/utils.css";
 
@@ -32,11 +32,6 @@ const CallBackOnUnmount = ({ cb }) => {
 
 const Login = lazy(() => import("./page/login"));
 const Home = lazy(() => import("./page/home"));
-
-export const OPEN_AIRTICLE_MODAL = "OPEN_AIRTICLE_MODAL";
-export const CLOSE_AIRTICLE_MODAL = "CLOSE_AIRTICLE_MODAL";
-export const CHANGE_SELECTED_ARTICLE = "CHANGE_SELECTED_ARTICLE";
-export const CHANGE_VIEW_TYPE = "CHANGE_VIEW_TYPE";
 
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {

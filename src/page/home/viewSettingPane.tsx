@@ -6,12 +6,7 @@ import {
   Stack,
   Separator,
 } from "@fluentui/react";
-
 import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
-
-import { useHistory, useLocation } from "react-router-dom";
-import queryString from "query-string";
-import { CHANGE_VIEW_TYPE } from "../../App";
 import { SettingContext, DispatchContext } from "../../context";
 
 const ViewSettingPane = () => {
@@ -61,7 +56,7 @@ const ViewSettingPane = () => {
   ];
 
   const onIsUreadOnlyChange = () => {
-    dispatch({type: 'TOGGLE_UNREAD_ONLY'})
+    dispatch({ type: "TOGGLE_UNREAD_ONLY" });
   };
 
   const onfeedThumbnaillDisplayTypeChange = (
@@ -78,7 +73,7 @@ const ViewSettingPane = () => {
     ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
     option?: IChoiceGroupOption
   ) => {
-    dispatch({ type: CHANGE_VIEW_TYPE, viewType: option?.key });
+    dispatch({ type: "CHANGE_VIEW_TYPE", viewType: option?.key });
   };
 
   return (
