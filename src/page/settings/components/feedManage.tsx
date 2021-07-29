@@ -145,9 +145,10 @@ const FeedManage = () => {
   };
 
   return (
-    <div className="h-full overflow-y-auto w-full scrollbar">
+    <div className="h-full w-full overflow-y-auto scrollbar">
+      <DetailsList items={feeds} columns={columns} />
       <Modal isOpen={isRenameModalOpened}>
-        <form onSubmit={onRename} >
+        <form onSubmit={onRename}>
           <div className="p-8">
             <Stack className="mb-4" horizontal>
               <Label className="flex-1 text-xl">Rename the feed</Label>
@@ -187,13 +188,14 @@ const FeedManage = () => {
                 type="submit"
               >
                 Rename
-                {renameFeedMutation.isLoading && <Spinner size={SpinnerSize.xSmall} className="ml-2"/>}
+                {renameFeedMutation.isLoading && (
+                  <Spinner size={SpinnerSize.xSmall} className="ml-2" />
+                )}
               </PrimaryButton>
             </Stack.Item>
           </Stack>
         </form>
       </Modal>
-      <DetailsList items={feeds} columns={columns} />
     </div>
   );
 };

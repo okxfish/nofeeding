@@ -94,7 +94,7 @@ const Settings = () => {
           onRenderGroupHeader={() => null}
         />
       </Stack>
-      <Stack grow className={classnames("", layerClassNames)}>
+      <Stack grow className={classnames("p-4", layerClassNames)}>
         <Switch>
           <Route path="/settings/feed-manage" component={FeedManage}/>
         </Switch>
