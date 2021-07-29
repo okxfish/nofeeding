@@ -103,7 +103,7 @@ function App() {
                   }}
                 >
                   <Router>
-                    {loaddingAnimationRender()}
+                    {/* {loaddingAnimationRender()} */}
                     <Suspense
                       fallback={
                         <CallBackOnUnmount cb={() => setIsLoading(false)} />

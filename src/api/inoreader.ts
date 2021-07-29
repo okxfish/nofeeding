@@ -5,6 +5,13 @@ export enum TextDirection {
   ltr = "ltr",
   rtl = "rtl",
 }
+
+export enum FeedActionType {
+  edit = "edit",
+  subscribe = "subscribe",
+  unsubscribe = "unsubscribe",
+}
+
 export interface StreamContentItem {
   alternate: { href: string; type: string }[];
   annotations: any[];
@@ -71,7 +78,14 @@ export const inoreader = {
   // Stream contents
   getStreamContents: (
     streamId: string,
-    { number, order, startTime, exclude, include, continuation }: any | undefined
+    {
+      number,
+      order,
+      startTime,
+      exclude,
+      include,
+      continuation,
+    }: any | undefined
   ) =>
     fetch.get<StreamContentsResponse>(
       `/reader/api/0/stream/contents/${encodeURIComponent(streamId)}`,
@@ -99,9 +113,25 @@ export const inoreader = {
   addSubscription: (url: string, folder?: string) =>
     fetch.get(`/reader/api/0/subscription/edit`, {
       params: {
-        ac: 'subscribe',
+        ac: "subscribe",
         s: url,
-        a: folder || '',
+        a: folder || "",
+      },
+    }),
+  // unsubscription
+  unsubscription: (streamId: string) =>
+    fetch.get(`/reader/api/0/subscription/edit`, {
+      params: {
+        ac: FeedActionType.unsubscribe,
+        s: streamId,
+      },
+    }),
+  renameFeed: (streamId: string, title:string) =>
+    fetch.get(`/reader/api/0/subscription/edit`, {
+      params: {
+        ac: FeedActionType.edit,
+        s: streamId,
+        t: title,
       },
     }),
   // Folder/Tag list

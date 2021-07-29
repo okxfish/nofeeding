@@ -10,27 +10,22 @@ import {
 } from "@fluentui/react";
 import OverviewCell from "./overviewCell";
 import { useHistory, useLocation } from "react-router-dom";
-import { useQuery } from "react-query";
-import { default as api } from "../../api";
+import { useQueryClient } from "react-query";
 import { get } from "lodash";
-import { normalize, schema, NormalizedSchema } from "normalizr";
 import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
-import { StreamPreferenceListResponse } from "./../../api/inoreader";
 import { SettingContext, UserInfoContext } from "./../../context";
 import { Tag } from "../../api/mockData";
-
 export interface Props {
   className?: string;
 }
-
 export interface KeyValuePair<T> {
   [key: string]: T;
 }
-
 export interface Sortable {
   sortid: string;
 }
+
 export interface Subscription extends Sortable {
   id: string;
   title: string;
@@ -56,9 +51,6 @@ export interface FolderEntity {
   folder: { [key: string]: Folder };
 }
 
-const subscription = new schema.Entity("subscription", undefined);
-const folder = new schema.Entity("folder");
-
 export const getTagNameFromId = (tagId: string): string => {
   const slice: string[] = tagId.split("/");
   return slice[slice.length - 1];
@@ -71,50 +63,7 @@ const OverviewPane = ({ className }: Props) => {
   const setting = useContext(SettingContext);
   const userInfo = useContext(UserInfoContext);
 
-  const subscriptionsListQuery = useQuery<
-    NormalizedSchema<SubscriptionEntity, string[]>
-  >(
-    "home/subscriptionsListQuery",
-    async () => {
-      const subscriptionList = await api.inoreader.getSubscriptionList();
-      const subscriptions = get(subscriptionList, "data.subscriptions");
-      const subscriptionsNormalized = normalize<
-        Subscription,
-        SubscriptionEntity
-      >(subscriptions, [subscription]);
-      return subscriptionsNormalized;
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const streamPreferencesQuery = useQuery<StreamPreferenceListResponse>(
-    "streamPreferences",
-    async () => {
-      const res = await api.inoreader.getStreamPreferenceList();
-      return res.data;
-    },
-    {
-      refetchOnWindowFocus: false,
-      retry: false,
-    }
-  );
-
-  const folderQuery = useQuery<NormalizedSchema<FolderEntity, string[]>>(
-    "home/folderQuery",
-    async () => {
-      const res = await api.inoreader.getFolderOrTagList(1, 1);
-      const tags = res.data.tags;
-      const foldersNormalized = normalize<InoreaderTag, FolderEntity>(tags, [
-        folder,
-      ]);
-      return foldersNormalized;
-    },
-    {
-      refetchOnWindowFocus: false,
-    }
-  );
+  const queryClient = useQueryClient();
 
   const onRenderLink: IRenderFunction<INavLink> = (props, defaultRender) => {
     if (!props) {
@@ -149,11 +98,17 @@ const OverviewPane = ({ className }: Props) => {
     );
   };
 
-  if (
-    !subscriptionsListQuery.data ||
-    !folderQuery.data ||
-    !streamPreferencesQuery.data
-  ) {
+  const subscriptionsListData = queryClient.getQueryData(
+    "home/subscriptionsListQuery"
+  );
+  const folderData = queryClient.getQueryData("home/folderQuery");
+  const streamPreferencesData = queryClient.getQueryData("streamPreferences");
+
+  console.log("subscriptionsListData", subscriptionsListData);
+  console.log("folderData", folderData);
+  console.log("streamPreferencesData", streamPreferencesData);
+
+  if (!subscriptionsListData || !folderData || !streamPreferencesData) {
     return null;
   }
 
@@ -216,7 +171,7 @@ const OverviewPane = ({ className }: Props) => {
     };
   })(location.search);
 
-  const getLinks = (streamPref:IdValuePair[]): any[] => {
+  const getLinks = (streamPref: IdValuePair[]): any[] => {
     const getSortIdString = (streamPref: IdValuePair[]): string => {
       return streamPref[streamPref.length - 1]?.value;
     };
@@ -251,7 +206,11 @@ const OverviewPane = ({ className }: Props) => {
     };
   };
 
-  const createFolderLink = (tag: Tag, links: INavLink[], id?:string): INavLink => {
+  const createFolderLink = (
+    tag: Tag,
+    links: INavLink[],
+    id?: string
+  ): INavLink => {
     if (!tag && id) {
       const name = getTagNameFromId(id);
       return {
@@ -259,7 +218,7 @@ const OverviewPane = ({ className }: Props) => {
         key: id,
         links: links,
         url: createLinkUrl(id),
-      }
+      };
     } else {
       const name = getTagNameFromId(tag.id);
       return {
@@ -286,6 +245,7 @@ const OverviewPane = ({ className }: Props) => {
     }
   ): INavLinkGroup | null => {
     if (!subscriptionById || !tagsById || !streamPrefById) {
+      // debugger
       return null;
     }
 
@@ -307,8 +267,8 @@ const OverviewPane = ({ className }: Props) => {
           const links = getLinks(streamPrefById[id])
             .map(getIdBySortid)
             .map(_getNavLinkGroupProps);
-          
-          return createFolderLink(tag, links, id );
+
+          return createFolderLink(tag, links, id);
         }
       }
     };
@@ -319,14 +279,13 @@ const OverviewPane = ({ className }: Props) => {
   const group = getNavLinkGroupProps(
     `user/${userInfo?.userId}/state/com.google/root`,
     {
-      subscriptionById: get(
-        subscriptionsListQuery,
-        "data.entities.subscription"
-      ),
-      tagsById: get(folderQuery, "data.entities.folder"),
-      streamPrefById: get(streamPreferencesQuery, "data.streamprefs"),
+      subscriptionById: get(subscriptionsListData, "entities.subscription"),
+      tagsById: get(folderData, "entities.folder"),
+      streamPrefById: get(streamPreferencesData, "streamprefs"),
     }
   );
+
+  console.log("group:", group);
 
   const handleAllFeedClick = () => history.push("/feed");
 
@@ -340,7 +299,7 @@ const OverviewPane = ({ className }: Props) => {
     });
 
   return (
-    <Stack className={`${className} min-h-0 p-2`} >
+    <Stack className={`${className} min-h-0 p-2`}>
       <OverviewCell
         className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
@@ -354,7 +313,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: '' }}
+        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: "" }}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}
