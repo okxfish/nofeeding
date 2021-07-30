@@ -146,7 +146,7 @@ const FeedManage = () => {
 
   return (
     <div className="h-full w-full overflow-y-auto scrollbar">
-      <DetailsList items={feeds} columns={columns} />
+    <DetailsList items={feeds} columns={columns} />
       <Modal isOpen={isRenameModalOpened}>
         <form onSubmit={onRename}>
           <div className="p-8">
