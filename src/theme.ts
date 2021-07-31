@@ -11,7 +11,27 @@ export const lightTheme:PartialTheme | Theme = {
       styles: {
         root: ['rounded-xl']
       },
-    }
+    },
+    TextField: {
+      styles: {
+        fieldGroup: ['rounded-md']
+      },
+    },
+    PrimaryButton: {
+      styles: {
+        root: ['rounded-md']
+      },
+    },
+    DefaultButton: {
+      styles: {
+        root: ['rounded-md']
+      },
+    },
+    Dropdown: {
+      styles: {
+        title: ['rounded-md']
+      },
+    },
   },
   palette: {
     themePrimary: '#545454',

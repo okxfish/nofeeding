@@ -56,16 +56,15 @@ const Login = () => {
           <div className="flex-1 flex justify-center items-center">
             {isLoginWithInoreader ? (
               <Spinner
-                label="log in ···"
                 size={SpinnerSize.large}
-                styles={{ circle: "w-16 h-16 border-8", label: "text-2xl" }}
+                styles={{ circle: "w-16 h-16 border-4"}}
               />
             ) : (
-              <BookFilp />
+              <Image className="w-72" src="/images/Z-but.png"/>
             )}
           </div>
           <Stack className="text-center mb-16">
-            <Text>
+            <Text className="">
               <a
                 href="https://github.com/uwpdver/fread"
                 target="_blank"
@@ -74,7 +73,7 @@ const Login = () => {
                 homepage
               </a>
             </Text>
-            <Text>version: 1.0</Text>
+            <Text className="">version: 1.0</Text>
           </Stack>
         </Stack.Item>
         <Stack.Item grow={1} className="bg-white">

@@ -81,7 +81,8 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i {
   @apply rounded-md overflow-hidden;
 }
 
-.ms-Callout-main {
+.ms-Callout .ms-Callout-main {
+  @apply rounded-lg;
   padding: 10px;
 }
 
@@ -96,16 +97,6 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i {
 .ms-Dropdown:focus::after {
   border-radius: 5px;
 } */
-
-/* 可访问性降低，应该根据不同的主题模式调整颜色 */
-button:focus {
-  outline: 2px dashed #666666;
-}
-
-.dark button:focus {
-  outline: 2px dashed #f7f7f7;
-}
-
 
 .ms-ContextualMenu-Callout .ms-Callout-main {
   padding: 8px;
