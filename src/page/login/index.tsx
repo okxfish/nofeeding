@@ -15,6 +15,7 @@ import {
 import "./style.css";
 import { useInoreaderToken } from "./../../utils/useInoreaderToken";
 import { useHistory } from "react-router-dom";
+import BookFilp from "./../../component/bookFilp/index";
 
 const Login = () => {
   const [isLoginWithInoreader, setIsLoginWithInoreader] =
@@ -46,24 +47,35 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page w-screen h-screen pt-12">
+    <div className="login-page w-screen h-screen pt-32">
       <Stack
         horizontal
         className="w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden"
       >
-        <Stack.Item
-          grow={1}
-          className="flex justify-center items-center bg-gray-200"
-        >
-          {isLoginWithInoreader ? (
-            <Spinner
-              label="log in ···"
-              size={SpinnerSize.large}
-              styles={{ circle: "w-16 h-16 border-8", label: "text-2xl" }}
-            />
-          ) : (
-            <span className="text-8xl">📰</span>
-          )}
+        <Stack.Item grow={1} className="bg-gray-200 flex flex-col">
+          <div className="flex-1 flex justify-center items-center">
+            {isLoginWithInoreader ? (
+              <Spinner
+                label="log in ···"
+                size={SpinnerSize.large}
+                styles={{ circle: "w-16 h-16 border-8", label: "text-2xl" }}
+              />
+            ) : (
+              <BookFilp />
+            )}
+          </div>
+          <Stack className="text-center mb-16">
+            <Text>
+              <a
+                href="https://github.com/uwpdver/fread"
+                target="_blank"
+                rel="noreferrer"
+              >
+                homepage
+              </a>
+            </Text>
+            <Text>version: 1.0</Text>
+          </Stack>
         </Stack.Item>
         <Stack.Item grow={1} className="bg-white">
           <form className="p-8 pt-10 h-128" onSubmit={handleOnSubmit}>

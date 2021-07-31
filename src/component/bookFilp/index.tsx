@@ -15,14 +15,14 @@ const BookFilp = () => {
 
   return (
     <div className={`book ${isFilpEnd ? "filp-end" : ""}`}>
-      <div className="back bg-gray-500"></div>
+      <div className="back bg-gray-600"></div>
       <div className="book-page page6"></div>
       <div className="book-page page5"></div>
       <div className="book-page page4"></div>
       <div className="book-page page3"></div>
       <div className="book-page page2"></div>
       <div className="book-page page1"></div>
-      <div className="front bg-gray-500"></div>
+      <div className="front bg-gray-600"></div>
     </div>
   );
 };
