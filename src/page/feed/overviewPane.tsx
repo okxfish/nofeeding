@@ -73,7 +73,7 @@ const OverviewPane = ({ className }: Props) => {
     const iconRender = (): ReactElement | null => {
       if (props.type === "feed") {
         if (setting.subscription.isIconDisplay && props.iconUrl) {
-          return <img className="w-4 h-4 mr-2" src={props.iconUrl} alt="" />;
+          return <img className="w-6 h-6 mr-2" src={props.iconUrl} alt="" />;
         } else {
           return null;
         }
@@ -81,7 +81,7 @@ const OverviewPane = ({ className }: Props) => {
         return (
           <Icon
             iconName={props.type === "tag" ? "Tag" : "FolderHorizontal"}
-            className="mr-2"
+            className="mr-2 w-6 h-6 leading-6"
           />
         );
       }
@@ -90,7 +90,7 @@ const OverviewPane = ({ className }: Props) => {
     return (
       <Stack horizontal verticalAlign="center" className="w-full">
         {iconRender()}
-        <Text block nowrap className="flex-1 text-left font-medium">
+        <Text block nowrap className="flex-1 text-left">
           {props.name}
         </Text>
         {props.type !== "feed" ? <span>{props.unreadCount}</span> : null}
@@ -103,10 +103,6 @@ const OverviewPane = ({ className }: Props) => {
   );
   const folderData = queryClient.getQueryData("home/folderQuery");
   const streamPreferencesData = queryClient.getQueryData("streamPreferences");
-
-  console.log("subscriptionsListData", subscriptionsListData);
-  console.log("folderData", folderData);
-  console.log("streamPreferencesData", streamPreferencesData);
 
   if (!subscriptionsListData || !folderData || !streamPreferencesData) {
     return null;
@@ -245,7 +241,6 @@ const OverviewPane = ({ className }: Props) => {
     }
   ): INavLinkGroup | null => {
     if (!subscriptionById || !tagsById || !streamPrefById) {
-      // debugger
       return null;
     }
 
@@ -267,7 +262,6 @@ const OverviewPane = ({ className }: Props) => {
           const links = getLinks(streamPrefById[id])
             .map(getIdBySortid)
             .map(_getNavLinkGroupProps);
-
           return createFolderLink(tag, links, id);
         }
       }
@@ -285,8 +279,6 @@ const OverviewPane = ({ className }: Props) => {
     }
   );
 
-  console.log("group:", group);
-
   const handleAllFeedClick = () => history.push("/feed");
 
   const handleStarFeedClick = () =>
@@ -299,7 +291,7 @@ const OverviewPane = ({ className }: Props) => {
     });
 
   return (
-    <Stack className={`${className} min-h-0 p-2`}>
+    <Stack className={`${className} min-h-0`}>
       <OverviewCell
         className={commonPx}
         iconProps={{ iconName: "PreviewLink" }}
@@ -313,7 +305,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: "" }}
+        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: ""}}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}

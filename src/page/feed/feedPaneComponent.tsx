@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { FeedItem } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
@@ -16,6 +16,7 @@ import {
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
 import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
+import { ViewType } from "../../context/setting";
 
 export interface Props {
   className?: string;
@@ -41,10 +42,10 @@ const FeedPaneComponent = ({
     layout: { viewType },
   } = useContext(SettingContext);
 
-  const paddingHori = 'px-6';
+  const paddingHori = "px-6";
 
-  if (!isEmpty(items)) {
-    const onRenderHeader = (props?: IGroupHeaderProps): JSX.Element | null => {
+  const onRenderHeader = useCallback(
+    (props?: IGroupHeaderProps): JSX.Element | null => {
       if (!props || !props.group) {
         return null;
       }
@@ -54,30 +55,31 @@ const FeedPaneComponent = ({
           verticalAlign="center"
           className={`pt-4 pb-2 ${paddingHori}`}
         >
-          <div className="flex-1 font-bold text-xl">
-            {props.group!.name}
-          </div>
+          <div className="flex-1 font-bold text-xl">{props.group!.name}</div>
         </Stack>
       );
-    };
+    },
+    []
+  );
 
-    const onRenderFooter = (): React.ReactElement | null => {
-      return (
-        <Stack
-          className={`pt-0 pb-4 w-full ${paddingHori}`}
-          horizontal
-          horizontalAlign="end"
-        >
-          <ActionButton
-            className="text-base mr-0 px-0"
-            styles={{ label: "m-0" }}
-            text="mark this group as read"
-          />
-        </Stack>
-      );
-    };
+  const onRenderFooter = useCallback((): React.ReactElement | null => {
+    return (
+      <Stack
+        className={`pt-0 pb-4 w-full ${paddingHori}`}
+        horizontal
+        horizontalAlign="end"
+      >
+        <ActionButton
+          className="text-base mr-0 px-0"
+          styles={{ label: "m-0" }}
+          text="mark this group as read"
+        />
+      </Stack>
+    );
+  }, []);
 
-    const onRenderCell = (
+  const onRenderCell = useCallback(
+    (
       nestingDepth?: number | undefined,
       item?: FeedItem,
       index?: number | undefined
@@ -93,7 +95,11 @@ const FeedPaneComponent = ({
           isSelected={item.id === currenActivedFeedId}
         />
       );
-    };
+    },
+    [currenActivedFeedId]
+  );
+
+  if (!isEmpty(items)) {
     return (
       <InfiniteScroll
         getScrollParent={getScrollParent}
@@ -107,6 +113,9 @@ const FeedPaneComponent = ({
           items={items}
           onRenderCell={onRenderCell}
           groups={groups}
+          styles={{
+            
+          }}
           usePageCache={true}
           groupProps={{
             onRenderHeader: onRenderHeader,

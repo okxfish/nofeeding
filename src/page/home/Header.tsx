@@ -7,6 +7,7 @@ import {
   NeutralColors,
   Image,
   Text,
+  SearchBox,
 } from "@fluentui/react";
 import SideBarButton from "./sideBarButton";
 import queryString from "query-string";
@@ -42,6 +43,7 @@ const Header = () => {
 
   const handleLogoffMenuItemClick = (e, item): void => {
     localStorage.removeItem("inoreaderToken");
+    history.replace('/login');
   };
 
   const profileMenuProps: IContextualMenuProps = {
@@ -179,7 +181,7 @@ const Header = () => {
   const folderName =
     streamId && typeof streamId === "string"
       ? getTagNameFromId(streamId)
-      : "all article";
+      : "All article";
 
   const name = subscription ? subscription.title : folderName;
   const feedType = subscription?.feedType;
@@ -206,27 +208,32 @@ const Header = () => {
     <Stack
       horizontal
       verticalAlign="center"
-      className="h-12 pr-4"
+      className="h-12 pr-4 space-x-2"
       style={{ flexShrink: 0 }}
     >
-      <SideBarButton
-        iconProps={{ iconName: "Back" }}
-        className="w-12 h-12"
-        onClick={handleBackBtnClick}
-      />
+      <div className="w-72">
+        <SideBarButton
+          iconProps={{ iconName: "Back" }}
+          onClick={handleBackBtnClick}
+          className="mx-2"
+        />
+      </div>
       <Switch>
-        <Route path="/settings" render={()=><Text className="text-lg">Settings</Text>}/>
+        <Route
+          path="/settings"
+          render={() => <Text className="text-lg">Settings</Text>}
+        />
         <Route
           path={["/", "/feed"]}
           render={() => (
             <>
-              {iconRender()}
+              {/* {iconRender()} */}
               <Text className="text-lg">{name}</Text>
             </>
           )}
         />
       </Switch>
-      <div className="flex-1"></div>
+      <Stack className="flex-1" horizontal></Stack>
       <SideBarButton
         iconProps={{ iconName: "Sync" }}
         title="sync feed"
@@ -262,6 +269,11 @@ const Header = () => {
         title="account"
         iconProps={{ iconName: "Contact" }}
         menuProps={profileMenuProps}
+      />
+      <SideBarButton
+        title="settings"
+        iconProps={{ iconName: "Settings" }}
+        onClick={() => history.push("/settings")}
       />
     </Stack>
   );

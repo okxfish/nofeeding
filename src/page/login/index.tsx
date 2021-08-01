@@ -99,7 +99,7 @@ const Login = () => {
               log in
             </PrimaryButton>
             <Separator className="mt-8 mb-4" alignContent="center" />
-            <DefaultButton className="w-full" onClick={loginWithInoreader}>
+            <DefaultButton className="w-full" onClick={loginWithInoreader} >
               login with inoreader
             </DefaultButton>
           </form>

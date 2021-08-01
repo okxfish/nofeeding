@@ -13,6 +13,7 @@ import { ArticleContext, SettingContext } from "../../context";
 import { ViewType } from "../../context/setting";
 import classnames from "classnames";
 import "./style.css";
+import { useThemeStyles } from "../../theme";
 
 export interface Props {
   className?: string;
@@ -34,6 +35,7 @@ const ArticlePane = forwardRef(
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
     const rootNodeRef = useRef<any>(null);
+    const { articleText } = useThemeStyles();
 
     useImperativeHandle(ref, () => rootNodeRef.current);
 
@@ -68,7 +70,7 @@ const ArticlePane = forwardRef(
           )}
 
           <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12">
-            <article className="max-w-3xl w-full mx-auto py-4">
+            <article className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}>
               <header className="mb-4">
                 <h2 className="mb-4">
                   <a

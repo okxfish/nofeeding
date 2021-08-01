@@ -19,7 +19,7 @@ import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
 import { getInitSetting, reducer } from "./reducer";
-import { NeutralColors, ThemeProvider } from "@fluentui/react";
+import { ThemeProvider, getTheme } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
 import "./App.css";
@@ -32,6 +32,9 @@ const CallBackOnUnmount = ({ cb }) => {
 
 const Login = lazy(() => import("./page/login"));
 const Home = lazy(() => import("./page/home"));
+
+const currentTheme = getTheme();
+console.log(currentTheme);
 
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {
@@ -84,10 +87,12 @@ function App() {
 
   const { currenActivedFeedId, setting } = store;
 
+  const theme = setting.isDarkMode ? darkTheme : lightTheme;
+
   return (
     <ThemeProvider
       applyTo="body"
-      theme={setting.isDarkMode ? darkTheme : lightTheme}
+      theme={theme}
     >
       <StoreContext.Provider value={store}>
         <DispatchContext.Provider value={dispatch}>
@@ -97,9 +102,7 @@ function App() {
                 <div
                   className={classnames("App", { dark: setting.isDarkMode })}
                   style={{
-                    backgroundColor: setting.isDarkMode
-                      ? NeutralColors.gray200
-                      : NeutralColors.gray30,
+                    backgroundColor: theme?.palette?.neutralLight
                   }}
                 >
                   <Router>

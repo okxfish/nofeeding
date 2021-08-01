@@ -58,15 +58,9 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i {
 }
 
 .dark.App {
-  /* background: #333333; */
 }
 
 .article-wrapper {
-  color: #2f2f2f;
-}
-
-.dark .article-wrapper {
-  color: #e8e8e8;
 }
 
 .ms-Callout.ms-ContextualMenu-Callout {
@@ -104,4 +98,9 @@ button.ms-Nav-chevronButton[aria-expanded="true"] i {
 
 .ms-ContextualMenu-divider {
   margin-top: 8px;
+}
+
+body .ms-TextField-fieldGroup:focus,
+button:focus {
+  outline: 0;
 }

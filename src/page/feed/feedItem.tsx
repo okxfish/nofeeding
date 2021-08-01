@@ -7,6 +7,8 @@ import {
   Image,
   Stack,
   NeutralColors,
+  useTheme,
+  Icon,
 } from "@fluentui/react";
 import { default as api } from "../../api";
 import classnames from "classnames";
@@ -50,7 +52,6 @@ const FeedItemComponent = ({
   rootClassName,
   itemClassName,
 }: Props) => {
-  const hooksRef = useRef<any>(null);
   const dispatch = useContext(DispatchContext);
   const {
     layout: { viewType },
@@ -58,6 +59,7 @@ const FeedItemComponent = ({
     isDarkMode,
   } = useContext(SettingContext);
   const setArticleDataById = useContext(SetFeedItemContext);
+  const { palette } = useTheme();
 
   const markAsReadMutation = useMutation(
     ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
@@ -94,36 +96,6 @@ const FeedItemComponent = ({
     }
   );
 
-  // // 检查哪个 hook 发生了变化
-  // useEffect(() => {
-  //   if (hooksRef.current !== null) {
-  //     console.log(
-  //       "has viewType change",
-  //       hooksRef.current.viewType !== viewType
-  //     );
-  //     console.log(`**${id}==================`);
-  //     console.log(
-  //       "has markAsStarMutation change",
-  //       hooksRef.current.markAsStarMutation !== markAsStarMutation
-  //     );
-  //     console.log(
-  //       "has markAsReadMutation change",
-  //       hooksRef.current.markAsReadMutation !== markAsReadMutation
-  //     );
-  //     console.log(
-  //       "has setArticleDataById change",
-  //       hooksRef.current.setArticleDataById !== setArticleDataById
-  //     );
-  //   }
-
-  //   hooksRef.current = {
-  //     viewType,
-  //     setArticleDataById,
-  //     markAsStarMutation,
-  //     markAsReadMutation,
-  //   };
-  // });
-
   // 标记文章已读/未读
   const onClick = useCallback(() => {
     const articleId = id;
@@ -157,21 +129,24 @@ const FeedItemComponent = ({
 
     const thumbnaillElem: React.ReactElement = (
       <div
-        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border-2 ${
+        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border flex items-center justify-center ${
           isRead ? "opacity-40" : ""
         }`}
         style={{
-          backgroundColor: isDarkMode
-            ? NeutralColors.gray130
-            : NeutralColors.gray90,
+          backgroundColor: palette.neutralQuaternaryAlt,
+          borderColor: palette.neutralQuaternaryAlt,
         }}
       >
-        <Image
-          className="mr-3  select-none"
-          src={thumbnailSrc}
-          maximizeFrame={true}
-          imageFit={ImageFit.cover}
-        />
+        {thumbnailSrc ? (
+          <Image
+            className="mr-3  select-none"
+            src={thumbnailSrc}
+            maximizeFrame={true}
+            imageFit={ImageFit.cover}
+          />
+        ) : (
+          <Icon iconName="FocalPoint" className=" text-5xl w-12 h-12 block" styles={{root: {color: palette.neutralLighter}}}/>
+        )}
       </div>
     );
 
@@ -253,9 +228,7 @@ const FeedItemComponent = ({
 
   return (
     <div
-      className={`overflow-x-hidden relative mb-3 mx-6 px-4 rounded-md shadow-sm ${rootClassName} hover:bg-white dark:hover:bg-gray-800 ${
-        isDarkMode ? "ms-bgColor-gray200" : "ms-bgColor-gray10"
-      }`}
+      className={`overflow-x-hidden relative mb-3 mx-6 px-4 rounded-md ${rootClassName}`}
     >
       <Stack
         horizontal

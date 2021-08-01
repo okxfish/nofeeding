@@ -2,7 +2,7 @@ import api from "../../api";
 import { lazy, useEffect, useContext, Suspense } from "react";
 import { useWindowSize } from "react-use";
 import { DispatchContext, SettingContext, StoreContext } from "../../context";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { Stack, Modal } from "@fluentui/react";
 import OverviewPane, {
   FolderEntity,
@@ -34,8 +34,6 @@ const Home = () => {
   } = useContext(SettingContext);
   const { modals } = useContext(StoreContext);
   const dispatch = useContext(DispatchContext);
-  const history = useHistory();
-
   const { height: windowHeight, width } = useWindowSize();
 
   useEffect(() => {
@@ -182,7 +180,7 @@ const Home = () => {
         grow
         disableShrink={false}
       >
-        {onSideBarRender({ history })}
+        {/* {onSideBarRender({ history })} */}
         <Stack
           horizontal
           grow

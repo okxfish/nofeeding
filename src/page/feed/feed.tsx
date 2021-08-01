@@ -11,7 +11,7 @@ import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 
-import { Modal } from "@fluentui/react";
+import { Modal, NeutralColors } from "@fluentui/react";
 
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
@@ -31,7 +31,7 @@ import {
   ArticleContext,
 } from "./../../context";
 import "./style.css";
-import { getLayerClassNames } from "../../theme";
+import { useThemeStyles } from "../../theme";
 
 const article = new schema.Entity<FeedProps>("article");
 interface ArticleEntitySchema {
@@ -59,6 +59,7 @@ const FeedContainer = () => {
   const queryClient = useQueryClient();
   const qs = queryString.parse(location.search);
   const streamId = qs.streamId;
+  const { contentLayer } = useThemeStyles();
 
   const streamContentQueryKey = useMemo(
     () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -175,8 +176,6 @@ const FeedContainer = () => {
 
   const getScrollParent = useCallback(() => scrollParentRef.current, []);
 
-  const layerClassNames = getLayerClassNames(isDarkMode);
-
   return (
     <FeedContext.Provider
       value={{
@@ -189,8 +188,7 @@ const FeedContainer = () => {
         <ArticleContext.Provider value={activedArticle}>
           <div
             className={classnames(
-              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72",
-              layerClassNames
+              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 px-2"
             )}
           >
             <OverviewPane />
@@ -202,7 +200,7 @@ const FeedContainer = () => {
               {
                 "flex-1": viewType !== ViewType.threeway,
               },
-              layerClassNames
+              contentLayer
             )}
             data-is-scrollable
           >
@@ -215,7 +213,7 @@ const FeedContainer = () => {
           </div>
           {viewType === ViewType.threeway && (
             <div
-              className={classnames("flex-1", layerClassNames)} 
+              className={classnames("flex-1", contentLayer)}
               style={{
                 minWidth: "32rem",
               }}

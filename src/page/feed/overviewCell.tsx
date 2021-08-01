@@ -14,14 +14,12 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
       {
         width: "100%",
         border: "0",
-        paddingLeft: 0,
-        paddingRight: 0,
         minWidth: "0",
         textAlign:'left',
         color: 'currentColor',
         backgroundColor: "transparent",
       },
-      "h-10 text-base rounded-md",
+      "h-10 rounded-md pl-8 lr-6",
     ],
     rootFocused: {
       outline: "none",
@@ -29,9 +27,7 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
     rootExpanded: {
       backgroundColor: ''
     },
-    icon: {
-      margin: '0',
-    },
+    icon: ['m-0 w-6 h-6 leading-6'],
     textContainer: 'ml-2',
     label: {
       fontWeight: "normal",

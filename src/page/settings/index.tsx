@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { getLayerClassNames } from "../../theme";
+import { useThemeStyles } from "../../theme";
 import {
   Icon,
   INavLink,
@@ -16,7 +16,7 @@ import FeedManage from "./components/feedManage";
 
 const Settings = () => {
   const { isDarkMode } = useContext(SettingContext);
-  const layerClassNames = getLayerClassNames(isDarkMode);
+  const {contentLayer} = useThemeStyles();
   const history = useHistory();
   const navLinkGroups: INavLinkGroup[] = [
     {
@@ -85,7 +85,7 @@ const Settings = () => {
 
   return (
     <>
-      <Stack disableShrink className={classnames("w-72 p-2", layerClassNames)}>
+      <Stack disableShrink className={classnames("w-72 px-2")}>
         <Nav
           groups={navLinkGroups}
           styles={{link: "px-2"}}
@@ -94,7 +94,7 @@ const Settings = () => {
           onRenderGroupHeader={() => null}
         />
       </Stack>
-      <Stack grow className={classnames("p-4", layerClassNames)}>
+      <Stack grow className={classnames("p-4", contentLayer)}>
         <Switch>
           <Route path="/settings/feed-manage" component={FeedManage}/>
         </Switch>
