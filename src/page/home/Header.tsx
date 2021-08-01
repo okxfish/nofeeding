@@ -43,7 +43,7 @@ const Header = () => {
 
   const handleLogoffMenuItemClick = (e, item): void => {
     localStorage.removeItem("inoreaderToken");
-    history.replace('/login');
+    history.replace("/login");
   };
 
   const profileMenuProps: IContextualMenuProps = {
@@ -66,6 +66,10 @@ const Header = () => {
 
   const handleBackBtnClick = () => {
     history.goBack();
+  };
+
+  const handleHomeBtnClick = () => {
+    history.push("/");
   };
 
   const getThumbnailSwitchMenuItemProps = (key, text) => ({
@@ -217,6 +221,13 @@ const Header = () => {
           onClick={handleBackBtnClick}
           className="mx-2"
         />
+        {!(["/", "/feed"].includes(location.pathname)) ? (
+          <SideBarButton
+            iconProps={{ iconName: "Home" }}
+            onClick={handleHomeBtnClick}
+            className=""
+          />
+        ) : null}
       </div>
       <Switch>
         <Route
