@@ -9,6 +9,7 @@ import {
   NeutralColors,
   useTheme,
   Icon,
+  mergeStyleSets,
 } from "@fluentui/react";
 import { default as api } from "../../api";
 import classnames from "classnames";
@@ -139,13 +140,17 @@ const FeedItemComponent = ({
       >
         {thumbnailSrc ? (
           <Image
-            className="mr-3  select-none"
+            className="select-none"
             src={thumbnailSrc}
             maximizeFrame={true}
             imageFit={ImageFit.cover}
           />
         ) : (
-          <Icon iconName="FocalPoint" className=" text-5xl w-12 h-12 block" styles={{root: {color: palette.neutralLighter}}}/>
+          <Icon
+            iconName="FocalPoint"
+            className=" text-5xl w-12 h-12 block"
+            styles={{ root: { color: palette.neutralLighter } }}
+          />
         )}
       </div>
     );
