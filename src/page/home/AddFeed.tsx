@@ -48,17 +48,9 @@ const AddFeed = (props: Props) => {
       api.inoreader.addSubscription(`feed/${feedUrl}`, folderId),
     {
       onSuccess: () => {
-        alert("Success");
-        queryClient.refetchQueries({
-          predicate: (query) => {
-            const keys: QueryKey[] = [
-              "home/subscriptionsListQuery",
-              "streamPreferences",
-              "home/folderQuery",
-            ];
-            return keys.includes(query.queryKey);
-          },
-        });
+        queryClient.invalidateQueries("home/subscriptionsListQuery");
+        queryClient.invalidateQueries("streamPreferences");
+        queryClient.invalidateQueries("home/folderQuery");
       },
       onError: (error) => {
         alert("Failed");

@@ -6,7 +6,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { IconButton, IIconProps, FontIcon, Text, Stack } from "@fluentui/react";
+import { IIconProps, FontIcon, Text, Stack } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ArticleContext, SettingContext } from "../../context";
@@ -14,6 +14,9 @@ import { ViewType } from "../../context/setting";
 import classnames from "classnames";
 import "./style.css";
 import { useThemeStyles } from "../../theme";
+import useIntersectionObserver from "../../utils/useIntersectionObserver";
+import SideBarButton from "../home/sideBarButton";
+import { CSSTransition } from "react-transition-group";
 
 export interface Props {
   className?: string;
@@ -30,13 +33,14 @@ const ArticlePane = forwardRef(
     const article: FeedItem | null = useContext(ArticleContext);
     const {
       layout: { viewType },
-      isDarkMode,
     } = useContext(SettingContext);
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
     const rootNodeRef = useRef<any>(null);
     const { articleText } = useThemeStyles();
-
+    const titleElemRef = useRef<any>(null);
+    const titleElemeEntry = useIntersectionObserver(titleElemRef, {});
+    const isTitleVisible = titleElemeEntry && !titleElemeEntry?.isIntersecting;
     useImperativeHandle(ref, () => rootNodeRef.current);
 
     useEffect(() => {
@@ -60,19 +64,30 @@ const ArticlePane = forwardRef(
       return (
         <div className="flex flex-col h-full overflow-y-hidden">
           {viewType !== ViewType.list && (
-            <div className="flex items-center h-10 mx-6">
-              <IconButton
+            <div className="flex items-center h-12 px-2 sm:px-12 justify-between">
+              <SideBarButton
                 className="block lg:hidden"
                 iconProps={backIcon}
                 onClick={closeModal}
               />
+              <div className="overflow-y-hidden flex-1">
+                <CSSTransition
+                  in={isTitleVisible}
+                  timeout={{
+                    exit: 340,
+                  }}
+                  unmountOnExit
+                  className="article-header__tilte font-semibold"
+                >
+                  <h2>{article?.title}</h2>
+                </CSSTransition>
+              </div>
             </div>
           )}
-
           <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12">
             <article className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}>
               <header className="mb-4">
-                <h2 className="mb-4">
+                <h2 className="mb-4" ref={titleElemRef}>
                   <a
                     className="no-underline"
                     href={article?.url}
@@ -101,11 +116,7 @@ const ArticlePane = forwardRef(
     };
 
     return (
-      <div
-        className={classnames("", className)}
-        style={style}
-        ref={rootNodeRef}
-      >
+      <div className={classnames(className)} style={style} ref={rootNodeRef}>
         {contentRender()}
       </div>
     );

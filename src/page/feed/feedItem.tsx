@@ -6,10 +6,11 @@ import {
   IIconProps,
   Image,
   Stack,
-  NeutralColors,
+  CommandBar,
   useTheme,
   Icon,
   mergeStyleSets,
+  ICommandBarItemProps,
 } from "@fluentui/react";
 import { default as api } from "../../api";
 import classnames from "classnames";
@@ -27,6 +28,7 @@ import {
 export interface Props extends FeedProps {
   itemIndex: number;
   isSelected: boolean;
+  onAboveRead(e: any, id: string, index: number): void;
 }
 
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
@@ -52,6 +54,7 @@ const FeedItemComponent = ({
   className,
   rootClassName,
   itemClassName,
+  onAboveRead,
 }: Props) => {
   const dispatch = useContext(DispatchContext);
   const {
@@ -175,29 +178,48 @@ const FeedItemComponent = ({
     icon: "mx-0",
   };
 
+  const commandItems: ICommandBarItemProps[] = [
+    {
+      iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
+      iconOnly: true,
+      key: "markThisAsRead",
+      text: "mark this as read",
+      className: "focus:outline-none",
+      styles: iconBtnStyle,
+      ariaLabel: "Mark as read",
+      onClick: onRead,
+      disabled: markAsReadMutation.isLoading,
+    },
+  ];
+
+  const overflowItems: ICommandBarItemProps[] = [
+    {
+      iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
+      iconOnly: true,
+      key: "star",
+      text: "favorite",
+      className: classnames("focus:outline-none", {
+        "text-yellow-300 hover:text-yellow-300": isStar,
+      }),
+      styles: iconBtnStyle,
+      ariaLabel: "Favorite",
+      onClick: onStar,
+      disabled: markAsStarMutation.isLoading,
+    },
+    {
+      iconProps: { iconName: "DoubleChevronUp" },
+      iconOnly: true,
+      key: "markAboveAsRead",
+      text: "mark above as read",
+      className: "focus:outline-none",
+      styles: iconBtnStyle,
+      ariaLabel: "Mark as read",
+      onClick: (e)=>onAboveRead(e, id, itemIndex)
+    },
+  ];
+
   const actionButtonsElem = (
-    <div className="space-x-2">
-      <IconButton
-        className={classnames("focus:outline-none", {
-          "text-yellow-300 hover:text-yellow-300": isStar,
-        })}
-        styles={iconBtnStyle}
-        iconProps={isStar ? favoriteStarFillIcon : favoriteStarIcon}
-        title="favorite"
-        ariaLabel="Favorite"
-        onClick={onStar}
-        disabled={markAsStarMutation.isLoading}
-      />
-      <IconButton
-        className="focus:outline-none"
-        styles={iconBtnStyle}
-        iconProps={isRead ? radioBtnOffIcon : radioBtnOnIcon}
-        title="mark as read"
-        ariaLabel="Mark as read"
-        onClick={onRead}
-        disabled={markAsReadMutation.isLoading}
-      />
-    </div>
+    <CommandBar items={commandItems} overflowItems={overflowItems} styles={{root: ['px-0']}}/>
   );
 
   const feedBodyElem: React.ReactElement | null = (
@@ -210,7 +232,7 @@ const FeedItemComponent = ({
     >
       <Stack horizontal>
         <Text
-          className={classnames("text-base flex-1", {
+          className={classnames("text-base truncat-3 flex-1", {
             "mr-2": viewType === ViewType.list,
             "mb-4": viewType !== ViewType.list,
           })}
@@ -233,7 +255,7 @@ const FeedItemComponent = ({
 
   const classNames = mergeStyleSets({
     feed: [
-      "relative z-10 group cursor-pointer px-6",
+      "relative z-10 group cursor-pointer px-4 sm:px-6",
       {
         selectors: {
           "&:hover": {
@@ -246,7 +268,7 @@ const FeedItemComponent = ({
 
   return (
     <div
-      className={`overflow-x-hidden relative my-3 mx-4 rounded-md ${rootClassName}`}
+      className={`overflow-x-hidden relative my-3 mx-2 sm:mx-4 rounded-md ${rootClassName}`}
     >
       <Stack
         horizontal

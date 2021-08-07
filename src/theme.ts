@@ -127,6 +127,20 @@ const getComponentsStyle = (palette: Partial<IPalette>) => {
         ],
       },
     },
+    CommandBar: {
+      styles: {
+        root: [
+          {
+            background: 'none',
+            selectors: {
+              "& .ms-Button--commandBar": {
+                backgroundColor: "transparent",
+              },
+            },
+          },
+        ],
+      },
+    },
     DetailsList: {
       styles: {
         root: [{}],
@@ -195,7 +209,7 @@ export const useThemeStyles = () => {
   const { palette } = theme;
   return mergeStyleSets({
     contentLayer: [
-      "rounded-t-lg border-2",
+      "border-2",
       {
         backgroundColor: palette.neutralLighter,
         borderColor: palette.neutralQuaternaryAlt,

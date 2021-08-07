@@ -46,10 +46,7 @@ const FeedManage = () => {
         queryClient.setQueryData(
           "home/subscriptionsListQuery",
           produce((data: any) => {
-            console.log(data);
-            console.log("before", current(data));
             data.result = data.result.filter((item) => item !== streamId);
-            console.log("after", current(data));
           })
         );
       },

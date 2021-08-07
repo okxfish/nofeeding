@@ -1,5 +1,6 @@
 import { fetch } from "./index";
 import { InoreaderTag } from "../page/feed/overviewPane";
+import qs from 'query-string';
 
 export enum TextDirection {
   ltr = "ltr",
@@ -142,7 +143,7 @@ export const inoreader = {
         counts: counts,
       },
     }),
-  markArticleAsRead: (id: string, asUnread?: boolean) => {
+  markArticleAsRead: (id: string | string[], asUnread?: boolean) => {
     const params = { i: id };
     if (asUnread) {
       params["r"] = SystemStreamIDs.READ;
@@ -151,6 +152,18 @@ export const inoreader = {
     }
     return fetch.post(`/reader/api/0/edit-tag`, null, {
       params: params,
+      paramsSerializer: (params)=>{
+        const result = qs.stringify(params);
+        return result;
+      }
+    });
+  },
+  markAllAsRead: (streamId: string) => {
+    return fetch.post(`/reader/api/0/mark-all-as-read`, null, {
+      params: {
+        ts: Date.now(),
+        s: streamId,
+      },
     });
   },
   markArticleAsStar: (id: string, isStar?: boolean) => {

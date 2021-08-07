@@ -62,6 +62,26 @@ article p {
 }
 
 
-.fread-feed-page__main-col {
-  @apply mx-2;
+.App .fread-feed-page__main-col {
+  @apply sm:mx-2;
+}
+
+.article-header__tilte {
+  transition: all 340ms ease-in-out;
+}
+
+.article-header__tilte.enter {
+  transform: translateY(150%);
+}
+
+.article-header__tilte.enter-active{
+  transform: translateY(0);
+}
+
+.article-header__tilte.exit-active{
+  transform: translateY(150%);
+}
+
+.article-header__tilte.exit-done {
+  transform: translateY(150%);
 }

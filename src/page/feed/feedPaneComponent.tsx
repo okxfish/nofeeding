@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { FeedItem } from "./types";
+import { FeedItem, FeedProps } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
@@ -12,7 +12,13 @@ import {
   Text,
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
-import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
+import {
+  CurrenActivedFeedIdContext,
+  SetFeedItemContext,
+  SettingContext,
+} from "./../../context";
+import { useMutation } from "react-query";
+import api from "../../api";
 
 export interface Props {
   className?: string;
@@ -31,10 +37,47 @@ const FeedPaneComponent = ({
   fetchNextPage,
   getScrollParent,
 }: Props) => {
+  const setArticleDataById = useContext(SetFeedItemContext);
   const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
   const {
     layout: { viewType },
   } = useContext(SettingContext);
+
+  const markAboveAsReadMutation = useMutation(
+    ({ ids, asUnread }: { ids: string[]; asUnread?: boolean }): any =>
+      api.inoreader.markArticleAsRead(ids, asUnread),
+    {
+      onMutate: ({ ids, asUnread }) => {
+        for (const id of ids) {
+          setArticleDataById(id, (article) => {
+            article.isRead = !asUnread;
+          });
+        }
+      },
+      onError: (error, { ids, asUnread }) => {
+        for (const id of ids) {
+          setArticleDataById(id, (article) => {
+            article.isRead = asUnread;
+          });
+        }
+      },
+    }
+  );
+
+  const allItemIds: string[] = items.map((item) => item.id);
+
+  const onAboveRead = useCallback(
+    (e: any, id: string, index: number): void => {
+      if (e) {
+        e.stopPropagation();
+      }
+      markAboveAsReadMutation.mutate({
+        ids: allItemIds.slice(0, index + 1),
+        asUnread: false,
+      });
+    },
+    [markAboveAsReadMutation, allItemIds]
+  );
 
   const onRenderCell = useCallback(
     (item?: FeedItem, index?: number | undefined): React.ReactNode => {
@@ -44,13 +87,14 @@ const FeedPaneComponent = ({
       return (
         <FeedItemComponent
           {...item}
+          onAboveRead={onAboveRead}
           key={item.id}
           itemIndex={index}
           isSelected={item.id === currenActivedFeedId}
         />
       );
     },
-    [currenActivedFeedId]
+    [currenActivedFeedId, onAboveRead]
   );
 
   if (!isEmpty(items)) {

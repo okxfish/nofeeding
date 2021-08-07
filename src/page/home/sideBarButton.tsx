@@ -8,7 +8,7 @@ import {
 export interface Props extends IButtonProps {}
 
 // 侧边栏按钮，封装了一些样式
-const sideBarButton = ({ className = "", styles, ...rest }: Props) => {
+const SideBarButton = ({ className = "", styles, ...rest }: Props) => {
   const defaultStyles: IButtonStyles = {
     root: [
       {
@@ -47,4 +47,4 @@ const sideBarButton = ({ className = "", styles, ...rest }: Props) => {
   );
 };
 
-export default sideBarButton;
+export default SideBarButton;

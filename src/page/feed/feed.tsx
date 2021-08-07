@@ -195,11 +195,11 @@ const FeedContainer = () => {
           <div
             ref={scrollParentRef}
             className={classnames(
-              "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
+              "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-none sm:rounded-t-lg",
+              contentLayer,
               {
                 "flex-1": viewType !== ViewType.threeway,
               },
-              contentLayer
             )}
             data-is-scrollable
           >
@@ -212,7 +212,7 @@ const FeedContainer = () => {
           </div>
           {viewType === ViewType.threeway && (
             <div
-              className={classnames("flex-1", contentLayer)}
+              className={classnames("flex-1 rounded-t-lg", contentLayer)}
               style={{
                 minWidth: "32rem",
               }}

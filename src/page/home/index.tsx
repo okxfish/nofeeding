@@ -20,6 +20,7 @@ import { ModalKeys } from "../../reducer";
 import { get } from "lodash";
 import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
+import HomeCommandBar from './HomeCommandBar';
 import { StreamPreferenceListResponse } from "../../api/inoreader";
 
 const subscription = new schema.Entity("subscription", undefined);
@@ -86,27 +87,6 @@ const Home = () => {
       refetchOnWindowFocus: false,
     }
   );
-
-  const onSideBarRender = ({ history }) => {
-    return (
-      <Stack
-        className={`sm:space-y-2 z-50 sm:w-12 flex-row sm:flex-col order-last sm:order-first`}
-        horizontalAlign="center"
-      >
-        <SideBarButton
-          iconProps={{ iconName: "News" }}
-          title="Settings"
-          onClick={() => history.push("/")}
-        />
-        <div className="flex-1"></div>
-        <SideBarButton
-          iconProps={{ iconName: "Settings" }}
-          title="Settings"
-          onClick={() => history.push("/settings")}
-        />
-      </Stack>
-    );
-  };
 
   const onModalsRender = () => {
     return (
@@ -180,7 +160,6 @@ const Home = () => {
         grow
         disableShrink={false}
       >
-        {/* {onSideBarRender({ history })} */}
         <Stack
           horizontal
           grow
@@ -194,6 +173,7 @@ const Home = () => {
             </Switch>
           </Suspense>
         </Stack>
+        <HomeCommandBar className="block sm:hidden" styles={{primarySet: ['flex justify-between']}}/>
       </Stack>
       {onModalsRender()}
     </Stack>
