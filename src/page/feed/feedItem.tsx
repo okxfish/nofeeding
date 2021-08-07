@@ -231,22 +231,31 @@ const FeedItemComponent = ({
     </Stack>
   );
 
+  const classNames = mergeStyleSets({
+    feed: [
+      "relative z-10 group cursor-pointer px-6",
+      {
+        selectors: {
+          "&:hover": {
+            backgroundColor: palette.neutralLight,
+          },
+        },
+      },
+    ],
+  });
+
   return (
     <div
-      className={`overflow-x-hidden relative mb-3 mx-6 px-4 rounded-md ${rootClassName}`}
+      className={`overflow-x-hidden relative my-3 mx-4 rounded-md ${rootClassName}`}
     >
       <Stack
         horizontal
         onClick={onClick}
-        className={classnames(
-          "relative z-10 group cursor-pointer select-none",
-          itemClassName,
-          {
-            "py-1": viewType === ViewType.list,
-            "py-4": viewType !== ViewType.list,
-            "": isSelected,
-          }
-        )}
+        className={classnames(classNames.feed, itemClassName, {
+          "py-1": viewType === ViewType.list,
+          "py-4": viewType !== ViewType.list,
+          "": isSelected,
+        })}
       >
         {feedHeaderRender()}
         {feedBodyElem}
