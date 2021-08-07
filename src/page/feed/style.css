@@ -60,3 +60,8 @@ article p {
 article p {
   @apply mb-2;
 }
+
+
+.fread-feed-page__main-col {
+  @apply mx-2;
+}

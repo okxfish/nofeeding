@@ -11,7 +11,7 @@ import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 
-import { Modal, NeutralColors } from "@fluentui/react";
+import { Modal } from "@fluentui/react";
 
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
@@ -52,7 +52,6 @@ const FeedContainer = () => {
   const {
     layout: { viewType },
     feed: { unreadOnly },
-    isDarkMode,
   } = useContext(SettingContext);
   const scrollParentRef = useRef<any>(null);
   const location = useLocation();
@@ -196,7 +195,7 @@ const FeedContainer = () => {
           <div
             ref={scrollParentRef}
             className={classnames(
-              "overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
+              "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
               {
                 "flex-1": viewType !== ViewType.threeway,
               },

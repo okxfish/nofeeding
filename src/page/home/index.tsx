@@ -184,7 +184,7 @@ const Home = () => {
         <Stack
           horizontal
           grow
-          className="overflow-y-hidden mx-2 sm:mx-0 sm:space-x-2 sm:pr-4"
+          className="overflow-y-hidden sm:pr-4"
           role="main"
         >
           <Suspense fallback={() => null}>
