@@ -228,7 +228,9 @@ const FeedContainer = () => {
             onDismiss={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
             isBlocking={false}
             styles={{
-              main: [{ maxHeight: "100%" }],
+              main: [
+                { maxHeight: "100%", maxWidth: "100%" },
+              ],
             }}
           >
             <ArticlePane
