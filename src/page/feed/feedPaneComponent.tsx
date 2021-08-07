@@ -5,23 +5,18 @@ import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
 import {
   Stack,
-  ActionButton,
-  GroupedList,
-  IGroup,
-  IGroupHeaderProps,
   Spinner,
   SpinnerSize,
   FontIcon,
+  List,
   Text,
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
 import { CurrenActivedFeedIdContext, SettingContext } from "./../../context";
-import { ViewType } from "../../context/setting";
 
 export interface Props {
   className?: string;
   items: FeedItem[];
-  groups?: IGroup[];
   hasNextPage: boolean;
   isFetching: boolean;
   fetchNextPage(): any;
@@ -31,7 +26,6 @@ export interface Props {
 const FeedPaneComponent = ({
   className,
   items,
-  groups,
   hasNextPage,
   isFetching,
   fetchNextPage,
@@ -42,48 +36,8 @@ const FeedPaneComponent = ({
     layout: { viewType },
   } = useContext(SettingContext);
 
-  const paddingHori = "px-6";
-
-  const onRenderHeader = useCallback(
-    (props?: IGroupHeaderProps): JSX.Element | null => {
-      if (!props || !props.group) {
-        return null;
-      }
-      return (
-        <Stack
-          horizontal
-          verticalAlign="center"
-          className={`pt-4 pb-2 ${paddingHori}`}
-        >
-          <div className="flex-1 font-bold text-xl">{props.group!.name}</div>
-        </Stack>
-      );
-    },
-    []
-  );
-
-  const onRenderFooter = useCallback((): React.ReactElement | null => {
-    return (
-      <Stack
-        className={`pt-0 pb-4 w-full ${paddingHori}`}
-        horizontal
-        horizontalAlign="end"
-      >
-        <ActionButton
-          className="text-base mr-0 px-0"
-          styles={{ label: "m-0" }}
-          text="mark this group as read"
-        />
-      </Stack>
-    );
-  }, []);
-
   const onRenderCell = useCallback(
-    (
-      nestingDepth?: number | undefined,
-      item?: FeedItem,
-      index?: number | undefined
-    ): React.ReactNode => {
+    (item?: FeedItem, index?: number | undefined): React.ReactNode => {
       if (typeof item === "undefined" || typeof index === "undefined") {
         return null;
       }
@@ -109,18 +63,10 @@ const FeedPaneComponent = ({
         useWindow={false}
         hasMore={hasNextPage && !isFetching}
       >
-        <GroupedList
+        <List<FeedItem>
           items={items}
           onRenderCell={onRenderCell}
-          groups={groups}
-          styles={{
-            
-          }}
           usePageCache={true}
-          groupProps={{
-            onRenderHeader: onRenderHeader,
-            onRenderFooter: onRenderFooter,
-          }}
         />
         <div>
           {isFetching ? (
@@ -155,7 +101,6 @@ export default React.memo(FeedPaneComponent, (prevProps, nextProps) => {
   if (
     prevProps.className !== nextProps.className ||
     prevProps.items !== nextProps.items ||
-    prevProps.groups !== nextProps.groups ||
     prevProps.hasNextPage !== nextProps.hasNextPage ||
     prevProps.isFetching !== nextProps.isFetching ||
     prevProps.fetchNextPage !== nextProps.fetchNextPage ||
