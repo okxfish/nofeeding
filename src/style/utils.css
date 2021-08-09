@@ -1,5 +1,5 @@
 .scrollbar {
-  --width: 0.4rem;
+  --width: 6px;
   --foreground-color: #c2c3c7;
   --background-color: transparent;
 }
@@ -19,6 +19,7 @@
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
   background: var(--foreground-color);
 }
 
