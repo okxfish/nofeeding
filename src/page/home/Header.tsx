@@ -55,13 +55,6 @@ const Header = () => {
           onClick={handleBackBtnClick}
           className="mx-2"
         />
-        {!["/", "/feed"].includes(location.pathname) ? (
-          <SideBarButton
-            iconProps={{ iconName: "Home" }}
-            onClick={handleHomeBtnClick}
-            className=""
-          />
-        ) : null}
       </div>
       <Switch>
         <Route
