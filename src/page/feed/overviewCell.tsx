@@ -16,7 +16,6 @@ const OverviewCell = ({ className = "", styles, ...rest }: Props) => {
         border: "0",
         minWidth: "0",
         textAlign:'left',
-        color: 'currentColor',
         backgroundColor: "transparent",
       },
       "h-10 rounded-md pl-8 lr-6",
