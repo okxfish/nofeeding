@@ -100,9 +100,10 @@ const ArticlePane = forwardRef(
                     </Text>
                   </a>
                 </h2>
-                <div className="text-sm font-normal flex align-middle">
-                  <Text className="mr-2">{article?.sourceName}</Text>
-                  <Text className="mr-2">
+                <div className="text-sm font-normal flex align-middle flex-wrap">
+                  <Text block nowrap>{article?.sourceName}</Text>
+                  <Text className="mx-2">|</Text>
+                  <Text block nowrap>
                     Publish at {article?.publishedTime.format("YYYY-M-D H:m")}
                   </Text>
                 </div>
