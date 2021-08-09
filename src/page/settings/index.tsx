@@ -11,13 +11,14 @@ import {
 } from "@fluentui/react";
 import classnames from "classnames";
 import { SettingContext } from "../../context";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import FeedManage from "./components/feedManage";
 
 const Settings = () => {
   const { isDarkMode } = useContext(SettingContext);
-  const {contentLayer} = useThemeStyles();
+  const { contentLayer } = useThemeStyles();
   const history = useHistory();
+  const location = useLocation();
   const navLinkGroups: INavLinkGroup[] = [
     {
       name: "Pages",
@@ -69,6 +70,7 @@ const Settings = () => {
         <Text block nowrap className="flex-1 text-left">
           {props?.name}
         </Text>
+        <Icon iconName="ChevronRight" className="ml-2 w-6 sm:hidden" />
       </Stack>
     );
   };
@@ -85,18 +87,26 @@ const Settings = () => {
 
   return (
     <>
-      <Stack disableShrink className={classnames("w-72 px-2")}>
+      <Stack
+        disableShrink
+        className={classnames("px-2 sm:w-72 flex-shrink-0", {
+          "hidden sm:flex": location.pathname !== "/settings",
+          "flex-grow sm:flex-0 sm:flex-grow-0 sm:flex-shrink-0": location.pathname === "/settings",
+        })}
+      >
         <Nav
           groups={navLinkGroups}
-          styles={{link: "px-2"}}
+          styles={{ link: "px-2" }}
           onRenderLink={onRenderLink}
           onLinkClick={handleLinkClick}
           onRenderGroupHeader={() => null}
         />
       </Stack>
-      <Stack grow className={classnames("p-4 rounded-t-lg", contentLayer)}>
+      <Stack grow className={classnames("p-4 rounded-none sm:rounded-t-lg", contentLayer,{
+        "hidden sm:flex": location.pathname === "/settings",
+      })}>
         <Switch>
-          <Route path="/settings/feed-manage" component={FeedManage}/>
+          <Route path="/settings/feed-manage" component={FeedManage} />
         </Switch>
       </Stack>
     </>
