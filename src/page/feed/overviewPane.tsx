@@ -93,7 +93,11 @@ const OverviewPane = ({ className }: Props) => {
         <Text block nowrap className="flex-1 text-left">
           {props.name}
         </Text>
-        {props.type !== "feed" ? <span>{props.unreadCount}</span> : null}
+        {props.type !== "feed" && props.unreadCount !== 0 ? (
+          <span >
+            {props.unreadCount}
+          </span>
+        ) : null}
       </Stack>
     );
   };
@@ -305,7 +309,7 @@ const OverviewPane = ({ className }: Props) => {
         onClick={handleStarFeedClick}
       />
       <Nav
-        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: ""}}
+        styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: "" }}
         groups={group ? [group] : null}
         onRenderLink={onRenderLink}
         onLinkClick={handleLinkClick}
