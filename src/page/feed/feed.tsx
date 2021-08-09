@@ -226,6 +226,7 @@ const FeedContainer = () => {
             isOpen={isArticleModalOpen}
             onDismiss={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
             isBlocking={false}
+            allowTouchBodyScroll
             styles={{
               main: [
                 { maxHeight: "100%", maxWidth: "100%" },

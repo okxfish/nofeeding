@@ -79,7 +79,7 @@ const ArticlePane = forwardRef(
                   unmountOnExit
                   className="article-header__tilte font-semibold"
                 >
-                  <h2>{article?.title}</h2>
+                  <Text block nowrap>{article?.title}</Text>
                 </CSSTransition>
               </div>
             </div>
