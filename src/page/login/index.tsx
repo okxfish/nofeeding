@@ -47,12 +47,12 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page w-screen h-screen pt-32">
+    <div className="login-page w-screen h-screen sm:pt-32">
       <Stack
         horizontal
-        className="w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden"
+        className="w-full md:w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto bg-gray-200"
       >
-        <Stack.Item grow={1} className="bg-gray-200 flex flex-col">
+        <Stack.Item grow={1} className="flex flex-col">
           <div className="flex-1 flex justify-center items-center">
             {isLoginWithInoreader ? (
               <Spinner
@@ -60,7 +60,7 @@ const Login = () => {
                 styles={{ circle: "w-16 h-16 border-4"}}
               />
             ) : (
-              <Image className="w-72" src="/images/Z-but.png"/>
+              <Image className="w-32 transform translate-y-12 sm:w-48 md:w-72" src="/images/Z-but.webp"/>
             )}
           </div>
           <Stack className="text-center mb-16">
@@ -76,7 +76,7 @@ const Login = () => {
             <Text className="">version: 1.0</Text>
           </Stack>
         </Stack.Item>
-        <Stack.Item grow={1} className="bg-white">
+        <Stack.Item grow={1} className="bg-white rounded-t-2xl sm:rounded-t-none shadow-md sm:shadow-none">
           <form className="p-8 pt-10 h-128" onSubmit={handleOnSubmit}>
             <Label className="text-center">Welcome To Fread</Label>
             <TextField
