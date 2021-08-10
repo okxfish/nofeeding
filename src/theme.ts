@@ -39,7 +39,7 @@ const darkThemePalette: Partial<IPalette> = {
   neutralLighterAlt: "#fdfdfd",
   neutralLighter: "#272727",
   neutralLight: "#202020",
-  neutralQuaternaryAlt: "#595959",
+  neutralQuaternaryAlt: "#303030",
   neutralQuaternary: "#5f5f5f",
   neutralTertiaryAlt: "#7a7a7a",
   neutralTertiary: "#f0f0f0",
@@ -209,7 +209,7 @@ export const useThemeStyles = () => {
   const { palette } = theme;
   return mergeStyleSets({
     contentLayer: [
-      "border-2",
+      "border",
       {
         backgroundColor: palette.neutralLighter,
         borderColor: palette.neutralQuaternaryAlt,
@@ -222,5 +222,3 @@ export const useThemeStyles = () => {
     ],
   });
 };
-
-const inoreaderToken = "ebe1bc358b043b602c92b50a8d0dc4bb3ed42ae4";

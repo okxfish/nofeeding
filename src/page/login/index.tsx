@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { default as api } from "../../api";
 import {
   TextField,
@@ -11,18 +11,39 @@ import {
   Image,
   Label,
   Text,
+  useTheme,
+  mergeStyleSets,
 } from "@fluentui/react";
 import "./style.css";
 import { useInoreaderToken } from "./../../utils/useInoreaderToken";
 import { useHistory } from "react-router-dom";
+import { SettingContext } from './../../context/setting';
 import BookFilp from "./../../component/bookFilp/index";
 
 const Login = () => {
+  const { palette } = useTheme();
   const [isLoginWithInoreader, setIsLoginWithInoreader] =
-    useState<boolean>(false);
+  useState<boolean>(false);
+  const { isDarkMode } = useContext(SettingContext);
 
   const history = useHistory();
   const inoreaderToken = useInoreaderToken();
+
+  const classNames = mergeStyleSets({
+    baseStack: [
+      "w-full md:w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto",
+      {
+        backgroundColor: palette.neutralQuaternaryAlt
+      }
+    ],
+    leftCol: ["relative z-10 group cursor-pointer px-4 sm:px-6"],
+    rightCol: [
+      "rounded-t-2xl sm:rounded-t-none shadow-md sm:shadow-none",
+      {
+        backgroundColor: palette.neutralLighter
+      }
+    ],
+  });
 
   useEffect(() => {
     if (inoreaderToken) {
@@ -48,19 +69,19 @@ const Login = () => {
 
   return (
     <div className="login-page w-screen h-screen sm:pt-32">
-      <Stack
-        horizontal
-        className="w-full md:w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto bg-gray-200"
-      >
+      <Stack horizontal className={classNames.baseStack}>
         <Stack.Item grow={1} className="flex flex-col">
           <div className="flex-1 flex justify-center items-center">
             {isLoginWithInoreader ? (
               <Spinner
                 size={SpinnerSize.large}
-                styles={{ circle: "w-16 h-16 border-4"}}
+                styles={{ circle: "w-16 h-16 border-4" }}
               />
             ) : (
-              <Image className="w-32 transform translate-y-12 sm:w-48 md:w-72" src="/images/Z-but.webp"/>
+              <Image
+                className="login-page__butterfly-image w-32 transform translate-y-12 sm:w-48 md:w-72"
+                src="/images/Z-but.webp"
+              />
             )}
           </div>
           <Stack className="text-center mb-16">
@@ -70,13 +91,16 @@ const Login = () => {
                 target="_blank"
                 rel="noreferrer"
               >
-                homepage
+                Homepage
               </a>
             </Text>
-            <Text className="">version: 1.0</Text>
+            <Text className="text-sm">version: 1.0</Text>
           </Stack>
         </Stack.Item>
-        <Stack.Item grow={1} className="bg-white rounded-t-2xl sm:rounded-t-none shadow-md sm:shadow-none">
+        <Stack.Item
+          grow={1}
+          className={classNames.rightCol}
+        >
           <form className="p-8 pt-10 h-128" onSubmit={handleOnSubmit}>
             <Label className="text-center">Welcome To Fread</Label>
             <TextField
@@ -99,7 +123,7 @@ const Login = () => {
               log in
             </PrimaryButton>
             <Separator className="mt-8 mb-4" alignContent="center" />
-            <DefaultButton className="w-full" onClick={loginWithInoreader} >
+            <DefaultButton className="w-full" onClick={loginWithInoreader}>
               login with inoreader
             </DefaultButton>
           </form>
