@@ -13,17 +13,20 @@ import {
   ICommandBarItemProps,
 } from "@fluentui/react";
 import { default as api } from "../../api";
+import queryString from "query-string";
 import classnames from "classnames";
 import { FeedProps } from "./types";
-import ArticlePane from "./articlePane";
 import { useMutation } from "react-query";
 import { default as dayjs, Dayjs } from "dayjs";
 import { ViewType, FeedThumbnailDisplayType } from "../../context/setting";
+import Swipeout from "../../component/swipeout";
+
 import {
   SettingContext,
   SetFeedItemContext,
   DispatchContext,
 } from "../../context";
+import { useWindowSize } from "react-use";
 
 export interface Props extends FeedProps {
   itemIndex: number;
@@ -41,14 +44,10 @@ const FeedItemComponent = ({
   title,
   summary,
   thumbnailSrc,
-  content,
-  url,
   sourceName,
-  sourceID,
   publishedTime,
   isRead,
   isStar,
-  isInnerArticleShow,
   itemIndex,
   isSelected,
   className,
@@ -60,11 +59,10 @@ const FeedItemComponent = ({
   const {
     layout: { viewType },
     feed: { feedThumbnailDisplayType },
-    isDarkMode,
   } = useContext(SettingContext);
   const setArticleDataById = useContext(SetFeedItemContext);
   const { palette } = useTheme();
-
+  const { width: windowWidth } = useWindowSize();
   const markAsReadMutation = useMutation(
     ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
       api.inoreader.markArticleAsRead(id, asUnread),
@@ -133,9 +131,8 @@ const FeedItemComponent = ({
 
     const thumbnaillElem: React.ReactElement = (
       <div
-        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border flex items-center justify-center ${
-          isRead ? "opacity-40" : ""
-        }`}
+        className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border flex items-center justify-center ${isRead ? "opacity-40" : ""
+          }`}
         style={{
           backgroundColor: palette.neutralQuaternaryAlt,
           borderColor: palette.neutralQuaternaryAlt,
@@ -178,48 +175,51 @@ const FeedItemComponent = ({
     icon: "mx-0",
   };
 
-  const commandItems: ICommandBarItemProps[] = [
-    {
-      iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
-      iconOnly: true,
-      key: "markThisAsRead",
-      text: "mark this as read",
-      className: "focus:outline-none",
-      styles: iconBtnStyle,
-      ariaLabel: "Mark as read",
-      onClick: onRead,
-      disabled: markAsReadMutation.isLoading,
-    },
-  ];
+  const markAsReadCommandBarItem: ICommandBarItemProps = {
+    iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
+    iconOnly: true,
+    key: "markThisAsRead",
+    text: "mark this as read",
+    className: "focus:outline-none",
+    styles: iconBtnStyle,
+    ariaLabel: "Mark as read",
+    onClick: onRead,
+    disabled: markAsReadMutation.isLoading,
+  }
 
-  const overflowItems: ICommandBarItemProps[] = [
-    {
-      iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
-      iconOnly: true,
-      key: "star",
-      text: "favorite",
-      className: classnames("focus:outline-none", {
-        "text-yellow-300 hover:text-yellow-300": isStar,
-      }),
-      styles: iconBtnStyle,
-      ariaLabel: "Favorite",
-      onClick: onStar,
-      disabled: markAsStarMutation.isLoading,
-    },
-    {
-      iconProps: { iconName: "DoubleChevronUp" },
-      iconOnly: true,
-      key: "markAboveAsRead",
-      text: "mark above as read",
-      className: "focus:outline-none",
-      styles: iconBtnStyle,
-      ariaLabel: "Mark as read",
-      onClick: (e)=>onAboveRead(e, id, itemIndex)
-    },
-  ];
+  const markAsStarCommandBarItem: ICommandBarItemProps = {
+    iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
+    iconOnly: true,
+    key: "star",
+    text: "favorite",
+    className: classnames("focus:outline-none", {
+      "text-yellow-300 hover:text-yellow-300": isStar,
+    }),
+    styles: iconBtnStyle,
+    ariaLabel: "Favorite",
+    onClick: onStar,
+    disabled: markAsStarMutation.isLoading,
+  }
+
+  const markAboveAsReadCommandBarItem: ICommandBarItemProps = {
+    iconProps: { iconName: "DoubleChevronUp" },
+    iconOnly: true,
+    key: "markAboveAsRead",
+    text: "mark above as read",
+    className: "focus:outline-none",
+    styles: iconBtnStyle,
+    ariaLabel: "Mark as read",
+    onClick: (e) => onAboveRead(e, id, itemIndex)
+  }
+
+  const commandItems: ICommandBarItemProps[] = windowWidth < 640 ? [] : [markAsReadCommandBarItem];
+
+  const overflowItems: ICommandBarItemProps[] = windowWidth < 640
+    ? [markAsReadCommandBarItem, markAsStarCommandBarItem, markAboveAsReadCommandBarItem]
+    : [markAsStarCommandBarItem, markAboveAsReadCommandBarItem];
 
   const actionButtonsElem = (
-    <CommandBar items={commandItems} overflowItems={overflowItems} styles={{root: ['px-0']}}/>
+    <CommandBar items={commandItems} overflowItems={overflowItems} styles={{ root: ['px-0'] }} />
   );
 
   const feedBodyElem: React.ReactElement | null = (
@@ -267,24 +267,46 @@ const FeedItemComponent = ({
   });
 
   return (
-    <div
-      className={`overflow-x-hidden relative my-3 mx-2 sm:mx-4 rounded-md ${rootClassName}`}
+    <Swipeout
+      className={`relative my-3 mx-0 sm:mx-4 rounded-none sm:rounded-md ${rootClassName}`}
+      leftBtnsProps={windowWidth < 640 ? [
+        {
+          className: 'bg-yellow-300 text-white text-xl font-medium',
+          text: (
+            <Icon className="text-2xl" {...(isStar ? favoriteStarFillIcon : favoriteStarIcon)} />
+          ),
+          onClick: (e) => onStar(e),
+        }
+      ] : []}
+      rightBtnsProps={windowWidth < 640 ? [
+        {
+          className: 'bg-green-400 text-white text-xl font-medium',
+          text: (
+            <Icon className="text-2xl" {...(isRead ? radioBtnOffIcon : radioBtnOnIcon)} />
+          ),
+          onClick: (e) => onRead(e),
+        }
+      ] : []}
+      overswipeRatio={0.3}
+      btnWidth={96}
     >
-      <Stack
-        horizontal
-        onClick={onClick}
-        className={classnames(classNames.feed, itemClassName, {
-          "py-1": viewType === ViewType.list,
-          "py-4": viewType !== ViewType.list,
-          "": isSelected,
-        })}
+      <div
       >
-        {feedHeaderRender()}
-        {feedBodyElem}
-        {viewType === ViewType.list ? actionButtonsElem : null}
-      </Stack>
-      {isInnerArticleShow ? <ArticlePane className="relative z-10" /> : null}
-    </div>
+        <Stack
+          horizontal
+          onClick={onClick}
+          className={classnames(classNames.feed, itemClassName, {
+            "py-1": viewType === ViewType.list,
+            "py-4": viewType !== ViewType.list,
+            "": isSelected,
+          })}
+        >
+          {feedHeaderRender()}
+          {feedBodyElem}
+          {viewType === ViewType.list ? actionButtonsElem : null}
+        </Stack>
+      </div>
+    </Swipeout>
   );
 };
 

@@ -38,7 +38,7 @@ const fetch = axios.create({
 // 请求拦截器
 fetch.interceptors.request.use(
   (config) => {
-    const inoreaderToken = localStorage.getItem("inoreaderToken") || "";
+    const inoreaderToken = localStorage.getItem("inoreaderToken") || "9cb54225d90c42df30f97de246a90933d87277f7";
     if (inoreaderToken) {
       config.headers.Authorization = `Bearer ${inoreaderToken}`;
     }
