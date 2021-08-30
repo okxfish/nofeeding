@@ -2,7 +2,7 @@ import { mergeStyleSets, PartialTheme, Theme, useTheme } from "@fluentui/react";
 import { NeutralColors, IPalette } from "@fluentui/theme";
 
 const lightThemePalette: Partial<IPalette> = {
-  themePrimary: "#545454",
+  themePrimary: "#016339",
   themeLighterAlt: "#fbfbfb",
   themeLighter: "#f6f6f6",
   themeLight: "#e5e5e5",
@@ -20,9 +20,9 @@ const lightThemePalette: Partial<IPalette> = {
   neutralTertiary: "#101010",
   neutralSecondary: "#202020",
   neutralPrimaryAlt: "#2f2f2f",
-  neutralPrimary: "#363636",
+  neutralPrimary: "1b1b1b",
   neutralDark: "#666666",
-  black: "#8e8e8e",
+  black: "#1b1b1b",
   white: "#fbfbfb",
 };
 
@@ -189,6 +189,40 @@ const getComponentsStyle = (palette: Partial<IPalette>) => {
         dropdownItem: ["rounded"],
       },
     },
+    Nav: {
+      styles: {
+       root: [
+         {
+          selectors:{
+            "& .ms-Nav-compositeLink.is-selected .ms-Nav-link": {
+              backgroundColor: palette.neutralQuaternaryAlt
+            },
+            "& .ms-Nav-compositeLink.is-selected .ms-Nav-link::after": {
+              backgroundColor: palette.themePrimary,
+              left: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '3px',
+              height: '50%',
+              borderRadius: '3px',
+              border: 0,
+              zIndex: 1,
+            },
+            "& .ms-Nav-compositeLink:hover .ms-Nav-link": {
+              backgroundColor: palette.neutralQuaternaryAlt
+            },
+            "& .ms-Nav-compositeLink.is-selected .ms-Nav-chevronButton": {
+              backgroundColor: 'transparent',
+            },
+            "& .ms-Nav-compositeLink.is-selected .ms-Nav-chevronButton::after": {
+              border: 0,
+            },
+          }
+         },
+       ],
+       navItems: ['space-y-1'],
+      }
+    }
   };
 };
 

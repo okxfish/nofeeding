@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useContext, useCallback } from "react";
+import React, { lazy, useRef, useMemo, useContext, useCallback, Suspense } from "react";
 import { useInfiniteQuery, useQueryClient } from "react-query";
 
 import { FeedItem, FeedProps } from "./types";
@@ -12,10 +12,6 @@ import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 
 import { Modal } from "@fluentui/react";
-
-import ArticlePane from "./articlePane";
-import FeedsPane from "./feedsPane";
-import OverviewPane from "./overviewPane";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 
@@ -32,6 +28,10 @@ import {
 } from "./../../context";
 import "./style.css";
 import { useThemeStyles } from "../../theme";
+
+const ArticlePane = lazy(() => import("./articlePane"));
+const FeedsPane = lazy(() => import("./feedsPane"));
+const OverviewPane = lazy(() => import("./overviewPane"))
 
 const article = new schema.Entity<FeedProps>("article");
 interface ArticleEntitySchema {
@@ -176,71 +176,73 @@ const FeedContainer = () => {
   const getScrollParent = useCallback(() => scrollParentRef.current, []);
 
   return (
-    <FeedContext.Provider
-      value={{
-        streamContentQuery,
-        streamContentData,
-        streamContentQueryKey,
-      }}
-    >
-      <SetFeedItemContext.Provider value={setArticleDataById}>
-        <ArticleContext.Provider value={activedArticle}>
-          <div
-            className={classnames(
-              "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-72 px-2"
-            )}
-          >
-            <OverviewPane />
-          </div>
-          <div
-            ref={scrollParentRef}
-            className={classnames(
-              "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-none sm:rounded-t-lg",
-              contentLayer,
-              {
-                "flex-1": viewType !== ViewType.threeway,
-              },
-            )}
-            data-is-scrollable
-          >
-            <FeedsPane
-              className={classnames("", {
-                "mx-auto": viewType !== ViewType.list,
-              })}
-              getScrollParent={getScrollParent}
-            />
-          </div>
-          {viewType === ViewType.threeway && (
+    <Suspense fallback={() => null}>
+      <FeedContext.Provider
+        value={{
+          streamContentQuery,
+          streamContentData,
+          streamContentQueryKey,
+        }}
+      >
+        <SetFeedItemContext.Provider value={setArticleDataById}>
+          <ArticleContext.Provider value={activedArticle}>
             <div
-              className={classnames("flex-1 rounded-t-lg", contentLayer)}
-              style={{
-                minWidth: "32rem",
+              className={classnames(
+                "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-nav-pane px-2"
+              )}
+            >
+              <OverviewPane />
+            </div>
+            <div
+              ref={scrollParentRef}
+              className={classnames(
+                "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-none sm:rounded-t-lg",
+                contentLayer,
+                {
+                  "flex-1": viewType !== ViewType.threeway,
+                },
+              )}
+              data-is-scrollable
+            >
+              <FeedsPane
+                className={classnames("", {
+                  "mx-auto": viewType !== ViewType.list,
+                })}
+                getScrollParent={getScrollParent}
+              />
+            </div>
+            {viewType === ViewType.threeway && (
+              <div
+                className={classnames("flex-1 rounded-t-lg", contentLayer)}
+                style={{
+                  minWidth: "32rem",
+                }}
+              >
+                <ArticlePane className="h-full" />
+              </div>
+            )}
+
+            <Modal
+              className=""
+              isOpen={isArticleModalOpen}
+              onDismiss={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
+              isBlocking={false}
+              allowTouchBodyScroll
+              styles={{
+                main: [
+                  { maxHeight: "100%", maxWidth: "100%" },
+                ],
               }}
             >
-              <ArticlePane className="h-full" />
-            </div>
-          )}
-
-          <Modal
-            className=""
-            isOpen={isArticleModalOpen}
-            onDismiss={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
-            isBlocking={false}
-            allowTouchBodyScroll
-            styles={{
-              main: [
-                { maxHeight: "100%", maxWidth: "100%" },
-              ],
-            }}
-          >
-            <ArticlePane
-              className="article-modal h-screen w-screen"
-              closeModal={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
-            />
-          </Modal>
-        </ArticleContext.Provider>
-      </SetFeedItemContext.Provider>
-    </FeedContext.Provider>
+              <ArticlePane
+                className="article-modal h-screen w-screen"
+                closeModal={() => dispatch({ type: "CLOSE_AIRTICLE_MODAL" })}
+              />
+            </Modal>
+          </ArticleContext.Provider>
+        </SetFeedItemContext.Provider>
+      </FeedContext.Provider>
+    </Suspense >
   );
 };
 

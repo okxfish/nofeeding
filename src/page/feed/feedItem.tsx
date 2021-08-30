@@ -219,7 +219,7 @@ const FeedItemComponent = ({
     : [markAsStarCommandBarItem, markAboveAsReadCommandBarItem];
 
   const actionButtonsElem = (
-    <CommandBar items={commandItems} overflowItems={overflowItems} styles={{ root: ['px-0'] }} />
+    <CommandBar items={commandItems} overflowItems={overflowItems} styles={{ root: ['px-0', 'h-6'] }} />
   );
 
   const feedBodyElem: React.ReactElement | null = (
@@ -243,10 +243,10 @@ const FeedItemComponent = ({
       </Stack>
       <Text className="flex-1 text-base w-full">{summary}</Text>
       <Stack horizontal verticalAlign="center">
-        <Text className="flex-1 text-sm" block nowrap title={sourceName}>
+        <Text className="flex-1 text-xs text-gray-700" block nowrap title={sourceName}>
           {sourceName}
         </Text>
-        <Text className="flex-0 text-sm" nowrap>
+        <Text className="flex-0 text-xs text-gray-700" nowrap>
           {relativePublishedTime}
         </Text>
       </Stack>
@@ -255,7 +255,7 @@ const FeedItemComponent = ({
 
   const classNames = mergeStyleSets({
     feed: [
-      "relative z-10 group cursor-pointer px-4 sm:px-6",
+      "relative z-10 group cursor-pointer px-2 sm:px-4",
       {
         selectors: {
           "&:hover": {
@@ -268,7 +268,7 @@ const FeedItemComponent = ({
 
   return (
     <Swipeout
-      className={`relative my-3 mx-0 sm:mx-4 rounded-none sm:rounded-md ${rootClassName}`}
+      className={`relative my-2 mx-0 sm:mx-2 rounded-none sm:rounded-md ${rootClassName}`}
       leftBtnsProps={windowWidth < 640 ? [
         {
           className: 'bg-yellow-300 text-white text-xl font-medium',
@@ -297,7 +297,7 @@ const FeedItemComponent = ({
           onClick={onClick}
           className={classnames(classNames.feed, itemClassName, {
             "py-1": viewType === ViewType.list,
-            "py-4": viewType !== ViewType.list,
+            "py-3": viewType !== ViewType.list,
             "": isSelected,
           })}
         >

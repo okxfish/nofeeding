@@ -31,6 +31,9 @@ module.exports = {
       'full': '100%',
     },
     extend: {
+      width: {
+        'nav-pane': '16rem',
+      },
       spacing: {
         '112': '28rem',
         '128': '32rem',
@@ -38,11 +41,6 @@ module.exports = {
         '176': '48rem',
         '192': '56rem',
       },
-      gridTemplateColumns: {
-        '16': 'repeat(16, minmax(0, 1fr))',
-        '18': 'repeat(18, minmax(0, 1fr))',
-        '24': 'repeat(24, minmax(0, 1fr))',
-      }
     },
   },
   variants: {

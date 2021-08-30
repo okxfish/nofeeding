@@ -89,7 +89,7 @@ const Settings = () => {
     <>
       <Stack
         disableShrink
-        className={classnames("px-2 sm:w-72 flex-shrink-0", {
+        className={classnames("px-2 sm:w-nav-pane flex-shrink-0", {
           "hidden sm:flex": location.pathname !== "/settings",
           "flex-grow sm:flex-0 sm:flex-grow-0 sm:flex-shrink-0": location.pathname === "/settings",
         })}

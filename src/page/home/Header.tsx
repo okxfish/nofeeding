@@ -49,7 +49,7 @@ const Header = () => {
       className="h-12 pr-4 space-x-2"
       style={{ flexShrink: 0 }}
     >
-      <div className="w-auto sm:w-72">
+      <div className="w-auto sm:w-nav-pane">
         <SideBarButton
           iconProps={{ iconName: "Back" }}
           onClick={handleBackBtnClick}

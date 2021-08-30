@@ -9,7 +9,7 @@ import {
 import { IIconProps, FontIcon, Text, Stack } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
-import { ArticleContext, SettingContext } from "../../context";
+import { ArticleContext, CurrenActivedFeedIdContext, SettingContext } from "../../context";
 import { ViewType } from "../../context/setting";
 import classnames from "classnames";
 import "./style.css";
@@ -34,6 +34,7 @@ const ArticlePane = forwardRef(
     const {
       layout: { viewType },
     } = useContext(SettingContext);
+    const scrollParentRef = useRef<any>(null)
     const htmlToReactParserRef = useRef(new HtmlToReactParser());
     const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
     const rootNodeRef = useRef<any>(null);
@@ -84,7 +85,7 @@ const ArticlePane = forwardRef(
               </div>
             </div>
           )}
-          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12">
+          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12" ref={scrollParentRef}>
             <article className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}>
               <header className="mb-4">
                 <h2 className="mb-4" ref={titleElemRef}>

@@ -38,7 +38,7 @@ const Home = () => {
   const { height: windowHeight, width } = useWindowSize();
 
   useEffect(() => {
-    if (viewType === ViewType.threeway && width < 1280) {
+    if (viewType === ViewType.threeway && width < 1120) {
       dispatch({ type: "CHANGE_VIEW_TYPE", viewType: ViewType.card });
     }
   }, [viewType, width, dispatch]);

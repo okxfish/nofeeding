@@ -23,10 +23,10 @@ const prdConfig: ServerConfig = {
 
 let serverConfig: ServerConfig = prdConfig;
 
-// if (process.env.NODE_ENV === "development") {
-//   serverConfig = devConfig;
-//   mockSetup(axios);
-// }
+if (process.env.NODE_ENV === "development") {
+  serverConfig = devConfig;
+  mockSetup(axios);
+}
 
 export const INOREADER_AUTH_URL = serverConfig.inoreaderAuthUrl;
 
@@ -38,7 +38,7 @@ const fetch = axios.create({
 // 请求拦截器
 fetch.interceptors.request.use(
   (config) => {
-    const inoreaderToken = localStorage.getItem("inoreaderToken") || "9cb54225d90c42df30f97de246a90933d87277f7";
+    const inoreaderToken = localStorage.getItem("inoreaderToken") || "";
     if (inoreaderToken) {
       config.headers.Authorization = `Bearer ${inoreaderToken}`;
     }

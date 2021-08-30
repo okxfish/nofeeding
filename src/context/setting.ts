@@ -37,7 +37,7 @@ export const initSetting:SettingState = {
     unreadOnly: true,
   },
   subscription: {
-    isIconDisplay: false
+    isIconDisplay: true
   },
   layout: {
     viewType: ViewType.card

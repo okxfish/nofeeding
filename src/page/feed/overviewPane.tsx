@@ -8,7 +8,6 @@ import {
   Icon,
   INavLinkGroup,
 } from "@fluentui/react";
-import OverviewCell from "./overviewCell";
 import { useHistory, useLocation } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { get } from "lodash";
@@ -30,6 +29,7 @@ export interface Subscription extends Sortable {
   id: string;
   title: string;
   iconUrl?: string;
+  iconName?: string;
 }
 
 export interface InoreaderTag extends Sortable {
@@ -75,16 +75,21 @@ const OverviewPane = ({ className }: Props) => {
         if (setting.subscription.isIconDisplay && props.iconUrl) {
           return <img className="w-6 h-6 mr-2" src={props.iconUrl} alt="" />;
         } else {
-          return null;
+          return (
+            <Icon
+              iconName={props.iconName}
+              className="mr-2 w-6 h-6 leading-6"
+            />
+          );
         }
-      } else {
-        return (
-          <Icon
-            iconName={props.type === "tag" ? "Tag" : "FolderHorizontal"}
-            className="mr-2 w-6 h-6 leading-6"
-          />
-        );
       }
+
+      return (
+        <Icon
+          iconName={props.iconName}
+          className="mr-2 w-6 h-6 leading-6"
+        />
+      );
     };
 
     return (
@@ -186,6 +191,18 @@ const OverviewPane = ({ className }: Props) => {
     return links;
   };
 
+  const createBuildInNavLink = ({ name, id, iconName }): INavLink => {
+    return (
+      {
+        name,
+        key: id,
+        url: createLinkUrl(id),
+        type: 'buildIn',
+        iconName,
+      }
+    )
+  }
+
   const createLink = (subscription: Subscription): INavLink => {
     return {
       name: subscription.title,
@@ -202,6 +219,7 @@ const OverviewPane = ({ className }: Props) => {
       key: tag.id,
       url: createLinkUrl(tag.id),
       type: "tag",
+      iconName: 'Tag',
       unreadCount: tag.unread_count,
     };
   };
@@ -215,9 +233,11 @@ const OverviewPane = ({ className }: Props) => {
       const name = getTagNameFromId(id);
       return {
         name,
-        key: id,
         links: links,
+        key: id,
         url: createLinkUrl(id),
+        type: "folder",
+        iconName: "FolderHorizontal",
       };
     } else {
       const name = getTagNameFromId(tag.id);
@@ -227,6 +247,7 @@ const OverviewPane = ({ className }: Props) => {
         key: tag.id,
         url: createLinkUrl(tag.id),
         type: "folder",
+        iconName: "FolderHorizontal",
         unreadCount: tag?.unread_count,
       };
     }
@@ -274,7 +295,7 @@ const OverviewPane = ({ className }: Props) => {
     return _getNavLinkGroupProps(rootStreamId);
   };
 
-  const group = getNavLinkGroupProps(
+  let group = getNavLinkGroupProps(
     `user/${userInfo?.userId}/state/com.google/root`,
     {
       subscriptionById: get(subscriptionsListData, "entities.subscription"),
@@ -283,31 +304,24 @@ const OverviewPane = ({ className }: Props) => {
     }
   );
 
-  const handleAllFeedClick = () => history.push("/feed");
+  if (group) {
+    const allLink = createBuildInNavLink({
+      id: '',
+      name: 'All',
+      iconName: 'PreviewLink',
+    })
 
-  const handleStarFeedClick = () =>
-    history.push({
-      pathname: "/feed",
-      search: queryString.stringify({
-        streamId: SystemStreamIDs.STARRED,
-        unreadOnly: true,
-      }),
-    });
+    const favLink = createBuildInNavLink({
+      id: SystemStreamIDs.STARRED,
+      name: 'Stared',
+      iconName: 'FavoriteStar',
+    })
+
+    group.links.unshift(allLink, favLink);
+  }
 
   return (
     <Stack className={`${className} min-h-0`}>
-      <OverviewCell
-        className={commonPx}
-        iconProps={{ iconName: "PreviewLink" }}
-        text="all"
-        onClick={handleAllFeedClick}
-      />
-      <OverviewCell
-        className={commonPx}
-        iconProps={{ iconName: "FavoriteStar" }}
-        text="star"
-        onClick={handleStarFeedClick}
-      />
       <Nav
         styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: "" }}
         groups={group ? [group] : null}
