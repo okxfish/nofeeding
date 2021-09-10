@@ -102,7 +102,7 @@ const FeedItemComponent = ({
   const onClick = useCallback(() => {
     const articleId = id;
     dispatch({ type: "CHANGE_SELECTED_ARTICLE", articleId });
-    if (viewType === ViewType.card) {
+    if (viewType !== ViewType.threeway) {
       dispatch({ type: "OPEN_AIRTICLE_MODAL" });
     }
     markAsReadMutation.mutate({ id, asUnread: false });

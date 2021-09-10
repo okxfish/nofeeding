@@ -196,7 +196,7 @@ const FeedContainer = () => {
             <div
               ref={scrollParentRef}
               className={classnames(
-                "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
+                "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-112 transition-all",
                 contentLayer,
                 {
                   "flex-1": viewType !== ViewType.threeway,
@@ -221,7 +221,6 @@ const FeedContainer = () => {
                 <ArticlePane className="h-full" />
               </div>
             )}
-
             <Modal
               className=""
               isOpen={isArticleModalOpen}

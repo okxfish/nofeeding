@@ -7,14 +7,18 @@ import {
   IRenderFunction,
   Icon,
   INavLinkGroup,
+  CommandBar,
+  ICommandBarItemProps,
 } from "@fluentui/react";
 import { useHistory, useLocation } from "react-router-dom";
 import { useQueryClient } from "react-query";
 import { get } from "lodash";
 import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
-import { SettingContext, UserInfoContext } from "./../../context";
+import { SettingContext, UserInfoContext, DispatchContext } from "./../../context";
 import { Tag } from "../../api/mockData";
+import { ModalKeys } from "../../reducer";
+
 export interface Props {
   className?: string;
 }
@@ -59,7 +63,7 @@ export const getTagNameFromId = (tagId: string): string => {
 const OverviewPane = ({ className }: Props) => {
   const history = useHistory();
   const location = useLocation();
-  const commonPx = "px-2";
+  const dispatch = useContext(DispatchContext);
   const setting = useContext(SettingContext);
   const userInfo = useContext(UserInfoContext);
 
@@ -320,8 +324,30 @@ const OverviewPane = ({ className }: Props) => {
     group.links.unshift(allLink, favLink);
   }
 
+  const commandItems: ICommandBarItemProps[] = [
+    {
+      key: "newFeed",
+      text: "Add Subscript",
+      iconOnly: true,
+      iconProps: { iconName: "Add" },
+      onClick: () =>
+        dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.AddFeedModal }),
+    }
+  ]
+
+  const overflowItems: ICommandBarItemProps[] = [];
+
   return (
     <Stack className={`${className} min-h-0`}>
+      <Stack className="py-2 pl-2" horizontal verticalAlign="center">
+        <Text className="text-xl font-medium flex-1">Fread</Text>
+        <CommandBar
+          className=""
+          items={commandItems}
+          overflowItems={overflowItems}
+          styles={{ root: 'p-0' }}
+        />
+      </Stack>
       <Nav
         styles={{ chevronButton: "", link: "pl-8 pr-6", compositeLink: "" }}
         groups={group ? [group] : null}

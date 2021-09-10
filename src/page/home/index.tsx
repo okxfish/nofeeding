@@ -13,14 +13,13 @@ import OverviewPane, {
 import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
-import SideBarButton from "./sideBarButton";
 import { ViewType } from "../../context/setting";
 import { ModalKeys } from "../../reducer";
 import { get } from "lodash";
 import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
-import HomeCommandBar from './HomeCommandBar';
 import { StreamPreferenceListResponse } from "../../api/inoreader";
+import NavBar from "./NavBar";
 
 const subscription = new schema.Entity("subscription", undefined);
 const folder = new schema.Entity("folder");
@@ -157,7 +156,8 @@ const Home = () => {
         className="overflow-y-hidden flex-col sm:flex-row"
         grow
         disableShrink={false}
-      >
+      >        
+        <NavBar className="sm:border-r"/>
         <Stack
           horizontal
           grow
@@ -171,7 +171,6 @@ const Home = () => {
             </Switch>
           </Suspense>
         </Stack>
-        <HomeCommandBar className="block sm:hidden" styles={{primarySet: ['flex justify-between']}}/>
       </Stack>
       {onModalsRender()}
     </Stack>

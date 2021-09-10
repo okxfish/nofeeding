@@ -6,11 +6,10 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { IIconProps, FontIcon, Text, Stack } from "@fluentui/react";
+import { IIconProps, FontIcon, Text, Stack, CommandBar, ICommandBarItemProps } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
-import { ArticleContext, CurrenActivedFeedIdContext, SettingContext } from "../../context";
-import { ViewType } from "../../context/setting";
+import { ArticleContext, SettingContext } from "../../context";
 import classnames from "classnames";
 import "./style.css";
 import { useThemeStyles } from "../../theme";
@@ -42,6 +41,7 @@ const ArticlePane = forwardRef(
     const titleElemRef = useRef<any>(null);
     const titleElemeEntry = useIntersectionObserver(titleElemRef, {});
     const isTitleVisible = titleElemeEntry && !titleElemeEntry?.isIntersecting;
+
     useImperativeHandle(ref, () => rootNodeRef.current);
 
     useEffect(() => {
@@ -61,30 +61,55 @@ const ArticlePane = forwardRef(
       );
     }
 
+    const commandItems: ICommandBarItemProps[] = [
+      {
+        key: "Share",
+        text: "Share",
+        iconOnly: true,
+        iconProps: { iconName: "Share" },
+        onClick: () => {
+          if (window.navigator.share) {
+            window.navigator.share({
+              title: article?.title,
+              url: article?.url
+            }).catch((error)=>{
+              console.log(error)
+            })
+          }
+        }
+      }
+    ]
+
+    const overflowItems: ICommandBarItemProps[] = [];
+
     const contentRender = () => {
       return (
         <div className="flex flex-col h-full overflow-y-hidden">
-          {viewType !== ViewType.list && (
-            <div className="flex items-center h-12 px-2 sm:px-12 justify-between">
-              <SideBarButton
-                className="block lg:hidden"
-                iconProps={backIcon}
-                onClick={closeModal}
-              />
-              <div className="overflow-y-hidden flex-1">
-                <CSSTransition
-                  in={isTitleVisible}
-                  timeout={{
-                    exit: 340,
-                  }}
-                  unmountOnExit
-                  className="article-header__tilte font-semibold"
-                >
-                  <Text block nowrap>{article?.title}</Text>
-                </CSSTransition>
-              </div>
+          <Stack className="px-2 sm:px-12 py-2" horizontal verticalAlign="center">
+            <SideBarButton
+              className="block lg:hidden"
+              iconProps={backIcon}
+              onClick={closeModal}
+            />
+            <div className="overflow-y-hidden flex-1">
+              <CSSTransition
+                in={isTitleVisible}
+                timeout={{
+                  exit: 340,
+                }}
+                unmountOnExit
+                className="article-header__tilte font-semibold text-xl"
+              >
+                <Text block nowrap>{article?.title}</Text>
+              </CSSTransition>
             </div>
-          )}
+            <CommandBar
+              className="flex justify-end"
+              styles={{ root: 'p-0' }}
+              items={commandItems}
+              overflowItems={overflowItems}
+            />
+          </Stack>
           <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12" ref={scrollParentRef}>
             <article className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}>
               <header className="mb-4">

@@ -221,6 +221,7 @@ const getComponentsStyle = (palette: Partial<IPalette>) => {
          },
        ],
        navItems: ['space-y-1'],
+       link: ['h-10 leaing-10']
       }
     }
   };
