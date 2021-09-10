@@ -91,13 +91,6 @@ const getComponentsStyle = (palette: Partial<IPalette>) => {
         fieldGroup: inputStyles,
       },
     },
-    Text: {
-      styles: {
-        root: {
-          color: palette.black
-        }
-      }
-    },
     SearchBox: {
       styles: {
         root: inputStyles,

@@ -19,7 +19,7 @@ import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
 import { getInitSetting, reducer } from "./reducer";
-import { ThemeProvider, getTheme } from "@fluentui/react";
+import { ThemeProvider, getTheme, mergeStyleSets } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
 import "./App.css";
@@ -89,6 +89,13 @@ function App() {
 
   const theme = setting.isDarkMode ? darkTheme : lightTheme;
 
+  const appClassNames = mergeStyleSets({
+    app: [{
+      backgroundColor: theme?.palette?.neutralLight,
+      color: theme?.palette?.black,
+    }]
+  })
+  
   return (
     <ThemeProvider
       applyTo="body"
@@ -100,10 +107,7 @@ function App() {
             <SettingContext.Provider value={setting}>
               <UserInfoContext.Provider value={userInfoQuery.data}>
                 <div
-                  className={classnames("App", { dark: setting.isDarkMode })}
-                  style={{
-                    backgroundColor: theme?.palette?.neutralLight
-                  }}
+                  className={classnames("App", appClassNames.app, { dark: setting.isDarkMode })}
                 >
                   <Router>
                     {/* {loaddingAnimationRender()} */}
