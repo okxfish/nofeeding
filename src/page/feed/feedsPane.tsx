@@ -259,7 +259,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
           </Text>
           <Icon iconName="ChevronDown" />
         </Stack>
-        <Text className="text-xl flex-1 hidden sm:block" block nowrap>
+        <Text className="text-xl font-semibold flex-1 hidden sm:block" block nowrap>
           {name}
         </Text>
         <CommandBar

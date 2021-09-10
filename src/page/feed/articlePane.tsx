@@ -121,7 +121,7 @@ const ArticlePane = forwardRef(
                     rel="noreferrer"
                     title={article?.url}
                   >
-                    <Text className="font-bold text-2xl break-words leading-7">
+                    <Text className="font-bold text-3xl break-words leading-7 tracking-wider">
                       {article?.title}
                     </Text>
                   </a>

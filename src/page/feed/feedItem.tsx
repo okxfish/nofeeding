@@ -222,37 +222,6 @@ const FeedItemComponent = ({
     <CommandBar items={commandItems} overflowItems={overflowItems} styles={{ root: ['px-0', 'h-6'] }} />
   );
 
-  const feedBodyElem: React.ReactElement | null = (
-    <Stack
-      horizontal={viewType === ViewType.list}
-      verticalAlign={viewType === ViewType.list ? "center" : "stretch"}
-      className={classnames("flex-1 overflow-hidden", {
-        "opacity-40": isRead,
-      })}
-    >
-      <Stack horizontal>
-        <Text
-          className={classnames("text-base truncat-3 flex-1", {
-            "mr-2": viewType === ViewType.list,
-            "mb-4": viewType !== ViewType.list,
-          })}
-        >
-          {title}
-        </Text>
-        {viewType === ViewType.list ? null : actionButtonsElem}
-      </Stack>
-      <Text className="flex-1 text-base w-full">{summary}</Text>
-      <Stack horizontal verticalAlign="center">
-        <Text className="flex-1 text-xs text-gray-700" block nowrap title={sourceName}>
-          {sourceName}
-        </Text>
-        <Text className="flex-0 text-xs text-gray-700" nowrap>
-          {relativePublishedTime}
-        </Text>
-      </Stack>
-    </Stack>
-  );
-
   const classNames = mergeStyleSets({
     feed: [
       "relative z-10 group cursor-pointer px-4",
@@ -264,7 +233,39 @@ const FeedItemComponent = ({
         },
       },
     ],
+    title: ["text-base truncat-3 flex-1"]
   });
+
+  const feedBodyElem: React.ReactElement | null = (
+    <Stack
+      horizontal={viewType === ViewType.list}
+      verticalAlign={viewType === ViewType.list ? "center" : "stretch"}
+      className={classnames("flex-1 overflow-hidden", {
+        "opacity-40": isRead,
+      })}
+    >
+      <Stack horizontal>
+        <Text
+          className={classnames(classNames.title, {
+            "mr-2": viewType === ViewType.list,
+            "mb-4": viewType !== ViewType.list,
+          })}
+        >
+          {title}
+        </Text>
+        {viewType === ViewType.list ? null : actionButtonsElem}
+      </Stack>
+      <Text className="flex-1 text-base w-full">{summary}</Text>
+      <Stack horizontal verticalAlign="center">
+        <Text className="flex-1 text-xs text-gray-500" block nowrap title={sourceName}>
+          {sourceName}
+        </Text>
+        <Text className="flex-0 text-xs text-gray-500" nowrap>
+          {relativePublishedTime}
+        </Text>
+      </Stack>
+    </Stack>
+  );
 
   return (
     <Swipeout

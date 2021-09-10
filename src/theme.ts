@@ -22,7 +22,7 @@ const lightThemePalette: Partial<IPalette> = {
   neutralPrimaryAlt: "#2f2f2f",
   neutralPrimary: "1b1b1b",
   neutralDark: "#666666",
-  black: "#1b1b1b",
+  black: "#3a3a3a",
   white: "#fbfbfb",
 };
 
@@ -90,6 +90,13 @@ const getComponentsStyle = (palette: Partial<IPalette>) => {
       styles: {
         fieldGroup: inputStyles,
       },
+    },
+    Text: {
+      styles: {
+        root: {
+          color: palette.black
+        }
+      }
     },
     SearchBox: {
       styles: {
