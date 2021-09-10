@@ -255,7 +255,7 @@ const FeedItemComponent = ({
 
   const classNames = mergeStyleSets({
     feed: [
-      "relative z-10 group cursor-pointer px-2 sm:px-4",
+      "relative z-10 group cursor-pointer px-4",
       {
         selectors: {
           "&:hover": {

@@ -74,10 +74,6 @@ article h2 {
   @apply text-lg;
 }
 
-.App .fread-feed-page__main-col {
-  @apply sm:mr-2;
-}
-
 .article-header__tilte {
   transition: all 340ms ease-in-out;
 }
