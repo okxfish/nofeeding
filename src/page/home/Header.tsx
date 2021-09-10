@@ -18,29 +18,14 @@ const Header = () => {
   const qs = queryString.parse(location.search);
   const { streamId } = qs;
 
-  const subscriptionsList = queryClient.getQueryData(
-    "home/subscriptionsListQuery"
-  );
-
+  
   const handleBackBtnClick = () => {
     history.goBack();
   };
-
+  
   const handleHomeBtnClick = () => {
     history.push("/");
   };
-
-  const subscription = get(
-    subscriptionsList,
-    `entities.subscription['${streamId}']`
-  );
-
-  const folderName =
-    streamId && typeof streamId === "string"
-      ? getTagNameFromId(streamId)
-      : "All article";
-
-  const name = subscription ? subscription.title : folderName;
 
   return (
     <Stack
@@ -65,25 +50,7 @@ const Header = () => {
           path={["/", "/feed"]}
           render={() => (
             <>
-              <Stack
-                horizontal
-                verticalAlign="center"
-                className="space-x-2 flex sm:hidden"
-                onClick={() =>
-                  dispatch({
-                    type: "OPEN_MODAL",
-                    modalKey: ModalKeys.OverViewPane,
-                  })
-                }
-              >
-                <Text className="text-lg flex-1" block nowrap>
-                  {name}
-                </Text>
-                <Icon iconName="ChevronDown" />
-              </Stack>
-              <Text className="text-lg flex-1 hidden sm:block" block nowrap>
-                {name}
-              </Text>
+              
             </>
           )}
         />

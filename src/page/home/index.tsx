@@ -13,7 +13,6 @@ import OverviewPane, {
 import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
-import Header from "./Header";
 import SideBarButton from "./sideBarButton";
 import { ViewType } from "../../context/setting";
 import { ModalKeys } from "../../reducer";
@@ -154,7 +153,6 @@ const Home = () => {
       }}
       className="w-full"
     >
-      <Header />
       <Stack
         className="overflow-y-hidden flex-col sm:flex-row"
         grow
