@@ -56,7 +56,7 @@ const FeedShimmer = ({ number = 5 }: Props) => {
 
   return (
     <Shimmer
-      className="pt-4 mx-auto w-11/12"
+      className="pt-6 px-2 mx-auto w-11/12"
       customElementsGroup={getCustomElements(number)}
       shimmerColors={{
         shimmer: palette.neutralLight,
