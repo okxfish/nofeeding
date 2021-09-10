@@ -102,7 +102,7 @@ const Settings = () => {
           onRenderGroupHeader={() => null}
         />
       </Stack>
-      <Stack grow className={classnames("p-4 rounded-none sm:rounded-t-lg", contentLayer,{
+      <Stack grow className={classnames("p-4", contentLayer,{
         "hidden sm:flex": location.pathname === "/settings",
       })}>
         <Switch>

@@ -196,7 +196,7 @@ const FeedContainer = () => {
             <div
               ref={scrollParentRef}
               className={classnames(
-                "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all rounded-none sm:rounded-t-lg",
+                "fread-feed-page__main-col overflow-y-scroll scrollbar h-full w-full sm:w-128 transition-all",
                 contentLayer,
                 {
                   "flex-1": viewType !== ViewType.threeway,
@@ -213,7 +213,7 @@ const FeedContainer = () => {
             </div>
             {viewType === ViewType.threeway && (
               <div
-                className={classnames("flex-1 rounded-t-lg", contentLayer)}
+                className={classnames("flex-1", contentLayer)}
                 style={{
                   minWidth: "32rem",
                 }}
