@@ -188,8 +188,8 @@ const FeedContainer = () => {
           <ArticleContext.Provider value={activedArticle}>
             <div
               className={classnames(
-                "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-nav-pane px-2 overview-pane border-l", {
-                  '-ml-64': !isOverviewPaneOpen
+                "overview-pane-container hidden sm:block overflow-y-scroll scrollbar-none transition-all w-nav-pane px-2 overview-pane border-l", {
+                  '-ml-64 closed': !isOverviewPaneOpen
                 }
               )}
             >
