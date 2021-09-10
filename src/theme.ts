@@ -244,7 +244,7 @@ export const useThemeStyles = () => {
   const { palette } = theme;
   return mergeStyleSets({
     contentLayer: [
-      "border",
+      "border-l",
       {
         backgroundColor: palette.neutralLighter,
         borderColor: palette.neutralQuaternaryAlt,

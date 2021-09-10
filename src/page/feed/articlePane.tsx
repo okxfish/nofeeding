@@ -63,6 +63,20 @@ const ArticlePane = forwardRef(
 
     const commandItems: ICommandBarItemProps[] = [
       {
+        iconProps: {iconName: article.isRead ? "RadioBtnOff" : "RadioBtnOn"},
+        iconOnly: true,
+        key: "markThisAsRead",
+        text: "mark this as read",
+        ariaLabel: "Mark as read",
+      },
+      {
+        iconProps: {iconName: article.isStar ? "FavoriteStar" : "FavoriteStarFill"},
+        iconOnly: true,
+        key: "star",
+        text: "Star",
+        ariaLabel: "Mark as Star",
+      },
+      {
         key: "Share",
         text: "Share",
         iconOnly: true,
@@ -72,7 +86,7 @@ const ArticlePane = forwardRef(
             window.navigator.share({
               title: article?.title,
               url: article?.url
-            }).catch((error)=>{
+            }).catch((error) => {
               console.log(error)
             })
           }

@@ -157,7 +157,7 @@ const Home = () => {
         grow
         disableShrink={false}
       >        
-        <NavBar className="sm:border-r"/>
+        <NavBar/>
         <Stack
           horizontal
           grow

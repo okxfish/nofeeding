@@ -6,14 +6,19 @@ import {
   IContextualMenuProps,
 } from "@fluentui/react";
 import { UserInfoContext } from "../../context/userInfo";
+import { DispatchContext } from "../../context";
+import { useWindowSize } from "react-use";
+import { ModalKeys } from "../../reducer";
 
 export interface Props {
   className?: string
 }
 
-const NavBar = ({className=''}:Props) => {
+const NavBar = ({ className = '' }: Props) => {
   const history = useHistory();
   const userInfo = useContext(UserInfoContext);
+  const dispatch = useContext(DispatchContext);
+  const { width: windowWidth } = useWindowSize();
   const { palette } = useTheme();
 
   const handleLogoffMenuItemClick = (e, item): void => {
@@ -38,35 +43,37 @@ const NavBar = ({className=''}:Props) => {
     ],
   };
 
-  const handleBackBtnClick = () => {
-    history.goBack();
+  const handleToggleOverviewPane = () => {
+    dispatch({ type: 'TOGGLE_OVERVIEW_PANE' })
   };
 
   return (
     <Stack
       horizontalAlign="stretch"
-      className={`${className} py-2 px-1 sm:space-y-2 flex-row sm:flex-col order-last sm:order-first justify-between`}
+      className={`${className} py-2 px-1 sm:space-y-2 flex-row sm:flex-col order-last sm:order-first justify-evenly`}
       style={{
         backgroundColor: palette.neutralLighter,
       }}
     >
-        <SideBarButton
-          iconProps={{ iconName: "Back" }}
-          onClick={handleBackBtnClick}
-        />
-        <SideBarButton
-          iconProps={{ iconName: "Home" }}
-          onClick={()=>history.push('/feed')}
-        />
-        <div className="sm:flex-1"/>
-        <SideBarButton
-          iconProps={{ iconName: "Contact" }}
-          menuProps={profileMenuProps}
-        />
-        <SideBarButton
-          iconProps={{ iconName: "Settings" }}
-          onClick={()=>history.push('/settings/general')}
-        />
+      <SideBarButton
+        className="hidden sm:block"
+        iconProps={{ iconName: "GlobalNavButton" }}
+        onClick={handleToggleOverviewPane}
+      />
+      <SideBarButton
+        iconProps={{ iconName: "Home" }}
+        onClick={() => history.push('/feed')}
+      />
+      {windowWidth > 640 ? <div className="sm:flex-1" /> : null}
+      <SideBarButton
+        className="hidden sm:block"
+        iconProps={{ iconName: "Contact" }}
+        menuProps={profileMenuProps}
+      />
+      <SideBarButton
+        iconProps={{ iconName: "Settings" }}
+        onClick={() => history.push('/settings')}
+      />
     </Stack>
   );
 };

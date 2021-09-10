@@ -14,6 +14,7 @@ export enum ModalKeys {
 interface Store {
   currenActivedFeedId: string;
   isArticleModalOpen: boolean;
+  isOverviewPaneOpen: boolean;
   modals: {
     [modalKey: number]: boolean;
   };
@@ -26,6 +27,7 @@ type Action =
   | { type: "OPEN_AIRTICLE_MODAL" | "CLOSE_AIRTICLE_MODAL" }
   | { type: "OPEN_MODAL" | "CLOSE_MODAL"; modalKey: ModalKeys }
   | { type: "TOGGLE_UNREAD_ONLY" }
+  | { type: "TOGGLE_OVERVIEW_PANE" }
   | { type: "TOGGLE_DARK_THEME" }
   | { type: "CHANGE_TO_DARK_THEME" }
   | { type: "CHANGE_TO_LIGHT_THEME" }
@@ -95,6 +97,11 @@ export const reducer = (prevState: Store, action: Action) => {
           ...prevState.setting,
           isDarkMode: !prevState.setting.isDarkMode,
         },
+      };
+    case "TOGGLE_OVERVIEW_PANE":
+      return {
+        ...prevState,
+        isOverviewPaneOpen: !prevState.isOverviewPaneOpen,
       };
     case "CHANGE_TO_DARK_THEME":
       return {

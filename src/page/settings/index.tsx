@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useThemeStyles } from "../../theme";
 import {
+  CommandBar,
   Icon,
   INavLink,
   INavLinkGroup,
@@ -94,6 +95,10 @@ const Settings = () => {
           "flex-grow sm:flex-0 sm:flex-grow-0 sm:flex-shrink-0": location.pathname === "/settings",
         })}
       >
+        <Stack className="py-2 pl-2" horizontal verticalAlign="center" >
+          <Text className="text-xl font-semibold">Settings</Text>
+          <CommandBar items={[]} />
+        </Stack>
         <Nav
           groups={navLinkGroups}
           styles={{ link: "px-2" }}

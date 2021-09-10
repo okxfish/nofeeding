@@ -41,6 +41,7 @@ function App() {
     return {
       currenActivedFeedId: "",
       isArticleModalOpen: false,
+      isOverviewPaneOpen: true,
       modals: {},
       setting: getInitSetting(),
     };

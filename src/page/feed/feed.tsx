@@ -46,7 +46,7 @@ interface InfiniteNormalizedArticles
 }
 
 const FeedContainer = () => {
-  const { isArticleModalOpen } = useContext(StoreContext);
+  const { isArticleModalOpen, isOverviewPaneOpen } = useContext(StoreContext);
   const dispatch = useContext(DispatchContext);
   const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
   const {
@@ -188,7 +188,9 @@ const FeedContainer = () => {
           <ArticleContext.Provider value={activedArticle}>
             <div
               className={classnames(
-                "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-nav-pane px-2"
+                "hidden sm:block overflow-y-scroll scrollbar-none transition-all w-nav-pane px-2 overview-pane border-l", {
+                  '-ml-64': !isOverviewPaneOpen
+                }
               )}
             >
               <OverviewPane />

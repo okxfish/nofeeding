@@ -8,6 +8,7 @@ import {
   ContextualMenuItemType,
   ICommandBarItemProps,
   Icon,
+  IconButton,
   IContextualMenuProps,
   NeutralColors,
   Stack,
@@ -242,29 +243,18 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
   return (
     <>
-      <Stack className="px-6 py-2 sticky top-0 z-10" horizontal verticalAlign="center" style={{backgroundColor: 'inherit'}}>
-        <Stack
-          horizontal
-          verticalAlign="center"
-          className="space-x-2 flex sm:hidden"
-          onClick={() =>
-            dispatch({
-              type: "OPEN_MODAL",
-              modalKey: ModalKeys.OverViewPane,
-            })
-          }
-        >
-          <Text className="text-xl flex-1" block nowrap>
-            {name}
-          </Text>
-          <Icon iconName="ChevronDown" />
-        </Stack>
-        <Text className="text-xl font-semibold flex-1 hidden sm:block" block nowrap>
+      <Stack className="px-3 sm:px-6 py-2 sticky top-0 z-10" horizontal verticalAlign="center" style={{ backgroundColor: 'inherit' }}>
+        <IconButton
+          className="sm:hidden mr-2"
+          onClick={() => dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.OverViewPane })}
+          iconProps={{ iconName: "GlobalNavButton" }}
+        />
+        <Text className="text-xl font-semibold flex-1" block nowrap>
           {name}
         </Text>
         <CommandBar
           className="flex flex-1 justify-end p-0"
-          styles={{root: 'p-0'}}
+          styles={{ root: 'p-0' }}
           items={commandItems}
           overflowItems={overflowItems}
         />
