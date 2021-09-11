@@ -77,7 +77,11 @@ const OverviewPane = ({ className }: Props) => {
     const iconRender = (): ReactElement | null => {
       if (props.type === "feed") {
         if (setting.subscription.isIconDisplay && props.iconUrl) {
-          return <img className="w-6 h-6 mr-2" src={props.iconUrl} alt="" />;
+          return (
+            <div className="mr-2 w-6 text-center">
+              <img className="w-4 h-4 mx-auto" src={props.iconUrl} alt="" />
+            </div>
+          );
         } else {
           return (
             <Icon

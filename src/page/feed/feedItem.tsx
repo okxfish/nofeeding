@@ -236,36 +236,54 @@ const FeedItemComponent = ({
     title: ["text-base truncat-3 flex-1"]
   });
 
-  const feedBodyElem: React.ReactElement | null = (
-    <Stack
-      horizontal={viewType === ViewType.list}
-      verticalAlign={viewType === ViewType.list ? "center" : "stretch"}
-      className={classnames("flex-1 overflow-hidden", {
-        "opacity-40": isRead,
-      })}
-    >
-      <Stack horizontal>
-        <Text
-          className={classnames(classNames.title, {
-            "mr-2": viewType === ViewType.list,
-            "mb-4": viewType !== ViewType.list,
+  const feedBodyRender = (): React.ReactElement | null => {
+    if (viewType === ViewType.list) {
+      return (
+        <Stack
+          horizontal
+          verticalAlign="center"
+          className={classnames("flex-1 overflow-hidden", {
+            "opacity-40": isRead,
           })}
         >
-          {title}
-        </Text>
-        {viewType === ViewType.list ? null : actionButtonsElem}
-      </Stack>
-      <Text className="flex-1 text-base w-full">{summary}</Text>
-      <Stack horizontal verticalAlign="center">
-        <Text className="flex-1 text-xs text-gray-500" block nowrap title={sourceName}>
-          {sourceName}
-        </Text>
-        <Text className="flex-0 text-xs text-gray-500" nowrap>
-          {relativePublishedTime}
-        </Text>
-      </Stack>
-    </Stack>
-  );
+          <Stack horizontal>
+            <Text className={classnames(classNames.title, 'mr-2')}>{title}</Text>
+          </Stack>
+          <Stack className="flex-1" horizontal verticalAlign="center">
+            <Text className="flex-1 text-xs text-gray-500" block nowrap title={sourceName}>
+              {sourceName}
+            </Text>
+            <Text className="flex-0 text-xs text-gray-500" nowrap>
+              {relativePublishedTime}
+            </Text>
+          </Stack>
+        </Stack>
+      )
+    } else {
+      return (
+        <Stack
+          verticalAlign="stretch"
+          className={classnames("flex-1 overflow-hidden", {
+            "opacity-40": isRead,
+          })}
+        >
+          <Stack horizontal>
+            <Text className={classnames(classNames.title, "mb-4")} >{title}</Text>
+            {actionButtonsElem}
+          </Stack>
+          <Text className="flex-1 text-base w-full">{summary}</Text>
+          <Stack horizontal verticalAlign="center">
+            <Text className="flex-1 text-xs text-gray-500" block nowrap title={sourceName}>
+              {sourceName}
+            </Text>
+            <Text className="flex-0 text-xs text-gray-500" nowrap>
+              {relativePublishedTime}
+            </Text>
+          </Stack>
+        </Stack>
+      )
+    }
+  }
 
   return (
     <Swipeout
@@ -303,7 +321,7 @@ const FeedItemComponent = ({
           })}
         >
           {feedHeaderRender()}
-          {feedBodyElem}
+          {feedBodyRender()}
           {viewType === ViewType.list ? actionButtonsElem : null}
         </Stack>
       </div>

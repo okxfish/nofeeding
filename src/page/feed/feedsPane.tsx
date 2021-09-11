@@ -1,5 +1,6 @@
 import {
   default as React,
+  ReactElement,
   useContext,
   useMemo,
 } from "react";
@@ -9,10 +10,12 @@ import {
   ICommandBarItemProps,
   Icon,
   IconButton,
+  IContextualMenuItem,
   IContextualMenuProps,
   NeutralColors,
   Stack,
-  Text
+  Text,
+  Toggle
 } from "@fluentui/react";
 import produce from "immer";
 import api from "../../api";
@@ -45,6 +48,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     useContext(FeedContext);
   const {
     feed: { feedThumbnailDisplayType, unreadOnly },
+    layout: { viewType }
   } = useContext(SettingContext);
 
   const dispatch = useContext(DispatchContext);
@@ -88,12 +92,23 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
   const isFeedFetching = useIsFetching(streamContentQueryKey);
 
-  const getThumbnailSwitchMenuItemProps = (key, text) => ({
+  const menuItemContentRender = (text, iconName, suffixRender): ReactElement | null => {
+    return (
+      <Stack horizontal verticalAlign="center" className="w-full h-full" tokens={{ childrenGap: 8 }}>
+        <Icon iconName={iconName} className="w-4 ml-1" />
+        <Text className="flex-1 text-base leading-8">{text}</Text>
+        {suffixRender()}
+      </Stack>
+    )
+  }
+
+  const getThumbnailSwitchMenuItemProps = (key: string, text?: string, iconName?: string): IContextualMenuItem => ({
     key,
-    text,
-    iconProps: {
-      iconName: feedThumbnailDisplayType === key ? "RadioBtnOn" : "RadioBtnOff",
-    },
+    onRenderContent: () => menuItemContentRender(
+      text,
+      iconName,
+      () => <Icon iconName={feedThumbnailDisplayType === key ? "RadioBtnOn" : "RadioBtnOff"} />
+    ),
     onClick: (e, item) =>
       dispatch({
         type: "CHANGE_THUMBNAIL_DISPLAY_TYPE",
@@ -101,14 +116,15 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
       }),
   });
 
-  const getViewTypeMenuItemProps = (key, text, iconName) => ({
+  const getViewTypeMenuItemProps = (key, text?: string, iconName?: string): IContextualMenuItem => ({
     key,
-    text,
-    iconProps: {
-      iconName: iconName,
-    },
+    onRenderContent: () => menuItemContentRender(
+      text,
+      iconName,
+      () => <Icon iconName={viewType === key ? "RadioBtnOn" : "RadioBtnOff"}/>
+    ),
     onClick: (e, item): void =>
-      dispatch({ type: "CHANGE_VIEW_TYPE", viewType: item.key }),
+      dispatch({ type: "CHANGE_VIEW_TYPE", viewType: item?.key }),
   });
 
   const menuProps: IContextualMenuProps = {
@@ -126,15 +142,15 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
           return (
             <div className="flex space-x-2">
               <button
-                className="w-6 h-6 rounded-full border flex items-center justify-center text-white"
-                style={{ backgroundColor: NeutralColors.black }}
+                className="w-6 h-6 rounded-full border flex items-center justify-center"
+                style={{ backgroundColor: NeutralColors.black, color: NeutralColors.white }}
                 onClick={() => dispatch({ type: "CHANGE_TO_DARK_THEME" })}
               >
                 D
               </button>
               <button
                 className="w-6 h-6 rounded-full border flex items-center justify-center"
-                style={{ backgroundColor: NeutralColors.white }}
+                style={{ backgroundColor: NeutralColors.white, color: NeutralColors.black }}
                 onClick={() => dispatch({ type: "CHANGE_TO_LIGHT_THEME" })}
               >
                 L
@@ -151,11 +167,12 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
       },
       {
         key: "UnreadOnly",
-        text: "unread only",
-        iconProps: {
-          iconName: unreadOnly ? "CheckboxComposite" : "Checkbox",
-        },
-        onClick: () => dispatch({ type: "TOGGLE_UNREAD_ONLY" }),
+        onRenderContent: () => menuItemContentRender(
+          "unread only",
+          "InboxCheck",
+          () => <Icon iconName={unreadOnly ? "RadioBtnOn" : "RadioBtnOff"} />
+        ),
+        onClick: () => dispatch({ type: "TOGGLE_UNREAD_ONLY" })
       },
       {
         key: "Thumbnail",
@@ -165,15 +182,18 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
       },
       getThumbnailSwitchMenuItemProps(
         FeedThumbnailDisplayType.alwaysDisplay,
-        "aways"
+        "aways",
+        'Photo2'
       ),
       getThumbnailSwitchMenuItemProps(
         FeedThumbnailDisplayType.alwaysNotDisplay,
-        "aways not"
+        "aways not",
+        'Photo2Remove'
       ),
       getThumbnailSwitchMenuItemProps(
         FeedThumbnailDisplayType.displayWhenThumbnaillExist,
-        "auto"
+        "auto",
+        'PictureStretch'
       ),
       {
         key: "Views",
@@ -197,13 +217,6 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
   const overflowItems: ICommandBarItemProps[] = [];
   const commandItems: ICommandBarItemProps[] = [
-    // {
-    //   iconProps: { iconName: "CheckList" },
-    //   iconOnly: true,
-    //   key: "markAllAsRead",
-    //   text: "Mark All As Read",
-    //   onClick: () => markAllAsReadMutation.mutate(String(streamId)),
-    // },
     {
       iconProps: { iconName: "Sync" },
       iconOnly: true,

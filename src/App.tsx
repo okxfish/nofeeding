@@ -47,7 +47,7 @@ function App() {
     };
   });
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const inoreaderToken = useInoreaderToken();
+  const [inoreaderToken] = useInoreaderToken();
 
   const userInfoQuery = useQuery(
     ["userInfo", inoreaderToken],

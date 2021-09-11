@@ -19,18 +19,19 @@ const queryClient = new QueryClient();
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://cra.link/PWA
 
-const registerServiceWork = async () => {
-  if ("serviceWorker" in window.navigator) {
-    try {
-      const registration = await navigator.serviceWorker.register("/sw.js", {
-        scope: "/",
-      });
-      console.log("Service worker registration succeeded:", registration);
-    } catch (error) {}
-  }
-};
+// const registerServiceWork = async () => {
+//   if ("serviceWorker" in window.navigator) {
+//     console.log("Service worker registration ing:");
+//     try {
+//       const registration = await navigator.serviceWorker.register("/sw.js", {
+//         scope: "/",
+//       });
+//       console.log("Service worker registration succeeded:", registration);
+//     } catch (error) {}
+//   }
+// };
 
-registerServiceWork();
+// registerServiceWork();
 
 initializeIcons();
 

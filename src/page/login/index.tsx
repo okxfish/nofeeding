@@ -23,15 +23,15 @@ import BookFilp from "./../../component/bookFilp/index";
 const Login = () => {
   const { palette } = useTheme();
   const [isLoginWithInoreader, setIsLoginWithInoreader] =
-  useState<boolean>(false);
+    useState<boolean>(false);
   const { isDarkMode } = useContext(SettingContext);
 
   const history = useHistory();
-  const inoreaderToken = useInoreaderToken();
+  const [inoreaderToken, setInoreaderToken] = useInoreaderToken();
 
   const classNames = mergeStyleSets({
     baseStack: [
-      "w-full md:w-192 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto",
+      "w-full sm:w-96 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto",
       {
         backgroundColor: palette.neutralQuaternaryAlt
       }
@@ -70,7 +70,16 @@ const Login = () => {
   return (
     <div className="login-page w-screen h-screen sm:pt-32">
       <Stack horizontal className={classNames.baseStack}>
-        <Stack.Item grow={1} className="flex flex-col">
+        <Stack.Item grow={1} className="flex flex-col pt-4">
+          <Text className="mx-auto text-xl tracking-widest font-semibold">
+            <span>Fr</span>
+            <span className="font-normal text-gray-400">
+              <span>ee</span>
+              <span> to </span>
+              <span>r</span>
+            </span>
+            <span>ead</span>
+          </Text>
           <div className="flex-1 flex justify-center items-center">
             {isLoginWithInoreader ? (
               <Spinner
@@ -79,30 +88,27 @@ const Login = () => {
               />
             ) : (
               <Image
-                className="login-page__butterfly-image w-32 transform translate-y-12 sm:w-48 md:w-72"
+                className="login-page__butterfly-image w-32 sm:w-48 md:w-72"
                 src="/images/Z-but.webp"
               />
             )}
           </div>
-          <Stack className="text-center mb-16">
-            <Text className="">
-              <a
-                href="https://github.com/uwpdver/fread"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Homepage
-              </a>
-            </Text>
+          <Stack className="text-center mb-12">
+            <Stack tokens={{ childrenGap: 16 }} className="w-full mb-8 px-8">
+              <PrimaryButton onClick={loginWithInoreader}>
+                login with inoreader
+              </PrimaryButton>
+            </Stack>
             <Text className="text-sm">version: 1.0</Text>
           </Stack>
         </Stack.Item>
-        <Stack.Item
+        {/* <Stack.Item
           grow={1}
           className={classNames.rightCol}
         >
           <form className="p-8 pt-10 h-128" onSubmit={handleOnSubmit}>
             <Label className="text-center">Welcome To Fread</Label>
+            
             <TextField
               className="mb-2"
               label="Account"
@@ -122,12 +128,10 @@ const Login = () => {
             <PrimaryButton className="block w-full mt-6" type="submit">
               log in
             </PrimaryButton>
-            <Separator className="mt-8 mb-4" alignContent="center" />
-            <DefaultButton className="w-full" onClick={loginWithInoreader}>
-              login with inoreader
-            </DefaultButton>
+            <Separator className="mt-8 mb-4" alignContent="center" /> 
+           
           </form>
-        </Stack.Item>
+        </Stack.Item> */}
       </Stack>
       <div className="max-w-2xl mx-auto mt-8 px-4"></div>
     </div>
