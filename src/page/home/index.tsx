@@ -1,5 +1,11 @@
 import api from "../../api";
-import { lazy, useEffect, useContext, Suspense } from "react";
+import { 
+  lazy,
+  useEffect,
+  useContext,
+  Suspense,
+  useRef
+ } from "react";
 import { useWindowSize } from "react-use";
 import { DispatchContext, SettingContext, StoreContext } from "../../context";
 import { Route, Switch } from "react-router-dom";
@@ -14,7 +20,7 @@ import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import { ViewType } from "../../context/setting";
-import { ModalKeys } from "../../reducer";
+import { ModalKeys, ScreenPosition } from "../../reducer";
 import { get } from "lodash";
 import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
@@ -31,8 +37,9 @@ const Home = () => {
   const {
     layout: { viewType },
   } = useContext(SettingContext);
-  const { modals } = useContext(StoreContext);
+  const { modals, activedScreen } = useContext(StoreContext);
   const dispatch = useContext(DispatchContext);
+  const scrollArea = useRef<HTMLDivElement>(null)
   const { height: windowHeight, width } = useWindowSize();
 
   useEffect(() => {
@@ -40,6 +47,24 @@ const Home = () => {
       dispatch({ type: "CHANGE_VIEW_TYPE", viewType: ViewType.card });
     }
   }, [viewType, width, dispatch]);
+
+  
+  // useEffect(() => {
+  //   if(!scrollArea.current) return;
+  //   switch (activedScreen) {
+  //     case ScreenPosition.Left:
+  //       scrollArea.current.scrollLeft = 0
+  //       break;
+  //     case ScreenPosition.Center:
+  //       scrollArea.current.scrollLeft = window.outerWidth
+  //       break;
+  //     case ScreenPosition.Right:
+  //       scrollArea.current.scrollLeft = 2 * window.outerWidth
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }, [activedScreen])
 
   const subscriptionsListQuery = useQuery<
     NormalizedSchema<SubscriptionEntity, string[]>
@@ -156,13 +181,12 @@ const Home = () => {
         className="overflow-y-hidden flex-col sm:flex-row"
         grow
         disableShrink={false}
-      >        
-        <NavBar/>
-        <Stack
-          horizontal
-          grow
-          className="overflow-y-hidden"
+      >
+        <NavBar className="hidden sm:flex"/>
+        <div
+          className="flex flex-1 flex-nowrap overflow-hidden relative"
           role="main"
+          ref={scrollArea}
         >
           <Suspense fallback={() => null}>
             <Switch>
@@ -170,7 +194,7 @@ const Home = () => {
               <Route path={["/", "/feed"]} component={FeedPage} />
             </Switch>
           </Suspense>
-        </Stack>
+        </div>
       </Stack>
       {onModalsRender()}
     </Stack>

@@ -25,7 +25,7 @@ export interface Props {
   };
 }
 
-const backIcon: IIconProps = { iconName: "Back" };
+const backIcon: IIconProps = { iconName: "ChevronLeft" };
 
 const ArticlePane = forwardRef(
   ({ className, style, closeModal }: Props, ref) => {
@@ -63,14 +63,14 @@ const ArticlePane = forwardRef(
 
     const commandItems: ICommandBarItemProps[] = [
       {
-        iconProps: {iconName: article.isRead ? "RadioBtnOff" : "RadioBtnOn"},
+        iconProps: { iconName: article.isRead ? "RadioBtnOff" : "RadioBtnOn" },
         iconOnly: true,
         key: "markThisAsRead",
         text: "mark this as read",
         ariaLabel: "Mark as read",
       },
       {
-        iconProps: {iconName: article.isStar ? "FavoriteStar" : "FavoriteStarFill"},
+        iconProps: { iconName: article.isStar ? "FavoriteStar" : "FavoriteStarFill" },
         iconOnly: true,
         key: "star",
         text: "Star",
@@ -124,7 +124,7 @@ const ArticlePane = forwardRef(
               overflowItems={overflowItems}
             />
           </Stack>
-          <div className="article-wrapper overflow-y-scroll scrollbar flex-1 px-4 sm:px-12" ref={scrollParentRef}>
+          <div className="article-wrapper overflow-y-scroll sm:scrollbar flex-1 px-4 sm:px-12 pb-64" ref={scrollParentRef}>
             <article className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}>
               <header className="mb-4">
                 <h2 className="mb-4" ref={titleElemRef}>

@@ -182,6 +182,9 @@ export default function Swipeout({
             return null;
         }
 
+        e.preventDefault();
+        e.stopPropagation()
+
         const pageX = e.targetTouches
             ? e.targetTouches[0].pageX
             : e.pageX; // 移动中触摸到的点的 x 坐标位置

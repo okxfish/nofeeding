@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 
-export const useInoreaderToken = ():[string, Dispatch<SetStateAction<string>>] => {
+export const useInoreaderToken = (): [string, Dispatch<SetStateAction<string>>] => {
   const [inoreaderToken, setInoreaderToken] = useState<string>((): string => {
     return localStorage.getItem("inoreaderToken") || "";
   });

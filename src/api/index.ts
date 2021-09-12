@@ -23,7 +23,7 @@ const prdConfig: ServerConfig = {
 
 let serverConfig: ServerConfig = prdConfig;
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development" || localStorage.getItem('inoreaderToken') === 'thisisamockuser') {
   serverConfig = devConfig;
   mockSetup(axios);
 }

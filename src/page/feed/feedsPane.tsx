@@ -25,18 +25,19 @@ import {
   useMutation,
   useIsFetching
 } from "react-query";
-import { useLocation } from "react-router";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   DispatchContext,
   FeedContext,
   SettingContext
 } from "../../context";
 import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
-import { ModalKeys } from "../../reducer";
+import { ModalKeys, ScreenPosition } from "../../reducer";
 
 import FeedPaneComponent from "./feedPaneComponent";
 import { get } from "lodash";
 import { getTagNameFromId } from "./overviewPane";
+import { useWindowSize } from "react-use";
 
 export interface Props {
   className?: string;
@@ -52,7 +53,9 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
   } = useContext(SettingContext);
 
   const dispatch = useContext(DispatchContext);
+  const history = useHistory();
   const queryClient = useQueryClient();
+  const { width: windowWidth } = useWindowSize();
 
   const location = useLocation();
   const { streamId } = queryString.parse(location.search);
@@ -121,7 +124,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     onRenderContent: () => menuItemContentRender(
       text,
       iconName,
-      () => <Icon iconName={viewType === key ? "RadioBtnOn" : "RadioBtnOff"}/>
+      () => <Icon iconName={viewType === key ? "RadioBtnOn" : "RadioBtnOff"} />
     ),
     onClick: (e, item): void =>
       dispatch({ type: "CHANGE_VIEW_TYPE", viewType: item?.key }),
@@ -218,18 +221,15 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
   const overflowItems: ICommandBarItemProps[] = [];
   const commandItems: ICommandBarItemProps[] = [
     {
-      iconProps: { iconName: "Sync" },
+      key: "sync",
       iconOnly: true,
+      iconProps: { iconName: "Sync" },
       styles: {
         icon: isFeedFetching ? "fr-spin" : "",
       },
-      key: "sync",
-      icon: "Sync",
-      text: "Sync",
       onClick: handleSyncClick,
     }, {
       key: "view",
-      text: "View",
       iconOnly: true,
       iconProps: { iconName: "View" },
       subMenuProps: menuProps,
@@ -237,6 +237,16 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.ViewSettingPane }),
     },
   ]
+
+  if(windowWidth <= 640){
+    commandItems.push({
+      key: "settings",
+      iconOnly: true,
+      iconProps: { iconName: "Settings" },
+      onClick: () =>
+        history.push('/settings'),
+    })
+  }
 
   const subscriptionsList = queryClient.getQueryData(
     "home/subscriptionsListQuery"
@@ -259,7 +269,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
       <Stack className="px-3 sm:px-6 py-2 sticky top-0 z-10" horizontal verticalAlign="center" style={{ backgroundColor: 'inherit' }}>
         <IconButton
           className="sm:hidden mr-2"
-          onClick={() => dispatch({ type: "OPEN_MODAL", modalKey: ModalKeys.OverViewPane })}
+          onClick={() => dispatch({ type: "CHANGE_SCREEN_POSITION", position: ScreenPosition.Left })}
           iconProps={{ iconName: "GlobalNavButton" }}
         />
         <Text className="text-xl font-semibold flex-1" block nowrap>

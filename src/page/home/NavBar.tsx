@@ -50,7 +50,7 @@ const NavBar = ({ className = '' }: Props) => {
   return (
     <Stack
       horizontalAlign="stretch"
-      className={`${className} py-2 px-1 sm:space-y-2 flex-row sm:flex-col order-last sm:order-first justify-evenly`}
+      className={`${className} py-2 px-1 space-y-2 flex-col justify-evenly`}
       style={{
         backgroundColor: palette.neutralLighter,
       }}

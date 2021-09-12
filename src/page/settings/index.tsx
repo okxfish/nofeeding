@@ -3,6 +3,7 @@ import { useThemeStyles } from "../../theme";
 import {
   CommandBar,
   Icon,
+  IconButton,
   INavLink,
   INavLinkGroup,
   IRenderFunction,
@@ -14,6 +15,11 @@ import classnames from "classnames";
 import { SettingContext } from "../../context";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import FeedManage from "./components/feedManage";
+import Account from "./components/account";
+import About from "./components/about";
+import General from "./components/general";
+import UserInterface from "./components/UserInterface";
+import ReadingPreference from "./components/ReadingPreference";
 
 const Settings = () => {
   const { isDarkMode } = useContext(SettingContext);
@@ -88,14 +94,14 @@ const Settings = () => {
 
   return (
     <>
-      <Stack
-        disableShrink
-        className={classnames("px-2 sm:w-nav-pane flex-shrink-0", {
+      <div
+        className={classnames("px-2 sm:w-nav-pane flex-col flex-shrink-0", {
           "hidden sm:flex": location.pathname !== "/settings",
           "flex-grow sm:flex-0 sm:flex-grow-0 sm:flex-shrink-0": location.pathname === "/settings",
         })}
       >
         <Stack className="py-2 pl-2" horizontal verticalAlign="center" >
+          <IconButton className="sm:hidden mr-2" iconProps={{iconName: 'Back'}} onClick={history.goBack}/>
           <Text className="text-xl font-semibold">Settings</Text>
           <CommandBar items={[]} />
         </Stack>
@@ -106,12 +112,17 @@ const Settings = () => {
           onLinkClick={handleLinkClick}
           onRenderGroupHeader={() => null}
         />
-      </Stack>
-      <Stack grow className={classnames("p-4", contentLayer,{
+      </div>
+      <Stack grow className={classnames("px-2", contentLayer,{
         "hidden sm:flex": location.pathname === "/settings",
       })}>
         <Switch>
           <Route path="/settings/feed-manage" component={FeedManage} />
+          <Route path="/settings/account" component={Account} />
+          <Route path="/settings/about" component={About} />
+          <Route path="/settings/general" component={General} />
+          <Route path="/settings/user-interface" component={UserInterface} />
+          <Route path="/settings/reading-preference" component={ReadingPreference} />
         </Switch>
       </Stack>
     </>

@@ -19,6 +19,7 @@ import {
 import api from "../../../api";
 import { produce, current } from "immer";
 import { useState } from "react";
+import Layout from "./layout";
 
 const FeedManage = () => {
   const [isRenameModalOpened, setIsRenameModalOpened] = useState(false);
@@ -83,7 +84,7 @@ const FeedManage = () => {
       fieldName: "Icon",
       minWidth: 16,
       maxWidth: 24,
-      onColumnClick: () => {},
+      onColumnClick: () => { },
       onRender: (item: any) => (
         <Image src={item.iconUrl} className=" h-4 w-4" />
       ),
@@ -142,58 +143,60 @@ const FeedManage = () => {
   };
 
   return (
-    <div className="h-full w-full overflow-y-auto scrollbar">
-    <DetailsList items={feeds} columns={columns} />
-      <Modal isOpen={isRenameModalOpened}>
-        <form onSubmit={onRename}>
-          <div className="p-8">
-            <Stack className="mb-4" horizontal>
-              <Label className="flex-1 text-xl">Rename the feed</Label>
+    <Layout title="Subscription">
+      <div className="h-full w-full overflow-y-auto sm:scrollbar">
+        <DetailsList items={feeds} columns={columns} />
+        <Modal isOpen={isRenameModalOpened}>
+          <form onSubmit={onRename}>
+            <div className="p-8">
+              <Stack className="mb-4" horizontal>
+                <Label className="flex-1 text-xl">Rename the feed</Label>
+              </Stack>
+              <Stack>
+                <Label>New Title</Label>
+                <TextField
+                  name="newFeedTitle"
+                  placeholder={get(
+                    feeds,
+                    `[${seletedIndex}].title`,
+                    "input a new title"
+                  )}
+                  className="w-96 max-w-full mb-4"
+                  required
+                />
+              </Stack>
+            </div>
+            <Stack
+              className="px-8 py-6"
+              horizontal
+              horizontalAlign="end"
+              verticalAlign="center"
+              tokens={{ childrenGap: "16px" }}
+            >
+              <Stack.Item grow={1}>
+                <DefaultButton
+                  className="w-full"
+                  onClick={() => setIsRenameModalOpened(false)}
+                  text="Cancel"
+                />
+              </Stack.Item>
+              <Stack.Item grow={1}>
+                <PrimaryButton
+                  className="w-full"
+                  disabled={renameFeedMutation.isLoading}
+                  type="submit"
+                >
+                  Rename
+                  {renameFeedMutation.isLoading && (
+                    <Spinner size={SpinnerSize.xSmall} className="ml-2" />
+                  )}
+                </PrimaryButton>
+              </Stack.Item>
             </Stack>
-            <Stack>
-              <Label>New Title</Label>
-              <TextField
-                name="newFeedTitle"
-                placeholder={get(
-                  feeds,
-                  `[${seletedIndex}].title`,
-                  "input a new title"
-                )}
-                className="w-96 max-w-full mb-4"
-                required
-              />
-            </Stack>
-          </div>
-          <Stack
-            className="px-8 py-6"
-            horizontal
-            horizontalAlign="end"
-            verticalAlign="center"
-            tokens={{ childrenGap: "16px" }}
-          >
-            <Stack.Item grow={1}>
-              <DefaultButton
-                className="w-full"
-                onClick={() => setIsRenameModalOpened(false)}
-                text="Cancel"
-              />
-            </Stack.Item>
-            <Stack.Item grow={1}>
-              <PrimaryButton
-                className="w-full"
-                disabled={renameFeedMutation.isLoading}
-                type="submit"
-              >
-                Rename
-                {renameFeedMutation.isLoading && (
-                  <Spinner size={SpinnerSize.xSmall} className="ml-2" />
-                )}
-              </PrimaryButton>
-            </Stack.Item>
-          </Stack>
-        </form>
-      </Modal>
-    </div>
+          </form>
+        </Modal>
+      </div>
+    </Layout>
   );
 };
 

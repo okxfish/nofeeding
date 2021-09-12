@@ -13,6 +13,7 @@ import {
   Text,
   useTheme,
   mergeStyleSets,
+  ImageFit,
 } from "@fluentui/react";
 import "./style.css";
 import { useInoreaderToken } from "./../../utils/useInoreaderToken";
@@ -31,7 +32,7 @@ const Login = () => {
 
   const classNames = mergeStyleSets({
     baseStack: [
-      "w-full sm:w-96 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-auto",
+      "w-full sm:w-96 mx-auto rounded-lg shadow-xl border-3 overflow-hidden flex-col sm:flex-row h-full sm:h-128",
       {
         backgroundColor: palette.neutralQuaternaryAlt
       }
@@ -67,11 +68,17 @@ const Login = () => {
     }
   };
 
+  const handleEnterMockMode = (e) => {
+    e.preventDefault();
+    localStorage.setItem('inoreaderToken', 'thisisamockuser')
+    window.location.reload()
+  }
+
   return (
-    <div className="login-page w-screen h-screen sm:pt-32">
+    <Stack verticalAlign="center" className="login-page w-screen h-screen">
       <Stack horizontal className={classNames.baseStack}>
-        <Stack.Item grow={1} className="flex flex-col pt-4">
-          <Text className="mx-auto text-xl tracking-widest font-semibold">
+        <div className="flex-1 flex flex-col">
+          <Text className="mx-auto text-xl tracking-widest font-semibold mt-20 sm:mt-8">
             <span>Fr</span>
             <span className="font-normal text-gray-400">
               <span>ee</span>
@@ -80,7 +87,11 @@ const Login = () => {
             </span>
             <span>ead</span>
           </Text>
-          <div className="flex-1 flex justify-center items-center">
+          <Stack
+            horizontalAlign="center"
+            verticalAlign="center"
+            className="flex-1 sm:h-72"
+          >
             {isLoginWithInoreader ? (
               <Spinner
                 size={SpinnerSize.large}
@@ -88,20 +99,24 @@ const Login = () => {
               />
             ) : (
               <Image
-                className="login-page__butterfly-image w-32 sm:w-48 md:w-72"
+                imageFit={ImageFit.contain}
+                className="login-page__butterfly-image h-4/5"
                 src="/images/Z-but.webp"
               />
             )}
-          </div>
-          <Stack className="text-center mb-12">
+          </Stack>
+          <Stack className="text-center mb-24">
             <Stack tokens={{ childrenGap: 16 }} className="w-full mb-8 px-8">
               <PrimaryButton onClick={loginWithInoreader}>
                 login with inoreader
               </PrimaryButton>
+              <DefaultButton onClick={handleEnterMockMode}>
+                enter mock mode
+              </DefaultButton>
             </Stack>
             <Text className="text-sm">version: 1.0</Text>
           </Stack>
-        </Stack.Item>
+        </div>
         {/* <Stack.Item
           grow={1}
           className={classNames.rightCol}
@@ -133,8 +148,7 @@ const Login = () => {
           </form>
         </Stack.Item> */}
       </Stack>
-      <div className="max-w-2xl mx-auto mt-8 px-4"></div>
-    </div>
+    </Stack>
   );
 };
 

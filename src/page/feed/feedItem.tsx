@@ -27,6 +27,7 @@ import {
   DispatchContext,
 } from "../../context";
 import { useWindowSize } from "react-use";
+import { ScreenPosition } from "../../reducer";
 
 export interface Props extends FeedProps {
   itemIndex: number;
@@ -102,11 +103,13 @@ const FeedItemComponent = ({
   const onClick = useCallback(() => {
     const articleId = id;
     dispatch({ type: "CHANGE_SELECTED_ARTICLE", articleId });
-    if (viewType !== ViewType.threeway) {
+    if(windowWidth <= 640){
+      dispatch({ type: "CHANGE_SCREEN_POSITION", position: ScreenPosition.Right })
+    } else if (viewType !== ViewType.threeway) {
       dispatch({ type: "OPEN_AIRTICLE_MODAL" });
     }
     markAsReadMutation.mutate({ id, asUnread: false });
-  }, [viewType, id, dispatch, markAsReadMutation]);
+  }, [viewType, id, dispatch, markAsReadMutation, windowWidth]);
 
   // 点击标星按钮
   const onStar = (e: any): void => {

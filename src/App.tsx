@@ -18,7 +18,7 @@ import {
 import { default as api } from "./api";
 import { useInoreaderToken } from "./utils/useInoreaderToken";
 import { useQuery } from "react-query";
-import { getInitSetting, reducer } from "./reducer";
+import { getInitSetting, reducer, ScreenPosition } from "./reducer";
 import { ThemeProvider, getTheme, mergeStyleSets } from "@fluentui/react";
 import { lightTheme, darkTheme } from "./theme";
 import classnames from "classnames";
@@ -34,7 +34,6 @@ const Login = lazy(() => import("./page/login"));
 const Home = lazy(() => import("./page/home"));
 
 const currentTheme = getTheme();
-console.log(currentTheme);
 
 function App() {
   const [store, dispatch] = useReducer(reducer, undefined, () => {
@@ -42,6 +41,7 @@ function App() {
       currenActivedFeedId: "",
       isArticleModalOpen: false,
       isOverviewPaneOpen: true,
+      activedScreen: ScreenPosition.Center,
       modals: {},
       setting: getInitSetting(),
     };

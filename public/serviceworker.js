@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fread-0.5'
+const CACHE_NAME = 'fread-0.6'
 const contentToCache = ['/index.html', '/static/', '/images/']
 
 const self = this

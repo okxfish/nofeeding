@@ -6,6 +6,7 @@ import {
   Nav,
   IRenderFunction,
   Icon,
+  IconButton,
   INavLinkGroup,
   CommandBar,
   ICommandBarItemProps,
@@ -17,7 +18,8 @@ import queryString from "query-string";
 import { IdValuePair, SystemStreamIDs } from "../../api/inoreader";
 import { SettingContext, UserInfoContext, DispatchContext } from "./../../context";
 import { Tag } from "../../api/mockData";
-import { ModalKeys } from "../../reducer";
+import { ModalKeys, ScreenPosition } from "../../reducer";
+import { useWindowSize } from "react-use";
 
 export interface Props {
   className?: string;
@@ -66,6 +68,7 @@ const OverviewPane = ({ className }: Props) => {
   const dispatch = useContext(DispatchContext);
   const setting = useContext(SettingContext);
   const userInfo = useContext(UserInfoContext);
+  const { width: windowWidth } = useWindowSize();
 
   const queryClient = useQueryClient();
 
@@ -130,6 +133,11 @@ const OverviewPane = ({ className }: Props) => {
     item?: INavLink
   ) => {
     e?.preventDefault();
+
+    if (windowWidth <= 640) {
+      dispatch({ type: "CHANGE_SCREEN_POSITION", position: ScreenPosition.Center })
+    }
+
     const qs = queryString.parse(location.search);
     history.push({
       pathname: "/feed",
@@ -339,16 +347,20 @@ const OverviewPane = ({ className }: Props) => {
     }
   ]
 
-  const overflowItems: ICommandBarItemProps[] = [];
-
   return (
     <Stack className={`${className} min-h-0`}>
       <Stack className="py-2 pl-2" horizontal verticalAlign="center">
-        <Text className="text-xl font-medium flex-1">Fread</Text>
+        <IconButton
+          className="sm:hidden mr-2"
+          iconProps={{ iconName: "GlobalNavButton" }}
+          onClick={() =>
+            dispatch({ type: "CHANGE_SCREEN_POSITION", position: ScreenPosition.Center })
+          }
+        />
+        <Text className="text-xl font-semibold flex-1">Fread</Text>
         <CommandBar
           className=""
           items={commandItems}
-          overflowItems={overflowItems}
           styles={{ root: 'p-0' }}
         />
       </Stack>

@@ -11,10 +11,17 @@ export enum ModalKeys {
   ViewSettingPane,
 }
 
+export enum ScreenPosition {
+  Left = 0,
+  Center,
+  Right,
+}
+
 interface Store {
   currenActivedFeedId: string;
   isArticleModalOpen: boolean;
   isOverviewPaneOpen: boolean;
+  activedScreen: ScreenPosition;
   modals: {
     [modalKey: number]: boolean;
   };
@@ -31,6 +38,7 @@ type Action =
   | { type: "TOGGLE_DARK_THEME" }
   | { type: "CHANGE_TO_DARK_THEME" }
   | { type: "CHANGE_TO_LIGHT_THEME" }
+  | { type: "CHANGE_SCREEN_POSITION", position: ScreenPosition}
   | {
       type: "CHANGE_THUMBNAIL_DISPLAY_TYPE";
       displayType: FeedThumbnailDisplayType;
@@ -118,6 +126,11 @@ export const reducer = (prevState: Store, action: Action) => {
           ...prevState.setting,
           isDarkMode: false,
         },
+      };
+    case "CHANGE_SCREEN_POSITION":
+      return {
+        ...prevState,
+        activedScreen: action.position,
       };
     case "OPEN_MODAL":
       return {
