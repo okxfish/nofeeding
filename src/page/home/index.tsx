@@ -10,7 +10,7 @@ import { useWindowSize } from "react-use";
 import { DispatchContext, SettingContext, StoreContext } from "../../context";
 import { Route, Switch } from "react-router-dom";
 import { Stack, Modal } from "@fluentui/react";
-import OverviewPane, {
+import {
   FolderEntity,
   InoreaderTag,
   Subscription,
@@ -20,7 +20,7 @@ import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import { ViewType } from "../../context/setting";
-import { ModalKeys, ScreenPosition } from "../../reducer";
+import { ModalKeys } from "../../reducer";
 import { get } from "lodash";
 import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
@@ -37,7 +37,7 @@ const Home = () => {
   const {
     layout: { viewType },
   } = useContext(SettingContext);
-  const { modals, activedScreen } = useContext(StoreContext);
+  const { modals } = useContext(StoreContext);
   const dispatch = useContext(DispatchContext);
   const scrollArea = useRef<HTMLDivElement>(null)
   const { height: windowHeight, width } = useWindowSize();
@@ -47,24 +47,6 @@ const Home = () => {
       dispatch({ type: "CHANGE_VIEW_TYPE", viewType: ViewType.card });
     }
   }, [viewType, width, dispatch]);
-
-  
-  // useEffect(() => {
-  //   if(!scrollArea.current) return;
-  //   switch (activedScreen) {
-  //     case ScreenPosition.Left:
-  //       scrollArea.current.scrollLeft = 0
-  //       break;
-  //     case ScreenPosition.Center:
-  //       scrollArea.current.scrollLeft = window.outerWidth
-  //       break;
-  //     case ScreenPosition.Right:
-  //       scrollArea.current.scrollLeft = 2 * window.outerWidth
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }, [activedScreen])
 
   const subscriptionsListQuery = useQuery<
     NormalizedSchema<SubscriptionEntity, string[]>
@@ -133,20 +115,6 @@ const Home = () => {
             }
           />
         </Modal>
-        <HelfScreenPanel
-          isOpen={modals[ModalKeys.OverViewPane]}
-          isLightDismiss
-          hasCloseButton={false}
-          onDismiss={() =>
-            dispatch({ type: "CLOSE_MODAL", modalKey: ModalKeys.OverViewPane })
-          }
-          onLightDismissClick={() =>
-            dispatch({ type: "CLOSE_MODAL", modalKey: ModalKeys.OverViewPane })
-          }
-          styles={{ content: "p-0" }}
-        >
-          <OverviewPane />
-        </HelfScreenPanel>
         <HelfScreenPanel
           isOpen={modals[ModalKeys.ViewSettingPane]}
           isLightDismiss

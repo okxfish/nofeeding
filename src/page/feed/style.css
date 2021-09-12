@@ -93,12 +93,3 @@ article h2 {
 .article-header__tilte.exit-done {
   transform: translateY(150%);
 }
-
-.overview-pane-container {
-  transition-duration: 300ms;
-}
-
-.overview-pane-container.closed {
-  transform-origin: left;
-  transform: scale3d(0.85, 0.85, 1);
-}

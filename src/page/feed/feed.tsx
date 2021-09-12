@@ -206,7 +206,7 @@ const FeedContainer = ({ }: Props) => {
 
   const feedClassNames = mergeStyleSets({
     overviewContainer: [
-      "overview-pane-container",
+      "transform-gpu origin-left duration-300",
       "scrollbar-none overflow-y-auto sm:overflow-y-scroll",
       "px-2 transition-all",
       "sm:block sm:w-nav-pane",
@@ -224,11 +224,19 @@ const FeedContainer = ({ }: Props) => {
       "w-screen flex-shrink-0 sm:flex-shrink",
     ],
     leftScreen: [
-      "h-screen absolute top-0 left-0 z-30 transform-gpu transition-transform",
+      "h-screen absolute top-0 z-30",
+      "left-0",
+      "transform-gpu transition-transform duration-300",
       `${activedScreen === ScreenPosition.Left ? '' : '-translate-x-full'}`
     ],
+    centerScreen: [
+      "transform-gpu transition-transform duration-300",
+      `${activedScreen === ScreenPosition.Center ? '' : 'scale-90 shadow-xl'}`
+    ],
     righttScreen: [
-      "h-screen absolute top-0 left-full z-30 transform-gpu transition-transform",
+      "h-screen absolute top-0 z-30",
+      "left-full",
+      "transform-gpu transition-transform duration-300",
       `${activedScreen === ScreenPosition.Right ? '-translate-x-full' : ''}`
     ]
   })
@@ -304,7 +312,7 @@ const FeedContainer = ({ }: Props) => {
                 feedClassNames.screen,
                 {
                   [feedClassNames.leftScreen]: windowWidth <= 640,
-                  'sm:-ml-64 sm:closed': !isOverviewPaneOpen
+                  'sm:-ml-64 sm:scale-90': !isOverviewPaneOpen
                 })}
               ref={leftScreenRef}
             >
@@ -317,6 +325,7 @@ const FeedContainer = ({ }: Props) => {
                 feedClassNames.feedContainer,
                 feedClassNames.screen,
                 {
+                  [feedClassNames.centerScreen]: windowWidth <= 640,
                   "sm:flex-1": viewType !== ViewType.threeway,
                 },
               )}
