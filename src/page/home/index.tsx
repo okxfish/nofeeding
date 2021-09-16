@@ -26,6 +26,7 @@ import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
 import { StreamPreferenceListResponse } from "../../api/inoreader";
 import NavBar from "./NavBar";
+import { useSelector } from "react-redux";
 
 const subscription = new schema.Entity("subscription", undefined);
 const folder = new schema.Entity("folder");
@@ -38,6 +39,9 @@ const Home = () => {
     layout: { viewType },
   } = useContext(SettingContext);
   const { modals } = useContext(StoreContext);
+  const store = useSelector(state=>state);
+  console.log('store', store)
+
   const dispatch = useContext(DispatchContext);
   const scrollArea = useRef<HTMLDivElement>(null)
   const { height: windowHeight, width } = useWindowSize();
