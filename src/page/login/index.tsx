@@ -18,14 +18,12 @@ import {
 import "./style.css";
 import { useInoreaderToken } from "./../../utils/useInoreaderToken";
 import { useHistory } from "react-router-dom";
-import { SettingContext } from './../../context/setting';
 import BookFilp from "./../../component/bookFilp/index";
 
 const Login = () => {
   const { palette } = useTheme();
   const [isLoginWithInoreader, setIsLoginWithInoreader] =
     useState<boolean>(false);
-  const { isDarkMode } = useContext(SettingContext);
 
   const history = useHistory();
   const [inoreaderToken, setInoreaderToken] = useInoreaderToken();

@@ -2,10 +2,10 @@ import { createModel } from "@rematch/core";
 import { RootModel } from './rootModel';
 
 export enum ModalKeys {
-    overViewPane = 0,
-    addFeedModal,
-    viewSettingPane,
-    articleModal,
+    OverViewPane = 0,
+    AddFeedModal,
+    ViewSettingPane,
+    ArticleModal,
 }
 
 type GlobalModal = {
@@ -14,10 +14,10 @@ type GlobalModal = {
 
 export const globalModal = createModel<RootModel>()({
     state: {
-        overViewPane: false,
-        addFeedModal: false,
-        viewSettingPane: false,
-        articleModal: false,
+        OverViewPane: false,
+        AddFeedModal: false,
+        ViewSettingPane: false,
+        ArticleModal: false,
     } as GlobalModal,
     reducers: {
         openModal(state, modalKey: ModalKeys) {

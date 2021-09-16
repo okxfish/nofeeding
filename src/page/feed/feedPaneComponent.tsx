@@ -12,13 +12,11 @@ import {
   Text,
 } from "@fluentui/react";
 import FeedShimmer from "./feedShimmer";
-import {
-  CurrenActivedFeedIdContext,
-  SetFeedItemContext,
-  SettingContext,
-} from "./../../context";
+import { SetFeedItemContext } from "./../../context";
 import { useMutation } from "react-query";
 import api from "../../api";
+import { useSelector } from "react-redux";
+import { RootState } from "../../model";
 
 export interface Props {
   className?: string;
@@ -38,10 +36,7 @@ const FeedPaneComponent = ({
   getScrollParent,
 }: Props) => {
   const setArticleDataById = useContext(SetFeedItemContext);
-  const currenActivedFeedId = useContext(CurrenActivedFeedIdContext);
-  const {
-    layout: { viewType },
-  } = useContext(SettingContext);
+  const currenActivedFeedId = useSelector<RootState, any>(state => state.app.currenActivedFeedId)
 
   const markAboveAsReadMutation = useMutation(
     ({ ids, asUnread }: { ids: string[]; asUnread?: boolean }): any =>

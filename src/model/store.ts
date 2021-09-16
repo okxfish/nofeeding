@@ -1,8 +1,10 @@
 import { init, RematchDispatch, RematchRootState } from '@rematch/core'
+import immerPlugin from '@rematch/immer'
 import { models, RootModel } from './rootModel'
 
-export const store = init({
-    models
+export const store = init<RootModel>({
+    models,
+    plugins: [immerPlugin()],
 })
 
 export type Store = typeof store

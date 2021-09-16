@@ -44,8 +44,8 @@ export const userInterface = createModel<RootModel>()({
             state.isDarkMode = false
             return state
         },
-        changeThumbnailDisplayType(state, feedThumbnailDisplayType: FeedThumbnailDisplayType) {
-            state.feedThumbnailDisplayType = feedThumbnailDisplayType
+        changeThumbnailDisplayType(state, feedThumbnailDisplayType?: FeedThumbnailDisplayType) {
+            state.feedThumbnailDisplayType = feedThumbnailDisplayType || FeedThumbnailDisplayType.alwaysDisplay
             return state
         },
     },

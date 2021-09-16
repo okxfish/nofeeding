@@ -228,7 +228,7 @@ const generatePagesFeed = (count:number, pageSize: number) => {
 const pagesFeed = generatePagesFeed(5, 20);
 
 export const mockSetup = (axios) => {
-  const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
+  const mock = new MockAdapter(axios, { onNoMatch: "passthrough", delayResponse: 500 });
 
   mock.onGet(/^.*user-info$/).reply(200, {
     isBloggerUser: false,

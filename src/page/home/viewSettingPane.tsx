@@ -1,116 +1,121 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
-  ChoiceGroup,
-  IChoiceGroupOption,
-  Toggle,
-  Stack,
-  Separator,
+    ChoiceGroup,
+    IChoiceGroupOption,
+    Toggle,
+    Stack,
+    Separator,
 } from "@fluentui/react";
-import { FeedThumbnailDisplayType, ViewType } from "../../context/setting";
-import { SettingContext, DispatchContext } from "../../context";
+import { Dispatch, RootState } from "../../model";
+import { useSelector, useDispatch } from "react-redux";
+import { ViewType, FeedThumbnailDisplayType } from "../../model/userInterface";
 
 const ViewSettingPane = () => {
-  const {
-    layout: { viewType },
-    feed: { feedThumbnailDisplayType, unreadOnly },
-  } = useContext(SettingContext);
-  const dispatch = useContext(DispatchContext);
+    const viewType = useSelector<RootState, any>(
+        (state) => state.userInterface.viewType
+    );
+    const unreadOnly = useSelector<RootState, any>(
+        (state) => state.feed.unreadOnly
+    );
+    const feedThumbnailDisplayType = useSelector<RootState, any>(
+        (state) => state.userInterface.feedThumbnailDisplayType
+    );
 
-  const viewTypeOptions: IChoiceGroupOption[] = [
-    {
-      key: ViewType.magazine,
-      text: "Magazine",
-      iconProps: { iconName: "GridViewMedium" },
-      styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-    },
-    {
-      key: ViewType.list,
-      text: "List",
-      iconProps: { iconName: "GroupedList" },
-      styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-    },
-    {
-      key: ViewType.threeway,
-      text: "Threeway",
-      iconProps: { iconName: "ColumnRightTwoThirds" },
-      styles: {
-        root: "hidden lg:block flex-1",
-        choiceFieldWrapper: "flex-1",
-      },
-    },
-  ];
+    const dispatch = useDispatch<Dispatch>();
 
-  const feedThumbnaillOptions: IChoiceGroupOption[] = [
-    {
-      key: FeedThumbnailDisplayType.alwaysDisplay,
-      text: "Always Display",
-    },
-    {
-      key: FeedThumbnailDisplayType.alwaysNotDisplay,
-      text: "Always Not Display",
-    },
-    {
-      key: FeedThumbnailDisplayType.displayWhenThumbnaillExist,
-      text: "Display When Thumbnaill Exist",
-    },
-  ];
+    const viewTypeOptions: IChoiceGroupOption[] = [
+        {
+            key: ViewType.magazine,
+            text: "Magazine",
+            iconProps: { iconName: "GridViewMedium" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+        },
+        {
+            key: ViewType.list,
+            text: "List",
+            iconProps: { iconName: "GroupedList" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+        },
+        {
+            key: ViewType.threeway,
+            text: "Threeway",
+            iconProps: { iconName: "ColumnRightTwoThirds" },
+            styles: {
+                root: "hidden lg:block flex-1",
+                choiceFieldWrapper: "flex-1",
+            },
+        },
+    ];
 
-  const onIsUreadOnlyChange = () => {
-    dispatch({ type: "TOGGLE_UNREAD_ONLY" });
-  };
+    const feedThumbnaillOptions: IChoiceGroupOption[] = [
+        {
+            key: FeedThumbnailDisplayType.alwaysDisplay,
+            text: "Always Display",
+        },
+        {
+            key: FeedThumbnailDisplayType.alwaysNotDisplay,
+            text: "Always Not Display",
+        },
+        {
+            key: FeedThumbnailDisplayType.displayWhenThumbnaillExist,
+            text: "Display When Thumbnaill Exist",
+        },
+    ];
 
-  const onfeedThumbnaillDisplayTypeChange = (
-    ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-    option?: IChoiceGroupOption
-  ) => {
-    dispatch({
-      type: "CHANGE_THUMBNAIL_DISPLAY_TYPE",
-      displayType: option?.key,
-    });
-  };
+    const onIsUreadOnlyChange = () => dispatch.feed.toggleIsUnreadOnly();
 
-  const onViewTypeChange = (
-    ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-    option?: IChoiceGroupOption
-  ) => {
-    dispatch({ type: "CHANGE_VIEW_TYPE", viewType: option?.key });
-  };
+    const onfeedThumbnaillDisplayTypeChange = (
+        ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+        option?: IChoiceGroupOption
+    ) => {
+        option &&
+            dispatch.userInterface.changeThumbnailDisplayType(
+                FeedThumbnailDisplayType[option.key]
+            );
+    };
 
-  return (
-    <Stack
-      tokens={{
-        childrenGap: "s",
-      }}
-    >
-      <Toggle
-        label="Unread Only"
-        inlineLabel
-        styles={{ label: "flex-1 order-none m-0" }}
-        onChange={onIsUreadOnlyChange}
-        checked={unreadOnly}
-      />
-      <Separator />
-      {viewType !== ViewType.list && (
-        <>
-          <ChoiceGroup
-            selectedKey={feedThumbnailDisplayType}
-            options={feedThumbnaillOptions}
-            onChange={onfeedThumbnaillDisplayTypeChange}
-            label="Feed Thumbnail"
-            styles={{ label: "mb-2" }}
-          />
-          <Separator />
-        </>
-      )}
-      <ChoiceGroup
-        selectedKey={viewType}
-        options={viewTypeOptions}
-        onChange={onViewTypeChange}
-        label="View Type"
-        styles={{ label: "mb-2" }}
-      />
-    </Stack>
-  );
+    const onViewTypeChange = (
+        ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+        option?: IChoiceGroupOption
+    ) => {
+        option && dispatch.userInterface.changeViewType(ViewType[option.key]);
+    };
+
+    return (
+        <Stack
+            tokens={{
+                childrenGap: "s",
+            }}
+        >
+            <Toggle
+                label="Unread Only"
+                inlineLabel
+                styles={{ label: "flex-1 order-none m-0" }}
+                onChange={onIsUreadOnlyChange}
+                checked={unreadOnly}
+            />
+            <Separator />
+            {viewType !== ViewType.list && (
+                <>
+                    <ChoiceGroup
+                        selectedKey={feedThumbnailDisplayType}
+                        options={feedThumbnaillOptions}
+                        onChange={onfeedThumbnaillDisplayTypeChange}
+                        label="Feed Thumbnail"
+                        styles={{ label: "mb-2" }}
+                    />
+                    <Separator />
+                </>
+            )}
+            <ChoiceGroup
+                selectedKey={viewType}
+                options={viewTypeOptions}
+                onChange={onViewTypeChange}
+                label="View Type"
+                styles={{ label: "mb-2" }}
+            />
+        </Stack>
+    );
 };
 
 export default ViewSettingPane;

@@ -1,6 +1,11 @@
 import { createModel } from "@rematch/core";
-import { ScreenPosition } from "../reducer";
 import { RootModel } from './rootModel';
+
+export enum ScreenPosition {
+    Left = 0,
+    Center,
+    Right,
+  }
 
 type App = {
     currenActivedFeedId: string;

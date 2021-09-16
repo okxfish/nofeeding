@@ -12,7 +12,6 @@ import {
   Text,
 } from "@fluentui/react";
 import classnames from "classnames";
-import { SettingContext } from "../../context";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import FeedManage from "./components/feedManage";
 import Account from "./components/account";
@@ -22,7 +21,6 @@ import UserInterface from "./components/UserInterface";
 import ReadingPreference from "./components/ReadingPreference";
 
 const Settings = () => {
-  const { isDarkMode } = useContext(SettingContext);
   const { contentLayer } = useThemeStyles();
   const history = useHistory();
   const location = useLocation();
