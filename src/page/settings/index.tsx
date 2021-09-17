@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { useThemeStyles } from "../../theme";
 import {
   CommandBar,
   Icon,
@@ -12,6 +11,7 @@ import {
   Text,
 } from "@fluentui/react";
 import classnames from "classnames";
+import { useThemeStyles } from "../../theme";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import FeedManage from "./components/feedManage";
 import Account from "./components/account";

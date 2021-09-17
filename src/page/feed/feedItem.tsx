@@ -386,7 +386,6 @@ export default React.memo(
             prevProps.title === nextProps.title &&
             prevProps.summary === nextProps.summary &&
             prevProps.thumbnailSrc === nextProps.thumbnailSrc &&
-            prevProps.content === nextProps.content &&
             prevProps.url === nextProps.url &&
             prevProps.sourceName === nextProps.sourceName &&
             prevProps.sourceID === nextProps.sourceID &&
