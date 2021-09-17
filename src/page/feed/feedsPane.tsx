@@ -92,7 +92,6 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     );
 
     const isFeedFetching = useIsFetching(streamContentQueryKey);
-    console.log("isFeedFetching", isFeedFetching);
 
     const menuItemContentRender = (
         text,

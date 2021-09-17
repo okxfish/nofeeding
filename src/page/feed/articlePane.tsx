@@ -19,11 +19,11 @@ import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
 import { ArticleContext } from "../../context";
 import classnames from "classnames";
-import "./style.css";
 import { useThemeStyles } from "../../theme";
 import useIntersectionObserver from "../../utils/useIntersectionObserver";
 import SideBarButton from "../home/sideBarButton";
 import { CSSTransition } from "react-transition-group";
+import "./style.css";
 
 export interface Props {
     className?: string;

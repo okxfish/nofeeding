@@ -75,8 +75,8 @@ const FeedContainer = ({}: Props) => {
     const location = useLocation();
     const queryClient = useQueryClient();
     const qs = queryString.parse(location.search);
-    const { width: windowWidth } = useWindowSize();
     const streamId = qs.streamId;
+    const { width: windowWidth } = useWindowSize();
     const { contentLayer } = useThemeStyles();
     const { palette } = useTheme();
 
