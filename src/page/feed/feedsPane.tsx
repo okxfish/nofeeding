@@ -24,9 +24,16 @@ import { getTagNameFromId } from "./overviewPane";
 import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../../model";
-import { FeedThumbnailDisplayType, ViewType } from "../../model/userInterface";
+import {
+    FeedThumbnailDisplayType,
+    FeedView,
+    ViewType,
+} from "../../model/userInterface";
 import { ModalKeys } from "../../model/globalModal";
 import { ScreenPosition } from "../../model/app";
+import { Subscription } from "../../api/mockData";
+import { FeedItem } from "./types";
+import MenuItem from "../../component/menuItem";
 
 export interface Props {
     className?: string;
@@ -44,6 +51,9 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     );
     const feedThumbnailDisplayType = useSelector<RootState, any>(
         (state) => state.userInterface.feedThumbnailDisplayType
+    );
+    const feedView = useSelector<RootState, any>(
+        (state) => state.userInterface.feedView
     );
 
     const dispatch = useDispatch<Dispatch>();
@@ -93,41 +103,27 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
     const isFeedFetching = useIsFetching(streamContentQueryKey);
 
-    const menuItemContentRender = (
-        text,
-        iconName,
-        suffixRender
-    ): ReactElement | null => {
-        return (
-            <Stack
-                horizontal
-                verticalAlign="center"
-                className="w-full h-full"
-                tokens={{ childrenGap: 8 }}
-            >
-                <Icon iconName={iconName} className="w-4 ml-1" />
-                <Text className="flex-1 text-base leading-8">{text}</Text>
-                {suffixRender()}
-            </Stack>
-        );
-    };
-
     const getThumbnailSwitchMenuItemProps = (
         key: FeedThumbnailDisplayType,
         text?: string,
         iconName?: string
     ): IContextualMenuItem => ({
         key,
-        onRenderContent: () =>
-            menuItemContentRender(text, iconName, () => (
-                <Icon
-                    iconName={
-                        feedThumbnailDisplayType === key
-                            ? "RadioBtnOn"
-                            : "RadioBtnOff"
-                    }
-                />
-            )),
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            feedThumbnailDisplayType === key
+                                ? "RadioBtnOn"
+                                : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
         onClick: () => dispatch.userInterface.changeThumbnailDisplayType(key),
     });
 
@@ -137,13 +133,42 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         iconName?: string
     ): IContextualMenuItem => ({
         key,
-        onRenderContent: () =>
-            menuItemContentRender(text, iconName, () => (
-                <Icon
-                    iconName={viewType === key ? "RadioBtnOn" : "RadioBtnOff"}
-                />
-            )),
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            viewType === key ? "RadioBtnOn" : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
         onClick: (): void => dispatch.userInterface.changeViewType(key),
+    });
+
+    const getFeedViewMenuItemProps = (
+        key: FeedView,
+        text?: string,
+        iconName?: string
+    ): IContextualMenuItem => ({
+        key,
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            feedView === key ? "RadioBtnOn" : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
+        onClick: (): void => dispatch.userInterface.changeFeedView(key),
     });
 
     const baseMenuItems: IContextualMenuItem[] = [
@@ -194,14 +219,40 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         },
         {
             key: "UnreadOnly",
-            onRenderContent: () =>
-                menuItemContentRender("unread only", "InboxCheck", () => (
-                    <Icon
-                        iconName={unreadOnly ? "RadioBtnOn" : "RadioBtnOff"}
-                    />
-                )),
+            onRenderContent: () => (
+                <MenuItem
+                    text="unread only"
+                    iconName="InboxCheck"
+                    suffixRender={() => (
+                        <Icon
+                            iconName={unreadOnly ? "RadioBtnOn" : "RadioBtnOff"}
+                        />
+                    )}
+                />
+            ),
             onClick: () => dispatch.feed.toggleIsUnreadOnly(),
         },
+        {
+            key: "FeedView",
+            itemType: ContextualMenuItemType.Header,
+            onRenderIcon: () => null,
+            text: "Feed View",
+        },
+        getFeedViewMenuItemProps(
+            FeedView.LeftCover,
+            "cover in left",
+            "ThumbnailView"
+        ),
+        getFeedViewMenuItemProps(
+            FeedView.RightCover,
+            "cover in right",
+            "ThumbnailViewMirrored"
+        ),
+        getFeedViewMenuItemProps(
+            FeedView.SocialMedia,
+            "social media",
+            "ButtonControl"
+        ),
     ];
 
     const getThumbnailMenuItems = (): IContextualMenuItem[] => {
@@ -302,10 +353,10 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         "home/subscriptionsListQuery"
     );
 
-    const subscription = get(
-        subscriptionsList,
-        `entities.subscription['${streamId}']`
-    );
+    const getSubscriptionById = (id: any): Subscription =>
+        get(subscriptionsList, `entities.subscription['${id}']`);
+
+    const subscription = getSubscriptionById(streamId);
 
     const folderName =
         streamId && typeof streamId === "string"
@@ -313,6 +364,13 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             : "All article";
 
     const name = subscription ? subscription.title : folderName;
+
+    const getFeedItems = (): FeedItem[] => {
+        return streamContentData.map((item) => ({
+            ...item,
+            sourceIcon: getSubscriptionById(item.sourceID)?.iconUrl,
+        }));
+    };
 
     return (
         <>
@@ -341,7 +399,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             </Stack>
             <FeedPaneComponent
                 className={className}
-                items={streamContentData}
+                items={getFeedItems()}
                 hasNextPage={streamContentQuery.hasNextPage}
                 isFetching={streamContentQuery.isFetching}
                 fetchNextPage={streamContentQuery.fetchNextPage}

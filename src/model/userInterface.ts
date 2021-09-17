@@ -20,11 +20,18 @@ export enum LineSpace {
     wide = '2.25',
 }
 
+export enum FeedView {
+    LeftCover = 'LEFT_COVER',
+    RightCover = 'RIGHT_COVER',
+    SocialMedia = 'SOCIAL_MEDIA',
+}
+
 type UserInterface = {
     viewType: ViewType;
     isSubscriptionIconDisplay: boolean;
     feedThumbnailDisplayType?: FeedThumbnailDisplayType | string;
     isDarkMode: boolean;
+    feedView: FeedView | string,
     readingPreference: {
         fontSize?: string | number;
         lineSpace?: LineSpace | string;
@@ -37,6 +44,7 @@ export const userInterface = createModel<RootModel>()({
         feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysNotDisplay,
         isSubscriptionIconDisplay: true,
         isDarkMode: false,
+        feedView: FeedView.RightCover,
         readingPreference: {
             fontSize: 16,
             lineSpace: LineSpace.normal,
@@ -73,6 +81,10 @@ export const userInterface = createModel<RootModel>()({
         },
         changeLineSpace(state, lineSpace: LineSpace | string) {
             state.readingPreference.lineSpace = lineSpace;
+            return state;
+        },
+        changeFeedView(state, feedView: FeedView | string) {
+            state.feedView = feedView;
             return state;
         },
     },

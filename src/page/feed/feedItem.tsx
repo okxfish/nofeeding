@@ -10,6 +10,7 @@ import {
     Icon,
     mergeStyleSets,
     ICommandBarItemProps,
+    IconButton,
 } from "@fluentui/react";
 import { default as api } from "../../api";
 import classnames from "classnames";
@@ -23,12 +24,17 @@ import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../../model";
 import { ModalKeys } from "../../model/globalModal";
-import { FeedThumbnailDisplayType, ViewType } from "../../model/userInterface";
+import {
+    FeedThumbnailDisplayType,
+    FeedView,
+    ViewType,
+} from "../../model/userInterface";
 import { ScreenPosition } from "../../model/app";
 
 export interface Props extends FeedProps {
     itemIndex: number;
     isSelected: boolean;
+    sourceIcon?: string;
     onAboveRead(e: any, id: string, index: number): void;
 }
 
@@ -43,6 +49,8 @@ const FeedItemComponent = ({
     summary,
     thumbnailSrc,
     sourceName,
+    sourceID,
+    sourceIcon,
     publishedTime,
     isRead,
     isStar,
@@ -55,6 +63,9 @@ const FeedItemComponent = ({
 }: Props) => {
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
+    );
+    const feedView = useSelector<RootState, any>(
+        (state) => state.userInterface.feedView
     );
     const feedThumbnailDisplayType = useSelector<RootState, any>(
         (state) => state.userInterface.feedThumbnailDisplayType
@@ -129,16 +140,81 @@ const FeedItemComponent = ({
         markAsReadMutation.mutate({ id, asUnread: isRead });
     };
 
-    const feedHeaderRender = (): React.ReactElement | null => {
-        if (viewType === ViewType.list) {
-            return null;
-        }
+    const nowTime: Dayjs = dayjs();
+    const relativePublishedTime: string = publishedTime.from(nowTime);
 
+    const iconBtnStyle = {
+        root: "px-0 rounded-md",
+        icon: "mx-0",
+    };
+
+    const markAsReadCommonProps = {
+        iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
+        onClick: onRead,
+        disabled: markAsReadMutation.isLoading,
+        styles: iconBtnStyle,
+    };
+
+    const markAsReadCommandBarItem: ICommandBarItemProps = {
+        ...markAsReadCommonProps,
+        iconOnly: true,
+        key: "markThisAsRead",
+        text: "mark this as read",
+        className: "focus:outline-none",
+        ariaLabel: "Mark as read",
+    };
+
+    const markAsStarCommandBarItem: ICommandBarItemProps = {
+        iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
+        iconOnly: true,
+        key: "star",
+        text: "favorite",
+        className: classnames("focus:outline-none", {
+            "text-yellow-300 hover:text-yellow-300": isStar,
+        }),
+        styles: iconBtnStyle,
+        ariaLabel: "Favorite",
+        onClick: onStar,
+        disabled: markAsStarMutation.isLoading,
+    };
+
+    const markAboveAsReadCommandBarItem: ICommandBarItemProps = {
+        iconProps: { iconName: "DoubleChevronUp" },
+        iconOnly: true,
+        key: "markAboveAsRead",
+        text: "mark above as read",
+        className: "focus:outline-none",
+        styles: iconBtnStyle,
+        ariaLabel: "Mark as read",
+        onClick: (e) => onAboveRead(e, id, itemIndex),
+    };
+
+    const classNames = mergeStyleSets({
+        feed: [
+            "relative z-10 group cursor-pointer px-4",
+            {
+                selectors: {
+                    "&:hover": {
+                        backgroundColor: palette.neutralLight,
+                    },
+                },
+            },
+        ],
+        title: ["text-base truncat-3 flex-1"],
+    });
+
+    const feedThumbnailRender = (
+        className?: string
+    ): React.ReactElement | null => {
         const thumbnaillElem: React.ReactElement = (
             <div
-                className={`flex-shrink-0 h-24 w-24  mr-4 mb-0 rounded-lg overflow-hidden border flex items-center justify-center ${
-                    isRead ? "opacity-40" : ""
-                }`}
+                className={classnames(
+                    "flex-shrink-0 h-24 w-24 mb-0 rounded-lg overflow-hidden border flex items-center justify-center",
+                    className,
+                    {
+                        "opacity-40": isRead,
+                    }
+                )}
                 style={{
                     backgroundColor: palette.neutralQuaternaryAlt,
                     borderColor: palette.neutralQuaternaryAlt,
@@ -173,131 +249,75 @@ const FeedItemComponent = ({
         }
     };
 
-    const nowTime: Dayjs = dayjs();
-    const relativePublishedTime: string = publishedTime.from(nowTime);
-
-    const iconBtnStyle = {
-        root: "px-0 rounded-md",
-        icon: "mx-0",
-    };
-
-    const markAsReadCommandBarItem: ICommandBarItemProps = {
-        iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
-        iconOnly: true,
-        key: "markThisAsRead",
-        text: "mark this as read",
-        className: "focus:outline-none",
-        styles: iconBtnStyle,
-        ariaLabel: "Mark as read",
-        onClick: onRead,
-        disabled: markAsReadMutation.isLoading,
-    };
-
-    const markAsStarCommandBarItem: ICommandBarItemProps = {
-        iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
-        iconOnly: true,
-        key: "star",
-        text: "favorite",
-        className: classnames("focus:outline-none", {
-            "text-yellow-300 hover:text-yellow-300": isStar,
-        }),
-        styles: iconBtnStyle,
-        ariaLabel: "Favorite",
-        onClick: onStar,
-        disabled: markAsStarMutation.isLoading,
-    };
-
-    const markAboveAsReadCommandBarItem: ICommandBarItemProps = {
-        iconProps: { iconName: "DoubleChevronUp" },
-        iconOnly: true,
-        key: "markAboveAsRead",
-        text: "mark above as read",
-        className: "focus:outline-none",
-        styles: iconBtnStyle,
-        ariaLabel: "Mark as read",
-        onClick: (e) => onAboveRead(e, id, itemIndex),
-    };
-
-    const commandItems: ICommandBarItemProps[] =
-        windowWidth < 640 ? [] : [markAsReadCommandBarItem];
-
-    const overflowItems: ICommandBarItemProps[] =
-        windowWidth < 640
-            ? [
-                  markAsReadCommandBarItem,
-                  markAsStarCommandBarItem,
-                  markAboveAsReadCommandBarItem,
-              ]
-            : [markAsStarCommandBarItem, markAboveAsReadCommandBarItem];
-
-    const actionButtonsElem = (
-        <CommandBar
-            items={commandItems}
-            overflowItems={overflowItems}
-            styles={{ root: ["px-0", "h-6"] }}
-        />
-    );
-
-    const classNames = mergeStyleSets({
-        feed: [
-            "relative z-10 group cursor-pointer px-4",
-            {
-                selectors: {
-                    "&:hover": {
-                        backgroundColor: palette.neutralLight,
-                    },
-                },
-            },
-        ],
-        title: ["text-base truncat-3 flex-1"],
+    const feedItemContentClassName = classnames("flex-1 overflow-hidden", {
+        "opacity-40": isRead,
     });
 
-    const feedBodyRender = (): React.ReactElement | null => {
-        if (viewType === ViewType.list) {
-            return (
+    const listViewRender = (): React.ReactElement | null => {
+        return (
+            <Stack
+                horizontal
+                verticalAlign="center"
+                className={classnames(feedItemContentClassName)}
+            >
+                <Text className={classnames(classNames.title, "mr-2")}>
+                    {title}
+                </Text>
                 <Stack
+                    className="flex-1 space-x-2"
                     horizontal
                     verticalAlign="center"
-                    className={classnames("flex-1 overflow-hidden", {
-                        "opacity-40": isRead,
-                    })}
                 >
-                    <Stack horizontal>
-                        <Text className={classnames(classNames.title, "mr-2")}>
-                            {title}
-                        </Text>
-                    </Stack>
-                    <Stack className="flex-1" horizontal verticalAlign="center">
-                        <Text
-                            className="flex-1 text-xs text-gray-500"
-                            block
-                            nowrap
-                            title={sourceName}
-                        >
-                            {sourceName}
-                        </Text>
-                        <Text className="flex-0 text-xs text-gray-500" nowrap>
-                            {relativePublishedTime}
-                        </Text>
-                    </Stack>
+                    <Text
+                        className="text-xs text-gray-500"
+                        block
+                        nowrap
+                        title={sourceName}
+                    >
+                        {sourceName}
+                    </Text>
+                    <Text className="flex-0 text-xs text-gray-500" nowrap>
+                        {relativePublishedTime}
+                    </Text>
                 </Stack>
-            );
-        } else {
-            return (
+                <CommandBar
+                    items={[
+                        markAboveAsReadCommandBarItem,
+                        markAsStarCommandBarItem,
+                        markAsReadCommandBarItem,
+                    ]}
+                    styles={{ root: ["px-0", "h-6"] }}
+                />
+            </Stack>
+        );
+    };
+
+    const leftCoverViewRender = (): React.ReactElement | null => {
+        return (
+            <Stack horizontal className="w-full space-x-4">
+                {feedThumbnailRender()}
                 <Stack
                     verticalAlign="stretch"
-                    className={classnames("flex-1 overflow-hidden", {
-                        "opacity-40": isRead,
-                    })}
+                    className={feedItemContentClassName}
                 >
                     <Stack horizontal>
                         <Text className={classnames(classNames.title, "mb-4")}>
                             {title}
                         </Text>
-                        {actionButtonsElem}
+                        <CommandBar
+                            items={[]}
+                            overflowItems={[
+                                markAsStarCommandBarItem,
+                                markAboveAsReadCommandBarItem,
+                            ]}
+                            styles={{ root: ["px-0", "h-6"] }}
+                        />
                     </Stack>
-                    <Text className="flex-1 text-base w-full">{summary}</Text>
-                    <Stack horizontal verticalAlign="center">
+                    <Stack
+                        horizontal
+                        verticalAlign="center"
+                        className="space-x-2"
+                    >
                         <Text
                             className="flex-1 text-xs text-gray-500"
                             block
@@ -309,9 +329,102 @@ const FeedItemComponent = ({
                         <Text className="flex-0 text-xs text-gray-500" nowrap>
                             {relativePublishedTime}
                         </Text>
+                        <IconButton {...markAsReadCommonProps} />
                     </Stack>
                 </Stack>
-            );
+            </Stack>
+        );
+    };
+
+    const rightCoverViewRender = (): React.ReactElement | null => {
+        return (
+            <Stack verticalAlign="stretch" className={feedItemContentClassName}>
+                <Stack
+                    horizontal
+                    verticalAlign="stretch"
+                    className="mb-3 space-x-4"
+                >
+                    <Text className={classNames.title}>{title}</Text>
+                    {feedThumbnailRender()}
+                </Stack>
+                <Stack horizontal verticalAlign="center" className="space-x-2">
+                    <Text
+                        className="text-xs text-gray-500"
+                        block
+                        nowrap
+                        title={sourceName}
+                    >
+                        {sourceName}
+                    </Text>
+                    <Text className="flex-0 text-xs text-gray-500" nowrap>
+                        {relativePublishedTime}
+                    </Text>
+                    <div className="flex-1" />
+                    <CommandBar
+                        items={[]}
+                        overflowItems={[
+                            markAsStarCommandBarItem,
+                            markAboveAsReadCommandBarItem,
+                        ]}
+                        styles={{ root: ["px-0", "h-6"] }}
+                    />
+                    <IconButton {...markAsReadCommonProps} />
+                </Stack>
+            </Stack>
+        );
+    };
+
+    const socialMediaViewRender = (): React.ReactElement | null => {
+        return (
+            <Stack
+                verticalAlign="stretch"
+                horizontal
+                className={classnames(feedItemContentClassName, "space-x-4")}
+            >
+                <img src={sourceIcon} className="w-8 h-8 rounded-full flex-0" />
+                <Stack horizontalAlign="stretch" className="space-y-2 flex-1">
+                    <Stack horizontal className="space-x-2">
+                        <Text
+                            className="font-semibold block nowrap"
+                            title={sourceName}
+                        >
+                            {sourceName}
+                        </Text>
+                        <Text className="text-gray-500" nowrap>
+                            {relativePublishedTime}
+                        </Text>
+                    </Stack>
+                    <Text className={classNames.title}>{title}</Text>
+                    {feedThumbnailRender("w-full h-auto max-h-sm max-w-lg")}
+                    <CommandBar
+                        className=" "
+                        items={[
+                            markAsStarCommandBarItem,
+                            markAboveAsReadCommandBarItem,
+                            markAsReadCommandBarItem,
+                        ]}
+                        overflowItems={[]}
+                        styles={{
+                            root: ["w-full", "px-0", "h-6"],
+                            primarySet: ["justify-between"],
+                        }}
+                    />
+                </Stack>
+            </Stack>
+        );
+    };
+
+    const feedBodyRender = (): React.ReactElement | null => {
+        if (viewType === ViewType.list) {
+            return listViewRender();
+        } else {
+            if (feedView === FeedView.RightCover) {
+                return rightCoverViewRender();
+            } else if (feedView === FeedView.SocialMedia) {
+                return socialMediaViewRender();
+            } else {
+                return leftCoverViewRender();
+            }
         }
     };
 
@@ -359,20 +472,15 @@ const FeedItemComponent = ({
             overswipeRatio={0.3}
             btnWidth={96}
         >
-            <div>
-                <Stack
-                    horizontal
-                    onClick={onClick}
-                    className={classnames(classNames.feed, itemClassName, {
-                        "py-1": viewType === ViewType.list,
-                        "py-3": viewType !== ViewType.list,
-                        "": isSelected,
-                    })}
-                >
-                    {feedHeaderRender()}
-                    {feedBodyRender()}
-                    {viewType === ViewType.list ? actionButtonsElem : null}
-                </Stack>
+            <div
+                className={classnames(classNames.feed, itemClassName, {
+                    "py-1": viewType === ViewType.list,
+                    "py-3": viewType !== ViewType.list,
+                    "": isSelected,
+                })}
+                onClick={onClick}
+            >
+                {feedBodyRender()}
             </div>
         </Swipeout>
     );
@@ -389,6 +497,7 @@ export default React.memo(
             prevProps.url === nextProps.url &&
             prevProps.sourceName === nextProps.sourceName &&
             prevProps.sourceID === nextProps.sourceID &&
+            prevProps.sourceIcon === nextProps.sourceIcon &&
             prevProps.publishedTime === nextProps.publishedTime &&
             prevProps.isRead === nextProps.isRead &&
             prevProps.isStar === nextProps.isStar &&

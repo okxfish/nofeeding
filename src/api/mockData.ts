@@ -2,6 +2,7 @@ import Mock from "mockjs";
 import { IdValuePair } from "../api/inoreader";
 import MockAdapter from "axios-mock-adapter";
 import { Sortable } from "../page/feed/overviewPane";
+import { sample } from "lodash";
 
 const Random = Mock.Random;
 
@@ -158,8 +159,11 @@ const _getSubscriptions = (number: number): Subscription[] => {
     return result;
 };
 
+const subscriptions = _getSubscriptions(30);
+
 const createFeed = (): Feed => {
     const randomId = Random.id().slice(0, 16);
+    const subscription = sample(subscriptions);
     return {
         alternate: [
             {
@@ -180,10 +184,9 @@ const createFeed = (): Feed => {
         id: generateFeedId(randomId),
         likingUsers: [],
         origin: {
-            htmlUrl: "https://space.bilibili.com/15982391/dynamic",
-            streamId:
-                "feed/http://47.115.60.250:1200/bilibili/user/dynamic/15982391?filter=%E5%81%A5%E5%BA%B7%E6%97%A5%E5%8E%86",
-            title: Random.ctitle(4, 20),
+            htmlUrl: subscription?.htmlUrl || '',
+            streamId: subscription?.id || '',
+            title: subscription?.title || '',
         },
         published: 1623291108,
         summary: {
@@ -216,7 +219,7 @@ const createFeed = (): Feed => {
             direction: "ltr",
         },
         timestampUsec: "1623293901496534",
-        title: Random.ctitle(1, 24),
+        title: Random.ctitle(6, 48),
         updated: 0,
     };
 };
@@ -233,7 +236,6 @@ const tags = _getTags(10);
 const rootTagId = generateSystemTagId(USER_ID, "root");
 const streamprefs = {};
 streamprefs[rootTagId] = createStreampref("", true);
-const subscriptions = _getSubscriptions(30);
 
 for (let index = 0; index < tags.length; index++) {
     const tag = tags[index];
