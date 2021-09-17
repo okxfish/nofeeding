@@ -117,10 +117,10 @@ const Home = () => {
                     isLightDismiss
                     hasCloseButton={false}
                     onDismiss={() =>
-                        dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
+                        dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
                     }
                     onLightDismissClick={() =>
-                        dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
+                        dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
                     }
                 >
                     <ViewSettingPane />

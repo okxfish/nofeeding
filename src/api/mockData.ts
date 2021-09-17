@@ -187,15 +187,32 @@ const createFeed = (): Feed => {
         },
         published: 1623291108,
         summary: {
-            content: `<div><img src="${Random.image(
-                "640x360"
-            )}" /><h3>${Random.ctitle(5, 8)}</h3><p>${Random.cparagraph(
-                12,
-                24
-            )}<p/><h3>${Random.ctitle(5, 8)}</h3><p>${Random.cparagraph(
-                16,
-                32
-            )}<p/><div>`,
+            content: `
+            <div>
+            <img src="${Random.image("640x360")}" />
+            <h1>${Random.ctitle(5, 8)}</h1>
+            <h2>${Random.ctitle(5, 8)}</h2>
+            <h3>${Random.ctitle(5, 8)}</h3>
+            <h4>${Random.ctitle(5, 8)}</h4>
+            <h5>${Random.ctitle(5, 8)}</h5>
+            <p>${Random.cparagraph(12, 24)}<p/>
+            <ul>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            </ul>
+            <ol>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            <li>${Random.cname()}</li>
+            </ol>
+            <h3>${Random.ctitle(5, 8)}</h3>
+            <p>${Random.cparagraph(16, 32)}<p/>
+            <img src="${Random.image("640x480")}" />
+            ${Random.cparagraph(12, 24)}
+            <div>`,
             direction: "ltr",
         },
         timestampUsec: "1623293901496534",

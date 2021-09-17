@@ -283,7 +283,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             key: "view",
             iconOnly: true,
             iconProps: { iconName: "View" },
-            subMenuProps: menuProps,
+            subMenuProps: windowWidth <= 640 ? undefined : menuProps,
             onClick: () =>
                 dispatch.globalModal.openModal(ModalKeys.ViewSettingPane),
         },

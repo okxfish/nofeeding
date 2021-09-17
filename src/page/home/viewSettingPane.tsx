@@ -5,6 +5,7 @@ import {
     Toggle,
     Stack,
     Separator,
+    Label,
 } from "@fluentui/react";
 import { Dispatch, RootState } from "../../model";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,42 +24,24 @@ const ViewSettingPane = () => {
 
     const dispatch = useDispatch<Dispatch>();
 
-    const viewTypeOptions: IChoiceGroupOption[] = [
-        {
-            key: ViewType.magazine,
-            text: "Magazine",
-            iconProps: { iconName: "GridViewMedium" },
-            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-        },
-        {
-            key: ViewType.list,
-            text: "List",
-            iconProps: { iconName: "GroupedList" },
-            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-        },
-        {
-            key: ViewType.threeway,
-            text: "Threeway",
-            iconProps: { iconName: "ColumnRightTwoThirds" },
-            styles: {
-                root: "hidden lg:block flex-1",
-                choiceFieldWrapper: "flex-1",
-            },
-        },
-    ];
-
     const feedThumbnaillOptions: IChoiceGroupOption[] = [
         {
             key: FeedThumbnailDisplayType.alwaysDisplay,
-            text: "Always Display",
+            text: "always",
+            iconProps: { iconName: "Photo2" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
         {
             key: FeedThumbnailDisplayType.alwaysNotDisplay,
-            text: "Always Not Display",
+            text: "never",
+            iconProps: { iconName: "Photo2Remove" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
         {
             key: FeedThumbnailDisplayType.displayWhenThumbnaillExist,
-            text: "Display When Thumbnaill Exist",
+            text: "auto",
+            iconProps: { iconName: "PictureStretch" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
     ];
 
@@ -68,17 +51,7 @@ const ViewSettingPane = () => {
         ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
         option?: IChoiceGroupOption
     ) => {
-        option &&
-            dispatch.userInterface.changeThumbnailDisplayType(
-                FeedThumbnailDisplayType[option.key]
-            );
-    };
-
-    const onViewTypeChange = (
-        ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
-        option?: IChoiceGroupOption
-    ) => {
-        option && dispatch.userInterface.changeViewType(ViewType[option.key]);
+        option && dispatch.userInterface.changeThumbnailDisplayType(option.key);
     };
 
     return (
@@ -94,26 +67,17 @@ const ViewSettingPane = () => {
                 onChange={onIsUreadOnlyChange}
                 checked={unreadOnly}
             />
-            <Separator />
             {viewType !== ViewType.list && (
                 <>
+                    <Label>Thumbnail</Label>
                     <ChoiceGroup
                         selectedKey={feedThumbnailDisplayType}
                         options={feedThumbnaillOptions}
                         onChange={onfeedThumbnaillDisplayTypeChange}
-                        label="Feed Thumbnail"
-                        styles={{ label: "mb-2" }}
+                        styles={{ flexContainer: "flex-nowrap" }}
                     />
-                    <Separator />
                 </>
             )}
-            <ChoiceGroup
-                selectedKey={viewType}
-                options={viewTypeOptions}
-                onChange={onViewTypeChange}
-                label="View Type"
-                styles={{ label: "mb-2" }}
-            />
         </Stack>
     );
 };
