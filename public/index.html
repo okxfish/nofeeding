@@ -7,7 +7,6 @@
             name="viewport"
             content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
         />
-        <meta name="theme-color" content="#000000" />
         <meta
             name="description"
             content="Web site created using create-react-app"
@@ -49,14 +48,14 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
         <script>
-            // window.addEventListener("load", () => {
-            //     if (navigator.serviceWorker) {
-            //         navigator.serviceWorker
-            //             .register("./serviceworker.js")
-            //             .then((reg) => console.log("success", reg.scope))
-            //             .catch((error) => console.log("fail", error));
-            //     }
-            // });
+            window.addEventListener("load", () => {
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker
+                        .register("./serviceworker.js")
+                        .then((reg) => console.log("success", reg.scope))
+                        .catch((error) => console.log("fail", error));
+                }
+            });
         </script>
     </body>
 </html>

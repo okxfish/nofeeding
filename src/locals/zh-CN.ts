@@ -7,6 +7,7 @@ export const zh = {
         "folder": "文件夹",
         "rssUrlInputPlaceholder": "请输入 RSS 地址",
         "folderDropdownPlaceholder": "请选择要添加到的文件夹",
+        "langDropdownPlaceholder": "选择语言",
         "add": "添加",
         "cancel": "取消",
         "theme": "主题",
@@ -24,6 +25,7 @@ export const zh = {
         "wide": "宽松",
         "font size": "字体大小",
         "line space": "行间距",
+        "lang": "语言",
     },
     settings: {
         "settings": "设置",
@@ -49,5 +51,9 @@ export const zh = {
         "star": "收藏",
         "share": "分享",
         "mark above as read": "将以上标记为已读",
-    }
+    },
+    lang: {
+        "zh": "简体中文",
+        "en": "英语",
+    },
 };

@@ -7,6 +7,7 @@ export const en = {
         "folder": "Folder",
         "rssUrlInputPlaceholder": "RSS url here",
         "folderDropdownPlaceholder": "Folder here",
+        "langDropdownPlaceholder": "Select the language",
         "add": "Add",
         "cancel": "Cancel",
         "theme": "Theme",
@@ -24,6 +25,7 @@ export const en = {
         "wide": "Wide",
         "font size": "Font size",
         "line space": "Line space",
+        "lang": "Language",
     },
     settings: {
         "settings": "Settings",
@@ -49,5 +51,9 @@ export const en = {
         "star": "Star",
         "share": "Share",
         "mark above as read": "Mark above as read",
-    }
+    },
+    lang: {
+        "zh": "Chinese(Simple)",
+        "en": "English",
+    },
 };
