@@ -1,10 +1,13 @@
 import { DefaultButton, Stack, Icon, Text } from "@fluentui/react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
 import { RootState } from "../../../model";
 import Layout from "./layout";
 
 const Account = () => {
+    const { t } = useTranslation(['translation', 'settings']);
+    
     const userInfo = useSelector<RootState, any>((state) => state.userInfo);
     const history = useHistory();
 
@@ -14,7 +17,7 @@ const Account = () => {
     };
 
     return (
-        <Layout title="Account">
+        <Layout title={t("settings:account")}>
             <Stack tokens={{ childrenGap: 16 }}>
                 <Stack
                     horizontal
@@ -31,7 +34,7 @@ const Account = () => {
                     className="sm:max-w-2xs"
                     onClick={handleLogoffClick}
                 >
-                    log off
+                    {t('log off')}
                 </DefaultButton>
             </Stack>
         </Layout>

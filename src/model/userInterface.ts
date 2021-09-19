@@ -40,7 +40,7 @@ type UserInterface = {
 
 export const userInterface = createModel<RootModel>()({
     state: {
-        viewType: ViewType.card,
+        viewType: ViewType.magazine,
         feedThumbnailDisplayType: FeedThumbnailDisplayType.alwaysNotDisplay,
         isSubscriptionIconDisplay: true,
         isDarkMode: false,

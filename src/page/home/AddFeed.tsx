@@ -10,6 +10,7 @@ import {
 } from "@fluentui/react";
 import { NormalizedSchema } from "normalizr";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { QueryKey, useMutation, useQueryClient } from "react-query";
 import { default as api } from "../../api";
 import { FolderEntity } from "../feed/overviewPane";
@@ -22,6 +23,7 @@ export interface Props {
 
 const AddFeed = (props: Props) => {
   const [selectedFolder, setSelectedFolder] = useState<IDropdownOption>();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const getDropdownOptions = (): IDropdownOption[] => {
@@ -77,21 +79,21 @@ const AddFeed = (props: Props) => {
     <form onSubmit={handleOnSubmit} className="h-full">
       <div className="p-8">
         <Stack className="mb-4" horizontal>
-          <Label className="flex-1 text-xl">Add new feed</Label>
+          <Label className="flex-1 text-xl">{t('add subscription')}</Label>
         </Stack>
         <Stack>
-          <Label>RSS Url</Label>
+          <Label>{t('rss url')}</Label>
           <TextField
             name="feedUrl"
-            placeholder="rss url here"
+            placeholder={t('rssUrlInputPlaceholder')}
             className="w-96 max-w-full mb-4"
             required
           />
-          <Label>Folder to store the RSS</Label>
+          <Label>{t('folder')}</Label>
           <Dropdown
             selectedKey={selectedFolder ? selectedFolder.key : undefined}
             options={getDropdownOptions()}
-            placeHolder="select a folder to categroy the feed"
+            placeHolder={t('folderDropdownPlaceholder')}
             onChange={handleDropdownChange}
           />
         </Stack>
@@ -107,7 +109,7 @@ const AddFeed = (props: Props) => {
           <DefaultButton
             className="w-full"
             onClick={props.onCancel}
-            text="Cancel"
+            text={t("cancel")}
           />
         </Stack.Item>
         <Stack.Item grow={1}>
@@ -115,7 +117,7 @@ const AddFeed = (props: Props) => {
             className="w-full"
             disabled={addFeedMutation.isLoading}
             type="submit"
-            text="Add"
+            text={t("add")}
           />
         </Stack.Item>
       </Stack>

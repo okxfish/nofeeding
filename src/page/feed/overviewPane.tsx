@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, Dispatch } from "../../model";
 import { ModalKeys } from "../../model/globalModal";
 import { ScreenPosition } from "../../model/app";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
     className?: string;
@@ -67,6 +68,7 @@ export const getTagNameFromId = (tagId: string): string => {
 const OverviewPane = ({ className }: Props) => {
     const history = useHistory();
     const location = useLocation();
+    const { t } = useTranslation();
     
     const isIconDisplay = useSelector<RootState, any>(
         (state) => state.userInterface.isSubscriptionIconDisplay
@@ -336,13 +338,13 @@ const OverviewPane = ({ className }: Props) => {
     if (group) {
         const allLink = createBuildInNavLink({
             id: "",
-            name: "All",
+            name: t("all article"),
             iconName: "PreviewLink",
         });
 
         const favLink = createBuildInNavLink({
             id: SystemStreamIDs.STARRED,
-            name: "Stared",
+            name: t("stared article"),
             iconName: "FavoriteStar",
         });
 
@@ -351,8 +353,8 @@ const OverviewPane = ({ className }: Props) => {
 
     const commandItems: ICommandBarItemProps[] = [
         {
-            key: "newFeed",
-            text: "Add Subscript",
+            key: "addSubscription",
+            text: t("add subscription"),
             iconOnly: true,
             iconProps: { iconName: "Add" },
             onClick: () =>

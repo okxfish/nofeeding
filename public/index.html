@@ -49,14 +49,14 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
         <script>
-            window.addEventListener("load", () => {
-                if (navigator.serviceWorker) {
-                    navigator.serviceWorker
-                        .register("./serviceworker.js")
-                        .then((reg) => console.log("success", reg.scope))
-                        .catch((error) => console.log("fail", error));
-                }
-            });
+            // window.addEventListener("load", () => {
+            //     if (navigator.serviceWorker) {
+            //         navigator.serviceWorker
+            //             .register("./serviceworker.js")
+            //             .then((reg) => console.log("success", reg.scope))
+            //             .catch((error) => console.log("fail", error));
+            //     }
+            // });
         </script>
     </body>
 </html>

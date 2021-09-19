@@ -44,7 +44,7 @@ const Home = () => {
 
     useEffect(() => {
         if (width <= 640 || viewType === ViewType.threeway && width < 1120) {
-            dispatch.userInterface.changeViewType(ViewType.card);
+            dispatch.userInterface.changeViewType(ViewType.magazine);
         }
     }, [viewType, width]);
 

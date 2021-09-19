@@ -24,6 +24,7 @@ import {
     IContextualMenuItem,
     Icon,
     Label,
+    Separator,
 } from "@fluentui/react";
 import { Parser as HtmlToReactParser } from "html-to-react";
 import { FeedItem } from "./types";
@@ -40,6 +41,7 @@ import { useWindowSize } from "react-use";
 import { LineSpace } from "../../model/userInterface";
 import "./style.css";
 import MenuItem from "../../component/menuItem";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
     className?: string;
@@ -54,6 +56,7 @@ const backIcon: IIconProps = { iconName: "ChevronLeft" };
 const ArticlePane = forwardRef(
     ({ className, style, closeModal }: Props, ref) => {
         const article: FeedItem | null = useContext(ArticleContext);
+        const { t } = useTranslation(["translation", "articleAction"]);
         const scrollParentRef = useRef<any>(null);
         const { width: windowWidth } = useWindowSize();
         const htmlToReactParserRef = useRef(new HtmlToReactParser());
@@ -96,19 +99,19 @@ const ArticlePane = forwardRef(
         const lineSpaceOptions: IChoiceGroupOption[] = [
             {
                 key: LineSpace.tight,
-                text: "tight",
+                text: t("tight"),
                 iconProps: { iconName: "AlignJustify" },
                 styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
             },
             {
                 key: LineSpace.normal,
-                text: "normal",
+                text: t("normal"),
                 iconProps: { iconName: "CollapseMenu" },
                 styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
             },
             {
                 key: LineSpace.wide,
-                text: "wide",
+                text: t("wide"),
                 iconProps: { iconName: "GlobalNavButton" },
                 styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
             },
@@ -156,7 +159,7 @@ const ArticlePane = forwardRef(
                     {
                         key: "fontSizeHeader",
                         itemType: ContextualMenuItemType.Header,
-                        text: "Font size",
+                        text: t("font size"),
                     },
                     {
                         key: "fontSizeSlider",
@@ -175,21 +178,21 @@ const ArticlePane = forwardRef(
                     {
                         key: "lineSpaceHeader",
                         itemType: ContextualMenuItemType.Header,
-                        text: "Line space",
+                        text: t("line space"),
                     },
                     getLineSpaceMenuItemProps(
                         LineSpace.tight,
-                        "tight",
+                        t("tight"),
                         "AlignJustify"
                     ),
                     getLineSpaceMenuItemProps(
                         LineSpace.normal,
-                        "normal",
+                        t("normal"),
                         "CollapseMenu"
                     ),
                     getLineSpaceMenuItemProps(
                         LineSpace.wide,
-                        "wide",
+                        t("wide"),
                         "GlobalNavButton"
                     ),
                 ],
@@ -198,13 +201,12 @@ const ArticlePane = forwardRef(
 
         const commandItems: ICommandBarItemProps[] = [
             {
+                key: "articleSetting",
+                text: t("article setting"),
                 iconProps: {
                     iconName: "Font",
                 },
                 iconOnly: true,
-                key: "fontSetting",
-                text: "font setting",
-                ariaLabel: "font setting",
                 subMenuProps: getReadingPreferenceMenuProps(),
                 onClick: () => {
                     if (windowWidth <= 640) {
@@ -213,28 +215,26 @@ const ArticlePane = forwardRef(
                 },
             },
             {
+                key: "markThisAsRead",
+                text: t("articleAction:read"),
                 iconProps: {
                     iconName: article?.isRead ? "RadioBtnOff" : "RadioBtnOn",
                 },
                 iconOnly: true,
-                key: "markThisAsRead",
-                text: "mark this as read",
-                ariaLabel: "Mark as read",
             },
             {
+                key: "star",
+                text: t("articleAction:star"),
                 iconProps: {
                     iconName: article?.isStar
                         ? "FavoriteStar"
                         : "FavoriteStarFill",
                 },
                 iconOnly: true,
-                key: "star",
-                text: "Star",
-                ariaLabel: "Mark as Star",
             },
             {
                 key: "Share",
-                text: "Share",
+                text: t("articleAction:share"),
                 iconOnly: true,
                 iconProps: { iconName: "Share" },
                 onClick: () => {
@@ -339,7 +339,7 @@ const ArticlePane = forwardRef(
                                 </Text>
                                 <Text className="mx-2">|</Text>
                                 <Text block nowrap>
-                                    Publish at{" "}
+                                    {`${t("publish at")} `}
                                     {article?.publishedTime.format(
                                         "YYYY-M-D H:m"
                                     )}
@@ -370,7 +370,7 @@ const ArticlePane = forwardRef(
                     onLightDismissClick={() => setIsReadSettingPaneOpen(false)}
                 >
                     <Stack className="w-full">
-                        <Label>Font size</Label>
+                        <Label>{t("font size")}</Label>
                         <Stack horizontal className="flex-1">
                             <IconButton
                                 iconProps={{ iconName: "FontDecrease" }}
@@ -396,7 +396,8 @@ const ArticlePane = forwardRef(
                                 }
                             />
                         </Stack>
-                        <Label>Line space</Label>
+                        <Separator />
+                        <Label>{t('line space')}</Label>
                         <Stack horizontal className="flex-1">
                             <ChoiceGroup
                                 options={lineSpaceOptions}

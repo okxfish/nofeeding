@@ -30,6 +30,7 @@ import {
     ViewType,
 } from "../../model/userInterface";
 import { ScreenPosition } from "../../model/app";
+import { useTranslation } from "react-i18next";
 
 export interface Props extends FeedProps {
     itemIndex: number;
@@ -77,6 +78,8 @@ const FeedItemComponent = ({
 
     const { palette } = useTheme();
     const { width: windowWidth } = useWindowSize();
+    const { t } = useTranslation(['translation', 'articleAction']);
+
     const markAsReadMutation = useMutation(
         ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
             api.inoreader.markArticleAsRead(id, asUnread),
@@ -159,21 +162,19 @@ const FeedItemComponent = ({
         ...markAsReadCommonProps,
         iconOnly: true,
         key: "markThisAsRead",
-        text: "mark this as read",
+        text: t("articleAction:read"),
         className: "focus:outline-none",
-        ariaLabel: "Mark as read",
     };
 
     const markAsStarCommandBarItem: ICommandBarItemProps = {
         iconProps: isStar ? favoriteStarFillIcon : favoriteStarIcon,
         iconOnly: true,
         key: "star",
-        text: "favorite",
+        text: t("articleAction:star"),
         className: classnames("focus:outline-none", {
             "text-yellow-300 hover:text-yellow-300": isStar,
         }),
         styles: iconBtnStyle,
-        ariaLabel: "Favorite",
         onClick: onStar,
         disabled: markAsStarMutation.isLoading,
     };
@@ -182,10 +183,9 @@ const FeedItemComponent = ({
         iconProps: { iconName: "DoubleChevronUp" },
         iconOnly: true,
         key: "markAboveAsRead",
-        text: "mark above as read",
+        text: t("articleAction:mark above as read"),
         className: "focus:outline-none",
         styles: iconBtnStyle,
-        ariaLabel: "Mark as read",
         onClick: (e) => onAboveRead(e, id, itemIndex),
     };
 

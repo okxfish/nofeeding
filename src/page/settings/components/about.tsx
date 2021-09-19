@@ -2,11 +2,13 @@ import {
     Stack,
     Text
 } from "@fluentui/react";
+import { useTranslation } from "react-i18next";
 import Layout from "./layout";
 
 const About = () => {
+    const { t } = useTranslation("settings");
     return (
-        <Layout title="About">
+        <Layout title={t("about")}>
             <Stack className="text-base">
                 <p className="">fread 0.2.2</p>
                 <p className="mb-2">© {new Date().getFullYear()} 要没时间了。</p>
