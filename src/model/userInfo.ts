@@ -4,6 +4,7 @@ import { RootModel } from "./rootModel";
 type UserInfo = {
     userId?: string | null;
     userName?: string | null;
+    userEmail?: string | null;
 };
 
 export const userInfo = createModel<RootModel>()({
@@ -14,6 +15,7 @@ export const userInfo = createModel<RootModel>()({
         fetchedUserInfo(state, userInfo: UserInfo) {
             state.userId = userInfo.userId;
             state.userName = userInfo.userName;
+            state.userEmail = userInfo.userEmail;
             return state;
         },
     },

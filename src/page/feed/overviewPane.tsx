@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState, Dispatch } from "../../model";
 import { ModalKeys } from "../../model/globalModal";
 import { ScreenPosition } from "../../model/app";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
     className?: string;
@@ -67,6 +68,7 @@ export const getTagNameFromId = (tagId: string): string => {
 const OverviewPane = ({ className }: Props) => {
     const history = useHistory();
     const location = useLocation();
+    const { t } = useTranslation();
     
     const isIconDisplay = useSelector<RootState, any>(
         (state) => state.userInterface.isSubscriptionIconDisplay
@@ -147,10 +149,8 @@ const OverviewPane = ({ className }: Props) => {
             dispatch.app.changeActivedScreen(ScreenPosition.Center);
         }
 
-        const qs = queryString.parse(location.search);
         history.push({
-            pathname: "/feed",
-            search: queryString.stringify({ ...qs, streamId: item?.key }),
+            pathname: `/feed/${encodeURIComponent(String(item?.key))}`,
         });
     };
 
@@ -321,8 +321,10 @@ const OverviewPane = ({ className }: Props) => {
         return _getNavLinkGroupProps(rootStreamId);
     };
 
+    const allArticleStreamId = `user/${userInfo?.userId}/state/com.google/root`
+
     let group = getNavLinkGroupProps(
-        `user/${userInfo?.userId}/state/com.google/root`,
+        allArticleStreamId,
         {
             subscriptionById: get(
                 subscriptionsListData,
@@ -335,14 +337,14 @@ const OverviewPane = ({ className }: Props) => {
 
     if (group) {
         const allLink = createBuildInNavLink({
-            id: "",
-            name: "All",
+            id: allArticleStreamId,
+            name: t("all article"),
             iconName: "PreviewLink",
         });
 
         const favLink = createBuildInNavLink({
             id: SystemStreamIDs.STARRED,
-            name: "Stared",
+            name: t("stared article"),
             iconName: "FavoriteStar",
         });
 
@@ -351,8 +353,8 @@ const OverviewPane = ({ className }: Props) => {
 
     const commandItems: ICommandBarItemProps[] = [
         {
-            key: "newFeed",
-            text: "Add Subscript",
+            key: "addSubscription",
+            text: t("add subscription"),
             iconOnly: true,
             iconProps: { iconName: "Add" },
             onClick: () =>
@@ -370,7 +372,7 @@ const OverviewPane = ({ className }: Props) => {
                         dispatch.app.changeActivedScreen(ScreenPosition.Center)
                     }
                 />
-                <Text className="text-xl font-semibold flex-1">Fread</Text>
+                <Text className="text-xl font-semibold flex-1">NoFeeding</Text>
                 <CommandBar
                     className=""
                     items={commandItems}

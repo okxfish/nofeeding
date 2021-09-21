@@ -1,19 +1,6 @@
 import { createModel } from "@rematch/core";
 import { RootModel } from './rootModel';
 
-export enum FeedThumbnailDisplayType {
-    alwaysNotDisplay = "ALWAYS_NOT_DISPLAY",
-    displayWhenThumbnaillExist = "DISPLAY_WHEN_THUMBNAIL_EXIST",
-    alwaysDisplay = "ALWAYS_DISPLAY",
-}
-
-export enum ViewType {
-    list = 'LIST',
-    magazine = 'MAGZ',
-    threeway = '3WAY',
-    card = 'CARD',
-}
-
 type Feed = {
     unreadOnly: boolean;
 }

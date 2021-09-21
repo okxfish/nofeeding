@@ -4,6 +4,7 @@ import React, {
     useCallback,
     Suspense,
     ReactElement,
+    useEffect,
 } from "react";
 import { useInfiniteQuery, useQueryClient } from "react-query";
 import { FeedItem, FeedProps } from "./types";
@@ -14,8 +15,7 @@ import { normalize, NormalizedSchema, schema } from "normalizr";
 import { Dayjs, default as dayjs } from "dayjs";
 import classnames from "classnames";
 import { Modal, mergeStyleSets, useTheme } from "@fluentui/react";
-import { useLocation } from "react-router-dom";
-import queryString from "query-string";
+import { useParams, useHistory } from "react-router-dom";
 import { produce } from "immer";
 import {
     FeedContext,
@@ -23,7 +23,7 @@ import {
     ArticleContext,
 } from "./../../context";
 import { useThemeStyles } from "../../theme";
-import { useWindowSize } from "react-use";
+import { usePrevious, useWindowSize } from "react-use";
 
 import ArticlePane from "./articlePane";
 import FeedsPane from "./feedsPane";
@@ -60,23 +60,30 @@ const FeedContainer = ({}: Props) => {
     const activedScreen = useSelector<RootState, any>(
         (state) => state.app.activedScreen
     );
-    const currenActivedFeedId = useSelector<RootState, any>(
-        (state) => state.app.currenActivedFeedId
-    );
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
     );
     const unreadOnly = useSelector<RootState, any>(
         (state) => state.feed.unreadOnly
     );
-
+    const userInfo = useSelector<RootState, any>(
+        (state) => state.userInfo
+    );
     const dispatch = useDispatch<Dispatch>();
+    const history = useHistory();
 
-    const location = useLocation();
     const queryClient = useQueryClient();
-    const qs = queryString.parse(location.search);
+    const routeParams = useParams<{ streamId: string; articleId: string }>();
+
+    const streamId = routeParams.streamId
+        ? decodeURIComponent(routeParams.streamId)
+        : `user/${userInfo?.userId}/state/com.google/root`;
+
+    const articleId = routeParams.articleId
+        ? decodeURIComponent(routeParams.articleId)
+        : "";
+
     const { width: windowWidth } = useWindowSize();
-    const streamId = qs.streamId;
     const { contentLayer } = useThemeStyles();
     const { palette } = useTheme();
 
@@ -86,6 +93,43 @@ const FeedContainer = ({}: Props) => {
         () => ["feed/streamContentQuery", streamId, unreadOnly],
         [streamId, unreadOnly]
     );
+
+    const getScrollParent = useCallback(() => centerScreenRef.current, []);
+
+    const openArticle = useCallback(() => {
+        if (windowWidth <= 640) {
+            dispatch.app.changeActivedScreen(ScreenPosition.Right);
+        } else if (viewType !== ViewType.threeway) {
+            dispatch.globalModal.openModal(ModalKeys.ArticleModal);
+        }
+    }, [windowWidth, viewType]);
+
+    const closeArticle = useCallback(() => {
+        if (windowWidth <= 640) {
+            dispatch.app.changeActivedScreen(ScreenPosition.Center);
+        } else if (viewType !== ViewType.threeway) {
+            dispatch.globalModal.closeModal(ModalKeys.ArticleModal);
+        }
+    }, [windowWidth, viewType]);
+
+    useEffect(() => {
+        const scrollParent = getScrollParent();
+        if (scrollParent) {
+            scrollParent.scrollTop = 0;
+        }
+    }, [streamContentQueryKey]);
+
+    const prevArticleId = usePrevious(articleId);
+
+    useEffect(() => {
+        if (articleId !== prevArticleId) {
+            if (articleId) {
+                openArticle();
+            } else {
+                closeArticle();
+            }
+        }
+    }, [articleId, prevArticleId, openArticle, closeArticle]);
 
     const resolveResponse = (data: StreamContentsResponse): FeedItem[] => {
         return data.items.map((item, index) => {
@@ -194,7 +238,7 @@ const FeedContainer = ({}: Props) => {
     }
 
     const activedArticle: FeedItem | null = getArticleById(
-        currenActivedFeedId,
+        articleId,
         streamContentQuery.data
     );
 
@@ -243,8 +287,6 @@ const FeedContainer = ({}: Props) => {
         ],
     });
 
-    const getScrollParent = useCallback(() => centerScreenRef.current, []);
-
     const articlePaneRender = (): ReactElement | null => {
         if (viewType === ViewType.threeway) {
             return (
@@ -267,11 +309,7 @@ const FeedContainer = ({}: Props) => {
                 >
                     <ArticlePane
                         className="h-full"
-                        closeModal={() =>
-                            dispatch.app.changeActivedScreen(
-                                ScreenPosition.Center
-                            )
-                        }
+                        closeModal={() => history.goBack()}
                     />
                 </div>
             );
@@ -280,9 +318,7 @@ const FeedContainer = ({}: Props) => {
                 <Modal
                     className=""
                     isOpen={isArticleModalOpen}
-                    onDismiss={() =>
-                        dispatch.globalModal.closeModal(ModalKeys.ArticleModal)
-                    }
+                    onDismiss={() => history.goBack()}
                     isBlocking={false}
                     allowTouchBodyScroll
                     styles={{
@@ -296,11 +332,7 @@ const FeedContainer = ({}: Props) => {
                 >
                     <ArticlePane
                         className="article-modal h-screen w-screen"
-                        closeModal={() =>
-                            dispatch.globalModal.closeModal(
-                                ModalKeys.ArticleModal
-                            )
-                        }
+                        closeModal={() => history.goBack()}
                     />
                 </Modal>
             );

@@ -20,10 +20,14 @@ import api from "../../../api";
 import { produce, current } from "immer";
 import { useState } from "react";
 import Layout from "./layout";
+import { useTranslation } from "react-i18next";
 
 const FeedManage = () => {
   const [isRenameModalOpened, setIsRenameModalOpened] = useState(false);
   const [seletedIndex, setSeletedIndex] = useState(-1);
+  
+  const { t } = useTranslation("settings");
+
   const queryClient = useQueryClient();
   const feedsQueryData = queryClient.getQueryData(
     "home/subscriptionsListQuery"
@@ -143,7 +147,7 @@ const FeedManage = () => {
   };
 
   return (
-    <Layout title="Subscription">
+    <Layout title={t("subscription")}>
       <div className="h-full w-full overflow-y-auto sm:scrollbar">
         <DetailsList items={feeds} columns={columns} />
         <Modal isOpen={isRenameModalOpened}>

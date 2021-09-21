@@ -5,6 +5,7 @@ import { IContextualMenuProps } from "@fluentui/react";
 import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../../model";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
     className?: string;
@@ -12,6 +13,7 @@ export interface Props {
 
 const NavBar = ({ className = "" }: Props) => {
     const history = useHistory();
+    const { t } = useTranslation();
     const userInfo = useSelector<RootState, any>((state) => state.userInfo);
     const dispatch = useDispatch<Dispatch>();
     const { width: windowWidth } = useWindowSize();
@@ -32,7 +34,7 @@ const NavBar = ({ className = "" }: Props) => {
             },
             {
                 key: "logoff",
-                text: "logoff",
+                text: t('log off'),
                 iconProps: { iconName: "SignOut" },
                 onClick: handleLogoffMenuItemClick,
             },

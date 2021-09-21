@@ -110,7 +110,7 @@ export const inoreader = {
     fetch.get<StreamPreferenceListResponse>(
       `/reader/api/0/preference/stream/list`
     ),
-  // Add subscription
+  // add subscription
   addSubscription: (url: string, folder?: string) =>
     fetch.get(`/reader/api/0/subscription/edit`, {
       params: {

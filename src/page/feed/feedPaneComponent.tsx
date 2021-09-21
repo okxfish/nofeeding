@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react";
-import { FeedItem, FeedProps } from "./types";
+import { FeedItem } from "./types";
 import FeedItemComponent from "./feedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
@@ -15,8 +15,8 @@ import FeedShimmer from "./feedShimmer";
 import { SetFeedItemContext } from "./../../context";
 import { useMutation } from "react-query";
 import api from "../../api";
-import { useSelector } from "react-redux";
-import { RootState } from "../../model";
+import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
   className?: string;
@@ -36,7 +36,10 @@ const FeedPaneComponent = ({
   getScrollParent,
 }: Props) => {
   const setArticleDataById = useContext(SetFeedItemContext);
-  const currenActivedFeedId = useSelector<RootState, any>(state => state.app.currenActivedFeedId)
+  const routeParams = useParams<{ streamId: string; articleId: string }>();
+  const currenActivedFeedId = routeParams.articleId
+        ? decodeURIComponent(routeParams.articleId)
+        : "";
 
   const markAboveAsReadMutation = useMutation(
     ({ ids, asUnread }: { ids: string[]; asUnread?: boolean }): any =>
@@ -60,7 +63,7 @@ const FeedPaneComponent = ({
   );
 
   const allItemIds: string[] = items.map((item) => item.id);
-
+  const { t } = useTranslation()
   const onAboveRead = useCallback(
     (e: any, id: string, index: number): void => {
       if (e) {
@@ -110,7 +113,7 @@ const FeedPaneComponent = ({
         <div>
           {isFetching ? (
             <Spinner
-              label="loading"
+              label={t('loading')}
               size={SpinnerSize.large}
               styles={{ root: "m-auto h-32", circle: "border-2" }}
             />

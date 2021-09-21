@@ -15,7 +15,7 @@ import produce from "immer";
 import api from "../../api";
 import queryString from "query-string";
 import { useQueryClient, useMutation, useIsFetching } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { FeedContext } from "../../context";
 
 import FeedPaneComponent from "./feedPaneComponent";
@@ -24,9 +24,17 @@ import { getTagNameFromId } from "./overviewPane";
 import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
 import { Dispatch, RootState } from "../../model";
-import { FeedThumbnailDisplayType, ViewType } from "../../model/userInterface";
+import {
+    FeedThumbnailDisplayType,
+    FeedView,
+    ViewType,
+} from "../../model/userInterface";
 import { ModalKeys } from "../../model/globalModal";
 import { ScreenPosition } from "../../model/app";
+import { Subscription } from "../../api/mockData";
+import { FeedItem } from "./types";
+import MenuItem from "../../component/menuItem";
+import { useTranslation } from "react-i18next";
 
 export interface Props {
     className?: string;
@@ -45,15 +53,21 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     const feedThumbnailDisplayType = useSelector<RootState, any>(
         (state) => state.userInterface.feedThumbnailDisplayType
     );
+    const feedView = useSelector<RootState, any>(
+        (state) => state.userInterface.feedView
+    );
 
     const dispatch = useDispatch<Dispatch>();
 
     const history = useHistory();
     const queryClient = useQueryClient();
     const { width: windowWidth } = useWindowSize();
+    const { t } = useTranslation(["translation", "viewSettings"]);
 
-    const location = useLocation();
-    const { streamId } = queryString.parse(location.search);
+    const routeParams = useParams<{ streamId: string }>();
+    const streamId = routeParams.streamId
+        ? decodeURIComponent(routeParams.streamId)
+        : "";
 
     const streamContentQueryKey = useMemo(
         () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -92,26 +106,6 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     );
 
     const isFeedFetching = useIsFetching(streamContentQueryKey);
-    console.log("isFeedFetching", isFeedFetching);
-
-    const menuItemContentRender = (
-        text,
-        iconName,
-        suffixRender
-    ): ReactElement | null => {
-        return (
-            <Stack
-                horizontal
-                verticalAlign="center"
-                className="w-full h-full"
-                tokens={{ childrenGap: 8 }}
-            >
-                <Icon iconName={iconName} className="w-4 ml-1" />
-                <Text className="flex-1 text-base leading-8">{text}</Text>
-                {suffixRender()}
-            </Stack>
-        );
-    };
 
     const getThumbnailSwitchMenuItemProps = (
         key: FeedThumbnailDisplayType,
@@ -119,16 +113,21 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         iconName?: string
     ): IContextualMenuItem => ({
         key,
-        onRenderContent: () =>
-            menuItemContentRender(text, iconName, () => (
-                <Icon
-                    iconName={
-                        feedThumbnailDisplayType === key
-                            ? "RadioBtnOn"
-                            : "RadioBtnOff"
-                    }
-                />
-            )),
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            feedThumbnailDisplayType === key
+                                ? "RadioBtnOn"
+                                : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
         onClick: () => dispatch.userInterface.changeThumbnailDisplayType(key),
     });
 
@@ -138,13 +137,42 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         iconName?: string
     ): IContextualMenuItem => ({
         key,
-        onRenderContent: () =>
-            menuItemContentRender(text, iconName, () => (
-                <Icon
-                    iconName={viewType === key ? "RadioBtnOn" : "RadioBtnOff"}
-                />
-            )),
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            viewType === key ? "RadioBtnOn" : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
         onClick: (): void => dispatch.userInterface.changeViewType(key),
+    });
+
+    const getFeedViewMenuItemProps = (
+        key: FeedView,
+        text?: string,
+        iconName?: string
+    ): IContextualMenuItem => ({
+        key,
+        onRenderContent: () => (
+            <MenuItem
+                text={text}
+                iconName={iconName}
+                suffixRender={() => (
+                    <Icon
+                        iconName={
+                            feedView === key ? "RadioBtnOn" : "RadioBtnOff"
+                        }
+                    />
+                )}
+            />
+        ),
+        onClick: (): void => dispatch.userInterface.changeFeedView(key),
     });
 
     const baseMenuItems: IContextualMenuItem[] = [
@@ -152,57 +180,90 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             key: "ThemeHeader",
             itemType: ContextualMenuItemType.Header,
             onRenderIcon: () => null,
-            text: "Theme",
+            text: t("theme"),
         },
         {
             key: "Theme",
             onRenderContent: () => {
                 return (
                     <div className="flex space-x-2">
-                        <button
-                            className="w-6 h-6 rounded-full border flex items-center justify-center"
-                            style={{
-                                backgroundColor: NeutralColors.black,
-                                color: NeutralColors.white,
+                        <IconButton
+                            iconProps={{ iconName: "ClearNight" }}
+                            styles={{
+                                root: [
+                                    "w-6 h-6 rounded-full border text-sm",
+                                    {
+                                        border: "1px solid currentColor",
+                                        // color: NeutralColors.white,
+                                    },
+                                ],
                             }}
                             onClick={() =>
                                 dispatch.userInterface.changeToDarkTheme()
                             }
-                        >
-                            D
-                        </button>
-                        <button
-                            className="w-6 h-6 rounded-full border flex items-center justify-center"
-                            style={{
-                                backgroundColor: NeutralColors.white,
-                                color: NeutralColors.black,
+                        />
+                        <IconButton
+                            iconProps={{ iconName: "Sunny" }}
+                            styles={{
+                                root: [
+                                    "w-6 h-6 rounded-full border text-sm",
+                                    {
+                                        border: "1px solid currentColor",
+                                        // backgroundColor: NeutralColors.white,
+                                        // color: NeutralColors.black,
+                                    },
+                                ],
                             }}
                             onClick={() =>
                                 dispatch.userInterface.changeToLightTheme()
                             }
-                        >
-                            L
-                        </button>
+                        />
                     </div>
                 );
             },
         },
         {
-            key: "Feed",
+            key: "Filter",
             itemType: ContextualMenuItemType.Header,
             onRenderIcon: () => null,
-            text: "Feed",
+            text: t("filter"),
         },
         {
             key: "UnreadOnly",
-            onRenderContent: () =>
-                menuItemContentRender("unread only", "InboxCheck", () => (
-                    <Icon
-                        iconName={unreadOnly ? "RadioBtnOn" : "RadioBtnOff"}
-                    />
-                )),
+            onRenderContent: () => (
+                <MenuItem
+                    text={t("unread only")}
+                    iconName="InboxCheck"
+                    suffixRender={() => (
+                        <Icon
+                            iconName={unreadOnly ? "RadioBtnOn" : "RadioBtnOff"}
+                        />
+                    )}
+                />
+            ),
             onClick: () => dispatch.feed.toggleIsUnreadOnly(),
         },
+        {
+            key: "FeedItemStyle",
+            itemType: ContextualMenuItemType.Header,
+            onRenderIcon: () => null,
+            text: t("viewSettings:feeditem style"),
+        },
+        getFeedViewMenuItemProps(
+            FeedView.LeftCover,
+            t("viewSettings:cover in left"),
+            "ThumbnailView"
+        ),
+        getFeedViewMenuItemProps(
+            FeedView.RightCover,
+            t("viewSettings:cover in right"),
+            "ThumbnailViewMirrored"
+        ),
+        getFeedViewMenuItemProps(
+            FeedView.SocialMedia,
+            t("viewSettings:social media"),
+            "ButtonControl"
+        ),
     ];
 
     const getThumbnailMenuItems = (): IContextualMenuItem[] => {
@@ -212,21 +273,21 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
                 key: "Thumbnail",
                 itemType: ContextualMenuItemType.Header,
                 onRenderIcon: () => null,
-                text: "Thumbnail",
+                text: t("viewSettings:thumbnail display"),
             },
             getThumbnailSwitchMenuItemProps(
                 FeedThumbnailDisplayType.alwaysDisplay,
-                "aways",
+                t("always"),
                 "Photo2"
             ),
             getThumbnailSwitchMenuItemProps(
                 FeedThumbnailDisplayType.alwaysNotDisplay,
-                "aways not",
+                t("never"),
                 "Photo2Remove"
             ),
             getThumbnailSwitchMenuItemProps(
                 FeedThumbnailDisplayType.displayWhenThumbnaillExist,
-                "auto",
+                t("auto"),
                 "PictureStretch"
             ),
         ];
@@ -237,20 +298,24 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
         return [
             {
-                key: "Views",
+                key: "Layout",
                 itemType: ContextualMenuItemType.Header,
                 onRenderIcon: () => null,
-                text: "Views",
+                text: t("layout"),
             },
             getViewTypeMenuItemProps(
-                ViewType.card,
-                "card view",
+                ViewType.magazine,
+                t("viewSettings:magazine view"),
                 "GridViewMedium"
             ),
-            getViewTypeMenuItemProps(ViewType.list, "list view", "GroupedList"),
+            getViewTypeMenuItemProps(
+                ViewType.list,
+                t("viewSettings:list view"),
+                "GroupedList"
+            ),
             getViewTypeMenuItemProps(
                 ViewType.threeway,
-                "split view",
+                t("viewSettings:split view"),
                 "ColumnRightTwoThirds"
             ),
         ];
@@ -284,7 +349,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             key: "view",
             iconOnly: true,
             iconProps: { iconName: "View" },
-            subMenuProps: menuProps,
+            subMenuProps: windowWidth <= 640 ? undefined : menuProps,
             onClick: () =>
                 dispatch.globalModal.openModal(ModalKeys.ViewSettingPane),
         },
@@ -303,17 +368,35 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
         "home/subscriptionsListQuery"
     );
 
-    const subscription = get(
-        subscriptionsList,
-        `entities.subscription['${streamId}']`
-    );
+    const getSubscriptionById = (id: any): Subscription =>
+        get(subscriptionsList, `entities.subscription['${id}']`);
 
-    const folderName =
-        streamId && typeof streamId === "string"
-            ? getTagNameFromId(streamId)
-            : "All article";
+    const subscription = getSubscriptionById(streamId);
 
-    const name = subscription ? subscription.title : folderName;
+    const getFolderName = (): string => {
+        if (!streamId) return t("all article");
+        if (typeof streamId === "string") {
+            const tagName = getTagNameFromId(streamId);
+            if(tagName === 'root'){
+                return t("all article")
+            } else if (tagName === "starred") {
+                return t("stared article");
+            } else {
+                return tagName;
+            }
+        } else {
+            return "";
+        }
+    };
+
+    const name = subscription ? subscription.title : getFolderName();
+
+    const getFeedItems = (): FeedItem[] => {
+        return streamContentData.map((item) => ({
+            ...item,
+            sourceIcon: getSubscriptionById(item.sourceID)?.iconUrl,
+        }));
+    };
 
     return (
         <>
@@ -342,7 +425,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             </Stack>
             <FeedPaneComponent
                 className={className}
-                items={streamContentData}
+                items={getFeedItems()}
                 hasNextPage={streamContentQuery.hasNextPage}
                 isFetching={streamContentQuery.isFetching}
                 fetchNextPage={streamContentQuery.fetchNextPage}

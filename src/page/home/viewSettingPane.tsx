@@ -5,14 +5,26 @@ import {
     Toggle,
     Stack,
     Separator,
+    Label,
+    Icon,
+    IconButton,
+    useTheme,
 } from "@fluentui/react";
 import { Dispatch, RootState } from "../../model";
 import { useSelector, useDispatch } from "react-redux";
-import { ViewType, FeedThumbnailDisplayType } from "../../model/userInterface";
+import {
+    ViewType,
+    FeedThumbnailDisplayType,
+    FeedView,
+} from "../../model/userInterface";
+import { useTranslation } from "react-i18next";
 
 const ViewSettingPane = () => {
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
+    );
+    const feedView = useSelector<RootState, any>(
+        (state) => state.userInterface.feedView
     );
     const unreadOnly = useSelector<RootState, any>(
         (state) => state.feed.unreadOnly
@@ -21,44 +33,50 @@ const ViewSettingPane = () => {
         (state) => state.userInterface.feedThumbnailDisplayType
     );
 
-    const dispatch = useDispatch<Dispatch>();
+    const { palette } = useTheme();
+    const { t } = useTranslation(["translation", "viewSettings"]);
 
-    const viewTypeOptions: IChoiceGroupOption[] = [
-        {
-            key: ViewType.magazine,
-            text: "Magazine",
-            iconProps: { iconName: "GridViewMedium" },
-            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-        },
-        {
-            key: ViewType.list,
-            text: "List",
-            iconProps: { iconName: "GroupedList" },
-            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
-        },
-        {
-            key: ViewType.threeway,
-            text: "Threeway",
-            iconProps: { iconName: "ColumnRightTwoThirds" },
-            styles: {
-                root: "hidden lg:block flex-1",
-                choiceFieldWrapper: "flex-1",
-            },
-        },
-    ];
+    const dispatch = useDispatch<Dispatch>();
 
     const feedThumbnaillOptions: IChoiceGroupOption[] = [
         {
             key: FeedThumbnailDisplayType.alwaysDisplay,
-            text: "Always Display",
+            text: t("always"),
+            iconProps: { iconName: "Photo2" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
         {
             key: FeedThumbnailDisplayType.alwaysNotDisplay,
-            text: "Always Not Display",
+            text: t("never"),
+            iconProps: { iconName: "Photo2Remove" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
         {
             key: FeedThumbnailDisplayType.displayWhenThumbnaillExist,
-            text: "Display When Thumbnaill Exist",
+            text: t("auto"),
+            iconProps: { iconName: "PictureStretch" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+        },
+    ];
+
+    const feedViewOptions: IChoiceGroupOption[] = [
+        {
+            key: FeedView.LeftCover,
+            text: t("viewSettings:cover in left"),
+            iconProps: { iconName: "ThumbnailView" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+        },
+        {
+            key: FeedView.RightCover,
+            text: t("viewSettings:cover in right"),
+            iconProps: { iconName: "ThumbnailViewMirrored" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
+        },
+        {
+            key: FeedView.SocialMedia,
+            text: t("viewSettings:social media"),
+            iconProps: { iconName: "ButtonControl" },
+            styles: { root: "flex-1", choiceFieldWrapper: "flex-1" },
         },
     ];
 
@@ -68,27 +86,76 @@ const ViewSettingPane = () => {
         ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
         option?: IChoiceGroupOption
     ) => {
-        option &&
-            dispatch.userInterface.changeThumbnailDisplayType(
-                FeedThumbnailDisplayType[option.key]
-            );
+        option && dispatch.userInterface.changeThumbnailDisplayType(option.key);
     };
 
-    const onViewTypeChange = (
+    const onfeedViewChange = (
         ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
         option?: IChoiceGroupOption
     ) => {
-        option && dispatch.userInterface.changeViewType(ViewType[option.key]);
+        option && dispatch.userInterface.changeFeedView(option.key);
     };
 
-    return (
-        <Stack
-            tokens={{
-                childrenGap: "s",
+    const headerRender = (text: string) => {
+        return <Label className="mb-2">{t(text)}</Label>;
+    };
+
+    const separatorElem = (
+        <Separator
+            styles={{
+                root: {
+                    selectors: {
+                        "&::before": {
+                            backgroundColor: palette.neutralQuaternary,
+                        },
+                    },
+                },
             }}
-        >
+        />
+    );
+
+    return (
+        <div>
+            {headerRender("theme")}
+            <Stack
+                horizontal
+                verticalAlign="center"
+                tokens={{ childrenGap: "16" }}
+            >
+                <IconButton
+                    iconProps={{ iconName: "ClearNight" }}
+                    styles={{
+                        root: [
+                            "w-10 h-10 rounded-full border text-sm",
+                            {
+                                border: "1px solid currentColor",
+                            },
+                        ],
+                    }}
+                    onClick={() => dispatch.userInterface.changeToDarkTheme()}
+                />
+                <IconButton
+                    iconProps={{ iconName: "Sunny" }}
+                    styles={{
+                        root: [
+                            "w-10 h-10 rounded-full border text-sm",
+                            {
+                                border: "1px solid currentColor",
+                            },
+                        ],
+                    }}
+                    onClick={() => dispatch.userInterface.changeToLightTheme()}
+                />
+            </Stack>
+            <Separator />
+            {headerRender("filter")}
             <Toggle
-                label="Unread Only"
+                label={
+                    <>
+                        <Icon iconName="InboxCheck" className="mr-2" />
+                        {t("unread only")}
+                    </>
+                }
                 inlineLabel
                 styles={{ label: "flex-1 order-none m-0" }}
                 onChange={onIsUreadOnlyChange}
@@ -97,24 +164,24 @@ const ViewSettingPane = () => {
             <Separator />
             {viewType !== ViewType.list && (
                 <>
+                    {headerRender("viewSettings:thumbnail display")}
                     <ChoiceGroup
                         selectedKey={feedThumbnailDisplayType}
                         options={feedThumbnaillOptions}
                         onChange={onfeedThumbnaillDisplayTypeChange}
-                        label="Feed Thumbnail"
-                        styles={{ label: "mb-2" }}
+                        styles={{ flexContainer: "flex-nowrap" }}
                     />
                     <Separator />
+                    {headerRender("viewSettings:feeditem style")}
+                    <ChoiceGroup
+                        selectedKey={feedView}
+                        options={feedViewOptions}
+                        onChange={onfeedViewChange}
+                        styles={{ flexContainer: "flex-nowrap" }}
+                    />
                 </>
             )}
-            <ChoiceGroup
-                selectedKey={viewType}
-                options={viewTypeOptions}
-                onChange={onViewTypeChange}
-                label="View Type"
-                styles={{ label: "mb-2" }}
-            />
-        </Stack>
+        </div>
     );
 };
 

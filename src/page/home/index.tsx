@@ -44,7 +44,7 @@ const Home = () => {
 
     useEffect(() => {
         if (width <= 640 || viewType === ViewType.threeway && width < 1120) {
-            dispatch.userInterface.changeViewType(ViewType.card);
+            dispatch.userInterface.changeViewType(ViewType.magazine);
         }
     }, [viewType, width]);
 
@@ -117,10 +117,10 @@ const Home = () => {
                     isLightDismiss
                     hasCloseButton={false}
                     onDismiss={() =>
-                        dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
+                        dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
                     }
                     onLightDismissClick={() =>
-                        dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
+                        dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
                     }
                 >
                     <ViewSettingPane />
@@ -150,7 +150,7 @@ const Home = () => {
                     <Suspense fallback={() => null}>
                         <Switch>
                             <Route path="/settings" component={SettingsPage} />
-                            <Route path={["/", "/feed"]} component={FeedPage} />
+                            <Route path={["/feed/:streamId?/:articleId?", "/",]} component={FeedPage} />
                         </Switch>
                     </Suspense>
                 </div>
