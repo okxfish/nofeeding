@@ -321,14 +321,6 @@ const FeedContainer = ({}: Props) => {
                     onDismiss={() => history.goBack()}
                     isBlocking={false}
                     allowTouchBodyScroll
-                    styles={{
-                        main: [
-                            {
-                                maxHeight: "100%",
-                                maxWidth: "100%",
-                            },
-                        ],
-                    }}
                 >
                     <ArticlePane
                         className="article-modal h-screen w-screen"
