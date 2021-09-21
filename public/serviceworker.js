@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nofeeding-0.2.4'
+const CACHE_NAME = 'nofeeding-0.2.5'
 const contentToCache = ['/index.html', '/static/', '/images/']
 
 const self = this

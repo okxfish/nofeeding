@@ -65,11 +65,14 @@ const ArticlePane = forwardRef(
             useState<boolean>(false);
         const rootNodeRef = useRef<any>(null);
         const { articleText } = useThemeStyles();
-        const titleElemRef = useRef<any>(null);
+
+        const mainTitleElemRef = useRef<any>(null);
+
         const [titleThreshold, setTitleThreshold] = useState<number>(0);
-        const titleElemeEntry = useIntersectionObserver(titleElemRef, {
+        const mainTitleObserverEntry = useIntersectionObserver(mainTitleElemRef, {
             threshold: titleThreshold,
-        });
+        }); // 观察主标题是否可见
+        const rootObserverEntry = useIntersectionObserver(rootNodeRef, {}); // 观察当前组件的根元素是否可见
 
         const fontSize = useSelector<RootState, any>(
             (state) => state.userInterface.readingPreference.fontSize
@@ -85,10 +88,20 @@ const ArticlePane = forwardRef(
 
         const dispatch = useDispatch<Dispatch>();
 
-        const isTitleVisible =
-            titleElemeEntry && !titleElemeEntry?.isIntersecting;
+        const getIsHeaderTitleVisible = () => {
+            return (
+                rootObserverEntry?.isIntersecting &&
+                mainTitleObserverEntry &&
+                !mainTitleObserverEntry?.isIntersecting
+            );
+        };
 
-        useImperativeHandle(ref, () => rootNodeRef.current);
+        const isHeaderTitleVisible = getIsHeaderTitleVisible();
+
+        useImperativeHandle(
+            ref,
+            () => rootNodeRef.current
+        );
 
         useEffect(() => {
             if (article !== null) {
@@ -123,11 +136,11 @@ const ArticlePane = forwardRef(
 
         const fontFamilyOptions: IChoiceGroupOption[] = [
             {
-                key: 'sans-serif',
+                key: "sans-serif",
                 text: t("sans-serif"),
             },
             {
-                key: 'serif',
+                key: "serif",
                 text: t("serif"),
             },
         ];
@@ -146,7 +159,8 @@ const ArticlePane = forwardRef(
             ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
             option?: IChoiceGroupOption
         ) => {
-            option && dispatch.userInterface.changeArticleFontFamily(option.key);
+            option &&
+                dispatch.userInterface.changeArticleFontFamily(option.key);
         };
 
         const getLineSpaceMenuItemProps = (
@@ -184,13 +198,16 @@ const ArticlePane = forwardRef(
                     suffixRender={() => (
                         <Icon
                             iconName={
-                                fontFamily === key ? "RadioBtnOn" : "RadioBtnOff"
+                                fontFamily === key
+                                    ? "RadioBtnOn"
+                                    : "RadioBtnOff"
                             }
                         />
                     )}
                 />
             ),
-            onClick: (): void => dispatch.userInterface.changeArticleFontFamily(key),
+            onClick: (): void =>
+                dispatch.userInterface.changeArticleFontFamily(key),
         });
 
         const getReadingPreferenceMenuProps = ():
@@ -244,14 +261,8 @@ const ArticlePane = forwardRef(
                         itemType: ContextualMenuItemType.Header,
                         text: t("font family"),
                     },
-                    getFontFamilyMenuItemProps(
-                        'sans-serif',
-                        t('sans-serif'),
-                    ),
-                    getFontFamilyMenuItemProps(
-                        'serif',
-                        t('serif'),
-                    ),
+                    getFontFamilyMenuItemProps("sans-serif", t("sans-serif")),
+                    getFontFamilyMenuItemProps("serif", t("serif")),
                 ],
             };
         };
@@ -334,7 +345,7 @@ const ArticlePane = forwardRef(
                     />
                     <div className="overflow-y-hidden flex-1">
                         <CSSTransition
-                            in={isTitleVisible}
+                            in={isHeaderTitleVisible}
                             timeout={{
                                 exit: 340,
                             }}
@@ -360,9 +371,12 @@ const ArticlePane = forwardRef(
             if (article === null) {
                 return (
                     <Stack className="text-center p-24 ">
-                        <FontIcon iconName="ReadingMode" className="text-7xl mb-4" />
+                        <FontIcon
+                            iconName="ReadingMode"
+                            className="text-7xl mb-4"
+                        />
                         <Text className="font-semibold text-xl">
-                            {t('no article here')}
+                            {t("no article here")}
                         </Text>
                     </Stack>
                 );
@@ -376,11 +390,11 @@ const ArticlePane = forwardRef(
                     <article
                         className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}
                         style={{
-                            fontFamily: fontFamily
+                            fontFamily: fontFamily,
                         }}
                     >
                         <header className="mb-4">
-                            <h2 className="mb-4" ref={titleElemRef}>
+                            <h2 className="mb-4" ref={mainTitleElemRef}>
                                 <a
                                     className="no-underline"
                                     href={article?.url}
@@ -457,23 +471,29 @@ const ArticlePane = forwardRef(
                             />
                         </Stack>
                         <Separator />
-                        <Label>{t('line space')}</Label>
+                        <Label>{t("line space")}</Label>
                         <Stack horizontal className="flex-1">
                             <ChoiceGroup
                                 options={lineSpaceOptions}
                                 selectedKey={lineSpace}
                                 onChange={handleChoiceLineSpace}
-                                styles={{ root: 'w-full', flexContainer: "flex-nowrap" }}
+                                styles={{
+                                    root: "w-full",
+                                    flexContainer: "flex-nowrap",
+                                }}
                             />
                         </Stack>
                         <Separator />
-                        <Label>{t('font family')}</Label>
+                        <Label>{t("font family")}</Label>
                         <Stack horizontal className="flex-1">
                             <ChoiceGroup
                                 options={fontFamilyOptions}
                                 selectedKey={fontFamily}
                                 onChange={handleFontFamilyChange}
-                                styles={{ root: 'w-full', flexContainer: "flex-nowrap" }}
+                                styles={{
+                                    root: "w-full",
+                                    flexContainer: "flex-nowrap",
+                                }}
                             />
                         </Stack>
                     </Stack>

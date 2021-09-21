@@ -285,6 +285,7 @@ export default function Swipeout({
                     zIndex: indexFromMiddle,
                     left: isOverswipeBtn ? baseOffset : 0,
                 }}
+                key={index}
                 onClick={onClick}
             >
                 {typeof btnProps.contentRender === 'function' ? btnProps.contentRender(btnProps, index) : btnProps.text}
