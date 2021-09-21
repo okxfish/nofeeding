@@ -1,4 +1,4 @@
-import { DefaultButton, Stack, Icon, Text } from "@fluentui/react";
+import { DefaultButton, Stack, Icon, Text, Image } from "@fluentui/react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router";
@@ -24,10 +24,10 @@ const Account = () => {
                     verticalAlign="center"
                     tokens={{ childrenGap: 8 }}
                 >
-                    <Icon iconName="Contact" className=" text-4xl" />
+                    <Image src={userInfo?.avatar} className="w-8 h-8 bg-gray-300 rounded-full"/>
                     <Stack>
                         <Text className="text-lg">{userInfo?.userName}</Text>
-                        <Text className="text-sm">{userInfo?.email}</Text>
+                        <Text className="text-sm">{userInfo?.userEmail}</Text>
                     </Stack>
                 </Stack>
                 <DefaultButton

@@ -34,6 +34,7 @@ type UserInterface = {
     feedView: FeedView | string,
     readingPreference: {
         fontSize?: string | number;
+        fontFamily?: string | number;
         lineSpace?: LineSpace | string;
     };
 };
@@ -48,6 +49,7 @@ export const userInterface = createModel<RootModel>()({
         readingPreference: {
             fontSize: 16,
             lineSpace: LineSpace.normal,
+            fontFamily: 'sans-serif',
         },
     } as UserInterface,
     reducers: {
@@ -77,6 +79,10 @@ export const userInterface = createModel<RootModel>()({
         },
         changeArticleFontSize(state, fontSize: number) {
             state.readingPreference.fontSize = fontSize;
+            return state;
+        },
+        changeArticleFontFamily(state, fontFamily: string) {
+            state.readingPreference.fontFamily = fontFamily;
             return state;
         },
         changeLineSpace(state, lineSpace: LineSpace | string) {

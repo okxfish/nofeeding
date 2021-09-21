@@ -150,7 +150,7 @@ const Home = () => {
                     <Suspense fallback={() => null}>
                         <Switch>
                             <Route path="/settings" component={SettingsPage} />
-                            <Route path={["/", "/feed"]} component={FeedPage} />
+                            <Route path={["/feed/:streamId?/:articleId?", "/",]} component={FeedPage} />
                         </Switch>
                     </Suspense>
                 </div>

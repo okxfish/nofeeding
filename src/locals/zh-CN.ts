@@ -26,6 +26,14 @@ export const zh = {
         "font size": "字体大小",
         "line space": "行间距",
         "lang": "语言",
+        "font family": "字体",
+        "sans-serif": "无衬线",
+        "serif": "衬线",
+        "login with inoreader": "用 Inoreader 账号登陆",
+        "enter mock mode": "游客模式",
+        "version": "版本号",
+        "no article here": "当前没有文章",
+        "loading": "加载中"
     },
     settings: {
         "settings": "设置",

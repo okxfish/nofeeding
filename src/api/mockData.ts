@@ -273,9 +273,9 @@ export const mockSetup = (axios) => {
         isBloggerUser: false,
         isMultiLoginEnabled: false,
         signupTimeSec: 1516257049,
-        userEmail: "1119548217@qq.com",
+        userEmail: "email@email.com",
         userId: USER_ID,
-        userName: "1119548217",
+        userName: "mock user",
         userProfileId: USER_ID,
     });
 

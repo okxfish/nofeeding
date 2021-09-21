@@ -18,7 +18,7 @@ import { FeedProps } from "./types";
 import { useMutation } from "react-query";
 import { default as dayjs, Dayjs } from "dayjs";
 import Swipeout from "../../component/swipeout";
-
+import qs from "query-string";
 import { SetFeedItemContext } from "../../context";
 import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import {
 } from "../../model/userInterface";
 import { ScreenPosition } from "../../model/app";
 import { useTranslation } from "react-i18next";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 export interface Props extends FeedProps {
     itemIndex: number;
@@ -62,6 +63,13 @@ const FeedItemComponent = ({
     itemClassName,
     onAboveRead,
 }: Props) => {
+    const routeParams = useParams<{ streamId: string }>();
+    const userInfo = useSelector<RootState, any>(
+        (state) => state.userInfo
+    );
+    const streamId = routeParams.streamId
+        ? decodeURIComponent(routeParams.streamId)
+        : `user/${userInfo?.userId}/state/com.google/root`;
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
     );
@@ -77,8 +85,9 @@ const FeedItemComponent = ({
     const setArticleDataById = useContext(SetFeedItemContext);
 
     const { palette } = useTheme();
+    const history = useHistory();
     const { width: windowWidth } = useWindowSize();
-    const { t } = useTranslation(['translation', 'articleAction']);
+    const { t } = useTranslation(["translation", "articleAction"]);
 
     const markAsReadMutation = useMutation(
         ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
@@ -118,14 +127,11 @@ const FeedItemComponent = ({
     // 标记文章已读/未读
     const onClick = useCallback(() => {
         const articleId = id;
-        dispatch.app.changeSelectedArticle(articleId);
-        if (windowWidth <= 640) {
-            dispatch.app.changeActivedScreen(ScreenPosition.Right);
-        } else if (viewType !== ViewType.threeway) {
-            dispatch.globalModal.openModal(ModalKeys.ArticleModal);
-        }
+        history.push({
+            pathname: `/feed/${encodeURIComponent(streamId)}/${encodeURIComponent(articleId)}`,
+        });
         markAsReadMutation.mutate({ id, asUnread: false });
-    }, [viewType, id, markAsReadMutation, windowWidth, dispatch]);
+    }, [id, markAsReadMutation]);
 
     // 点击标星按钮
     const onStar = (e: any): void => {

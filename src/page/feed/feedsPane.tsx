@@ -15,7 +15,7 @@ import produce from "immer";
 import api from "../../api";
 import queryString from "query-string";
 import { useQueryClient, useMutation, useIsFetching } from "react-query";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { FeedContext } from "../../context";
 
 import FeedPaneComponent from "./feedPaneComponent";
@@ -64,8 +64,10 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
     const { width: windowWidth } = useWindowSize();
     const { t } = useTranslation(["translation", "viewSettings"]);
 
-    const location = useLocation();
-    const { streamId } = queryString.parse(location.search);
+    const routeParams = useParams<{ streamId: string }>();
+    const streamId = routeParams.streamId
+        ? decodeURIComponent(routeParams.streamId)
+        : "";
 
     const streamContentQueryKey = useMemo(
         () => ["feed/streamContentQuery", streamId, unreadOnly],
@@ -188,10 +190,13 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
                         <IconButton
                             iconProps={{ iconName: "ClearNight" }}
                             styles={{
-                                root: ["w-6 h-6 rounded-full border text-sm", {
-                                    border: '1px solid currentColor'
-                                    // color: NeutralColors.white,
-                                }]
+                                root: [
+                                    "w-6 h-6 rounded-full border text-sm",
+                                    {
+                                        border: "1px solid currentColor",
+                                        // color: NeutralColors.white,
+                                    },
+                                ],
                             }}
                             onClick={() =>
                                 dispatch.userInterface.changeToDarkTheme()
@@ -200,16 +205,18 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
                         <IconButton
                             iconProps={{ iconName: "Sunny" }}
                             styles={{
-                                root: ["w-6 h-6 rounded-full border text-sm", {
-                                    border: '1px solid currentColor'
-                                    // backgroundColor: NeutralColors.white,
-                                    // color: NeutralColors.black,
-                                }]
+                                root: [
+                                    "w-6 h-6 rounded-full border text-sm",
+                                    {
+                                        border: "1px solid currentColor",
+                                        // backgroundColor: NeutralColors.white,
+                                        // color: NeutralColors.black,
+                                    },
+                                ],
                             }}
                             onClick={() =>
                                 dispatch.userInterface.changeToLightTheme()
                             }
-                            
                         />
                     </div>
                 );
@@ -225,7 +232,7 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
             key: "UnreadOnly",
             onRenderContent: () => (
                 <MenuItem
-                    text={t('unread only')}
+                    text={t("unread only")}
                     iconName="InboxCheck"
                     suffixRender={() => (
                         <Icon
@@ -366,19 +373,21 @@ const FeedsPane = ({ className, getScrollParent }: Props) => {
 
     const subscription = getSubscriptionById(streamId);
 
-    const getFolderName = ():string => {
-        if(!streamId) return t("all article");
-        if(typeof streamId === "string"){
-            const tagName = getTagNameFromId(streamId)
-            if(tagName === 'starred') {
+    const getFolderName = (): string => {
+        if (!streamId) return t("all article");
+        if (typeof streamId === "string") {
+            const tagName = getTagNameFromId(streamId);
+            if(tagName === 'root'){
+                return t("all article")
+            } else if (tagName === "starred") {
                 return t("stared article");
             } else {
                 return tagName;
             }
         } else {
-            return ''
+            return "";
         }
-    }
+    };
 
     const name = subscription ? subscription.title : getFolderName();
 

@@ -75,6 +75,10 @@ const ArticlePane = forwardRef(
             (state) => state.userInterface.readingPreference.fontSize
         );
 
+        const fontFamily = useSelector<RootState, any>(
+            (state) => state.userInterface.readingPreference.fontFamily
+        );
+
         const lineSpace = useSelector<RootState, any>(
             (state) => state.userInterface.readingPreference.lineSpace
         );
@@ -117,6 +121,17 @@ const ArticlePane = forwardRef(
             },
         ];
 
+        const fontFamilyOptions: IChoiceGroupOption[] = [
+            {
+                key: 'sans-serif',
+                text: t("sans-serif"),
+            },
+            {
+                key: 'serif',
+                text: t("serif"),
+            },
+        ];
+
         const handleChangeFontSize = (value: number) =>
             dispatch.userInterface.changeArticleFontSize(value);
 
@@ -125,6 +140,13 @@ const ArticlePane = forwardRef(
             option?: IChoiceGroupOption
         ) => {
             option && dispatch.userInterface.changeLineSpace(option.key);
+        };
+
+        const handleFontFamilyChange = (
+            ev?: React.FormEvent<HTMLElement | HTMLInputElement>,
+            option?: IChoiceGroupOption
+        ) => {
+            option && dispatch.userInterface.changeArticleFontFamily(option.key);
         };
 
         const getLineSpaceMenuItemProps = (
@@ -147,6 +169,28 @@ const ArticlePane = forwardRef(
                 />
             ),
             onClick: (): void => dispatch.userInterface.changeLineSpace(key),
+        });
+
+        const getFontFamilyMenuItemProps = (
+            key: string,
+            text?: string,
+            iconName?: string
+        ): IContextualMenuItem => ({
+            key,
+            onRenderContent: () => (
+                <MenuItem
+                    text={text}
+                    iconName={iconName}
+                    suffixRender={() => (
+                        <Icon
+                            iconName={
+                                fontFamily === key ? "RadioBtnOn" : "RadioBtnOff"
+                            }
+                        />
+                    )}
+                />
+            ),
+            onClick: (): void => dispatch.userInterface.changeArticleFontFamily(key),
         });
 
         const getReadingPreferenceMenuProps = ():
@@ -194,6 +238,19 @@ const ArticlePane = forwardRef(
                         LineSpace.wide,
                         t("wide"),
                         "GlobalNavButton"
+                    ),
+                    {
+                        key: "fontFamilyHeader",
+                        itemType: ContextualMenuItemType.Header,
+                        text: t("font family"),
+                    },
+                    getFontFamilyMenuItemProps(
+                        'sans-serif',
+                        t('sans-serif'),
+                    ),
+                    getFontFamilyMenuItemProps(
+                        'serif',
+                        t('serif'),
                     ),
                 ],
             };
@@ -303,9 +360,9 @@ const ArticlePane = forwardRef(
             if (article === null) {
                 return (
                     <Stack className="text-center p-24 ">
-                        <FontIcon iconName="ReadingMode" className="text-7xl" />
+                        <FontIcon iconName="ReadingMode" className="text-7xl mb-4" />
                         <Text className="font-semibold text-xl">
-                            No Article Here
+                            {t('no article here')}
                         </Text>
                     </Stack>
                 );
@@ -318,6 +375,9 @@ const ArticlePane = forwardRef(
                 >
                     <article
                         className={`max-w-3xl w-full mx-auto py-4 ${articleText}`}
+                        style={{
+                            fontFamily: fontFamily
+                        }}
                     >
                         <header className="mb-4">
                             <h2 className="mb-4" ref={titleElemRef}>
@@ -403,7 +463,17 @@ const ArticlePane = forwardRef(
                                 options={lineSpaceOptions}
                                 selectedKey={lineSpace}
                                 onChange={handleChoiceLineSpace}
-                                styles={{ flexContainer: "flex-nowrap" }}
+                                styles={{ root: 'w-full', flexContainer: "flex-nowrap" }}
+                            />
+                        </Stack>
+                        <Separator />
+                        <Label>{t('font family')}</Label>
+                        <Stack horizontal className="flex-1">
+                            <ChoiceGroup
+                                options={fontFamilyOptions}
+                                selectedKey={fontFamily}
+                                onChange={handleFontFamilyChange}
+                                styles={{ root: 'w-full', flexContainer: "flex-nowrap" }}
                             />
                         </Stack>
                     </Stack>

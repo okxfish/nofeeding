@@ -1,7 +1,7 @@
 {
-  "short_name": "Fread App",
-  "name": "Fread ",
-  "description": "free to read",
+  "short_name": "NoFeeding",
+  "name": "NoFeeding ",
+  "description": "Just see what I want see",
   "icons": [
     {
       "src": "favicon.ico",
@@ -9,13 +9,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
+      "src": "logo192.webp",
+      "type": "image/webp",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
+      "src": "logo512.webp",
+      "type": "image/webp",
       "sizes": "512x512"
     }
   ],

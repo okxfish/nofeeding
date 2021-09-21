@@ -8,22 +8,16 @@ export enum ScreenPosition {
   }
 
 type App = {
-    currenActivedFeedId: string;
     isOverviewPaneOpen: boolean;
     activedScreen: ScreenPosition;
 }
 
 export const app = createModel<RootModel>()({
     state: {
-        currenActivedFeedId: '',
         isOverviewPaneOpen: false,
         activedScreen: ScreenPosition.Center,
     } as App,
     reducers: {
-        changeSelectedArticle(state, payload: string) {
-            state.currenActivedFeedId = payload
-            return state
-        },
         toggleOverviewPane(state, payload: any) {
             state.isOverviewPaneOpen = !state.isOverviewPaneOpen
             return state

@@ -149,10 +149,8 @@ const OverviewPane = ({ className }: Props) => {
             dispatch.app.changeActivedScreen(ScreenPosition.Center);
         }
 
-        const qs = queryString.parse(location.search);
         history.push({
-            pathname: "/feed",
-            search: queryString.stringify({ ...qs, streamId: item?.key }),
+            pathname: `/feed/${encodeURIComponent(String(item?.key))}`,
         });
     };
 
@@ -323,8 +321,10 @@ const OverviewPane = ({ className }: Props) => {
         return _getNavLinkGroupProps(rootStreamId);
     };
 
+    const allArticleStreamId = `user/${userInfo?.userId}/state/com.google/root`
+
     let group = getNavLinkGroupProps(
-        `user/${userInfo?.userId}/state/com.google/root`,
+        allArticleStreamId,
         {
             subscriptionById: get(
                 subscriptionsListData,
@@ -337,7 +337,7 @@ const OverviewPane = ({ className }: Props) => {
 
     if (group) {
         const allLink = createBuildInNavLink({
-            id: "",
+            id: allArticleStreamId,
             name: t("all article"),
             iconName: "PreviewLink",
         });
@@ -372,7 +372,7 @@ const OverviewPane = ({ className }: Props) => {
                         dispatch.app.changeActivedScreen(ScreenPosition.Center)
                     }
                 />
-                <Text className="text-xl font-semibold flex-1">Fread</Text>
+                <Text className="text-xl font-semibold flex-1">NoFeeding</Text>
                 <CommandBar
                     className=""
                     items={commandItems}
