@@ -66,12 +66,11 @@ const FeedContainer = ({}: Props) => {
     const unreadOnly = useSelector<RootState, any>(
         (state) => state.feed.unreadOnly
     );
-    const userInfo = useSelector<RootState, any>(
-        (state) => state.userInfo
-    );
+    const userInfo = useSelector<RootState, any>((state) => state.userInfo);
     const dispatch = useDispatch<Dispatch>();
     const history = useHistory();
 
+    const notEmptyPrevArticleIdRef = useRef<string>('');
     const queryClient = useQueryClient();
     const routeParams = useParams<{ streamId: string; articleId: string }>();
 
@@ -96,22 +95,7 @@ const FeedContainer = ({}: Props) => {
 
     const getScrollParent = useCallback(() => centerScreenRef.current, []);
 
-    const openArticle = useCallback(() => {
-        if (windowWidth <= 640) {
-            dispatch.app.changeActivedScreen(ScreenPosition.Right);
-        } else if (viewType !== ViewType.threeway) {
-            dispatch.globalModal.openModal(ModalKeys.ArticleModal);
-        }
-    }, [windowWidth, viewType]);
-
-    const closeArticle = useCallback(() => {
-        if (windowWidth <= 640) {
-            dispatch.app.changeActivedScreen(ScreenPosition.Center);
-        } else if (viewType !== ViewType.threeway) {
-            dispatch.globalModal.closeModal(ModalKeys.ArticleModal);
-        }
-    }, [windowWidth, viewType]);
-
+    // 切换订阅源时，将滚动条滚动到最顶部
     useEffect(() => {
         const scrollParent = getScrollParent();
         if (scrollParent) {
@@ -119,9 +103,35 @@ const FeedContainer = ({}: Props) => {
         }
     }, [streamContentQueryKey]);
 
-    const prevArticleId = usePrevious(articleId);
-
+    // 切换订阅源时，将滚动条滚动到最顶部
     useEffect(() => {
+        if(articleId){
+            if(articleId !== notEmptyPrevArticleIdRef.current){
+                notEmptyPrevArticleIdRef.current = articleId
+            }
+        }
+    }, [articleId]);
+
+    const prevArticleId = usePrevious(articleId)
+
+    // 根据 prevArticleId 和 articleId 判断打开或关闭文章
+    useEffect(() => {
+        const openArticle = () => {
+            if (windowWidth <= 640) {
+                dispatch.app.changeActivedScreen(ScreenPosition.Right);
+            } else if (viewType !== ViewType.threeway) {
+                dispatch.globalModal.openModal(ModalKeys.ArticleModal);
+            }
+        };
+    
+        const closeArticle = () => {
+            if (windowWidth <= 640) {
+                dispatch.app.changeActivedScreen(ScreenPosition.Center);
+            } else if (viewType !== ViewType.threeway) {
+                dispatch.globalModal.closeModal(ModalKeys.ArticleModal);
+            }
+        };
+
         if (articleId !== prevArticleId) {
             if (articleId) {
                 openArticle();
@@ -129,7 +139,7 @@ const FeedContainer = ({}: Props) => {
                 closeArticle();
             }
         }
-    }, [articleId, prevArticleId, openArticle, closeArticle]);
+    }, [articleId, prevArticleId, windowWidth, viewType]);
 
     const resolveResponse = (data: StreamContentsResponse): FeedItem[] => {
         return data.items.map((item, index) => {
@@ -237,10 +247,14 @@ const FeedContainer = ({}: Props) => {
             .reduce((acc, cur) => [...acc, ...cur], []);
     }
 
-    const activedArticle: FeedItem | null = getArticleById(
-        articleId,
-        streamContentQuery.data
-    );
+    // 如果当前 articleId 为空，则文章内容不改变
+    const activedArticle = useMemo<FeedItem>(()=>{
+        let id = articleId;
+        if(!articleId) {
+            id = notEmptyPrevArticleIdRef.current
+        }
+        return getArticleById(id, streamContentQuery.data)
+    },[articleId, streamContentQuery.data]);
 
     const feedClassNames = mergeStyleSets({
         overviewContainer: [
