@@ -3,15 +3,14 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { initializeIcons } from "@fluentui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
-
-import { Provider } from 'react-redux'
-import { store } from './model'
+import { Provider } from "react-redux";
+import { store } from "./model";
 
 import { default as dayjs } from "dayjs";
 import { default as relativeTime } from "dayjs/plugin/relativeTime";
 import { default as localizedFormat } from "dayjs/plugin/localizedFormat";
 import "dayjs/locale/zh-cn"; // 导入本地化语言
-import './i18n'
+import "./i18n";
 import "./index.css";
 
 dayjs.extend(localizedFormat);
@@ -23,14 +22,14 @@ const queryClient = new QueryClient();
 initializeIcons();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
+    <React.StrictMode>
+        <Provider store={store}>
+            <QueryClientProvider client={queryClient}>
+                <App />
+            </QueryClientProvider>
+        </Provider>
+    </React.StrictMode>,
+    document.getElementById("root")
 );
 
 /*
