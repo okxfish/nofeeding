@@ -93,5 +93,9 @@ export const userInterface = createModel<RootModel>()({
             state.feedView = feedView;
             return state;
         },
+        toggleIsSubscriptionIconDisplay(state, payload: any){
+            state.isSubscriptionIconDisplay = !state.isSubscriptionIconDisplay
+            return state
+        },
     },
 });
