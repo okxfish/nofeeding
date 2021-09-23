@@ -62,7 +62,9 @@ function App() {
         );
     };
 
-    const isDarkMode = useSelector<RootState, any>((state) => state.userInterface.isDarkMode);
+    const isDarkMode = useSelector<RootState, any>(
+        (state) => state.userInterface.isDarkMode
+    );
 
     const theme = isDarkMode ? darkTheme : lightTheme;
 
