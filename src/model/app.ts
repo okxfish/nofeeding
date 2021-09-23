@@ -14,7 +14,7 @@ type App = {
 
 export const app = createModel<RootModel>()({
     state: {
-        isOverviewPaneOpen: false,
+        isOverviewPaneOpen: true,
         activedScreen: ScreenPosition.Center,
     } as App,
     reducers: {
