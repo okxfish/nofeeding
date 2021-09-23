@@ -1,5 +1,5 @@
 import { fetch } from "./index";
-import { InoreaderTag } from "../page/feed/overviewPane";
+import { InoreaderTag } from "../page/feed/types";
 import qs from 'query-string';
 
 export enum TextDirection {

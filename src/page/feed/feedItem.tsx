@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useRef, useEffect } from "react";
+import React from "react";
 import {
     Text,
     ImageFit,
@@ -12,32 +12,27 @@ import {
     ICommandBarItemProps,
     IconButton,
 } from "@fluentui/react";
-import { default as api } from "../../api";
 import classnames from "classnames";
 import { FeedProps } from "./types";
-import { useMutation } from "react-query";
 import { default as dayjs, Dayjs } from "dayjs";
 import Swipeout from "../../component/swipeout";
-import qs from "query-string";
-import { SetFeedItemContext } from "../../context";
 import { useWindowSize } from "react-use";
-import { useDispatch, useSelector } from "react-redux";
-import { Dispatch, RootState } from "../../model";
-import { ModalKeys } from "../../model/globalModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../model";
 import {
     FeedThumbnailDisplayType,
     FeedView,
     ViewType,
 } from "../../model/userInterface";
-import { ScreenPosition } from "../../model/app";
 import { useTranslation } from "react-i18next";
-import { useHistory, useLocation, useParams } from "react-router-dom";
 
 export interface Props extends FeedProps {
     itemIndex: number;
-    isSelected: boolean;
+    isSelected?: boolean;
     sourceIcon?: string;
-    onAboveRead(e: any, id: string, index: number): void;
+    onStar(e: any, id:string, isStar?:boolean): void;
+    onRead(e: any, id:string, isRead?:boolean): void;
+    onClick(e: any, id:string): void;
 }
 
 const favoriteStarIcon: IIconProps = { iconName: "FavoriteStar" };
@@ -61,15 +56,10 @@ const FeedItemComponent = ({
     className,
     rootClassName,
     itemClassName,
-    onAboveRead,
+    onStar,
+    onRead,
+    onClick,
 }: Props) => {
-    const routeParams = useParams<{ streamId: string }>();
-    const userInfo = useSelector<RootState, any>(
-        (state) => state.userInfo
-    );
-    const streamId = routeParams.streamId
-        ? decodeURIComponent(routeParams.streamId)
-        : `user/${userInfo?.userId}/state/com.google/root`;
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
     );
@@ -80,74 +70,9 @@ const FeedItemComponent = ({
         (state) => state.userInterface.feedThumbnailDisplayType
     );
 
-    const dispatch = useDispatch<Dispatch>();
-
-    const setArticleDataById = useContext(SetFeedItemContext);
-
     const { palette } = useTheme();
-    const history = useHistory();
     const { width: windowWidth } = useWindowSize();
     const { t } = useTranslation(["translation", "articleAction"]);
-
-    const markAsReadMutation = useMutation(
-        ({ id, asUnread }: { id: string; asUnread?: boolean }): any =>
-            api.inoreader.markArticleAsRead(id, asUnread),
-        {
-            onMutate: ({ id, asUnread }) => {
-                setArticleDataById(id, (article) => {
-                    article.isRead = !asUnread;
-                });
-            },
-            onError: (error, { id, asUnread }) => {
-                setArticleDataById(id, (article) => {
-                    article.isRead = asUnread;
-                });
-            },
-        }
-    );
-
-    // 文章标星
-    const markAsStarMutation = useMutation(
-        ({ id, isStar }: { id: string; isStar?: boolean }): any =>
-            api.inoreader.markArticleAsStar(id, isStar),
-        {
-            onMutate: ({ id, isStar }) => {
-                setArticleDataById(id, (article) => {
-                    article.isStar = isStar;
-                });
-            },
-            onError: (error, { id, isStar }) => {
-                setArticleDataById(id, (article) => {
-                    article.isStar = !isStar;
-                });
-            },
-        }
-    );
-
-    // 标记文章已读/未读
-    const onClick = useCallback(() => {
-        const articleId = id;
-        history.push({
-            pathname: `/feed/${encodeURIComponent(streamId)}/${encodeURIComponent(articleId)}`,
-        });
-        markAsReadMutation.mutate({ id, asUnread: false });
-    }, [id, markAsReadMutation]);
-
-    // 点击标星按钮
-    const onStar = (e: any): void => {
-        if (e) {
-            e.stopPropagation();
-        }
-        markAsStarMutation.mutate({ id, isStar: !isStar });
-    };
-
-    // 点击标记已读/未读按钮
-    const onRead = (e: any): void => {
-        if (e) {
-            e.stopPropagation();
-        }
-        markAsReadMutation.mutate({ id, asUnread: isRead });
-    };
 
     const nowTime: Dayjs = dayjs();
     const relativePublishedTime: string = publishedTime.from(nowTime);
@@ -159,8 +84,7 @@ const FeedItemComponent = ({
 
     const markAsReadCommonProps = {
         iconProps: isRead ? radioBtnOffIcon : radioBtnOnIcon,
-        onClick: onRead,
-        disabled: markAsReadMutation.isLoading,
+        onClick: (e) => onRead(e, id, isRead),
         styles: iconBtnStyle,
     };
 
@@ -181,18 +105,7 @@ const FeedItemComponent = ({
             "text-yellow-300 hover:text-yellow-300": isStar,
         }),
         styles: iconBtnStyle,
-        onClick: onStar,
-        disabled: markAsStarMutation.isLoading,
-    };
-
-    const markAboveAsReadCommandBarItem: ICommandBarItemProps = {
-        iconProps: { iconName: "DoubleChevronUp" },
-        iconOnly: true,
-        key: "markAboveAsRead",
-        text: t("articleAction:mark above as read"),
-        className: "focus:outline-none",
-        styles: iconBtnStyle,
-        onClick: (e) => onAboveRead(e, id, itemIndex),
+        onClick: (e)=>onStar(e, id, isStar),
     };
 
     const classNames = mergeStyleSets({
@@ -288,7 +201,6 @@ const FeedItemComponent = ({
                 </Stack>
                 <CommandBar
                     items={[
-                        markAboveAsReadCommandBarItem,
                         markAsStarCommandBarItem,
                         markAsReadCommandBarItem,
                     ]}
@@ -314,7 +226,6 @@ const FeedItemComponent = ({
                             items={[]}
                             overflowItems={[
                                 markAsStarCommandBarItem,
-                                markAboveAsReadCommandBarItem,
                             ]}
                             styles={{ root: ["px-0", "h-6"] }}
                         />
@@ -370,7 +281,6 @@ const FeedItemComponent = ({
                         items={[]}
                         overflowItems={[
                             markAsStarCommandBarItem,
-                            markAboveAsReadCommandBarItem,
                         ]}
                         styles={{ root: ["px-0", "h-6"] }}
                     />
@@ -406,7 +316,6 @@ const FeedItemComponent = ({
                         className=" "
                         items={[
                             markAsStarCommandBarItem,
-                            markAboveAsReadCommandBarItem,
                             markAsReadCommandBarItem,
                         ]}
                         overflowItems={[]}
@@ -451,7 +360,7 @@ const FeedItemComponent = ({
                                           : favoriteStarIcon)}
                                   />
                               ),
-                              onClick: (e) => onStar(e),
+                              onClick: (e) => onStar(e, id, isStar),
                           },
                       ]
                     : []
@@ -470,7 +379,7 @@ const FeedItemComponent = ({
                                           : radioBtnOnIcon)}
                                   />
                               ),
-                              onClick: (e) => onRead(e),
+                              onClick: (e) => onRead(e, id, isRead),
                           },
                       ]
                     : []
@@ -484,7 +393,7 @@ const FeedItemComponent = ({
                     "py-3": viewType !== ViewType.list,
                     "": isSelected,
                 })}
-                onClick={onClick}
+                onClick={(e)=>onClick(e, id)}
             >
                 {feedBodyRender()}
             </div>
@@ -492,30 +401,25 @@ const FeedItemComponent = ({
     );
 };
 
-export default React.memo(
-    FeedItemComponent,
-    (prevProps: Props, nextProps: Props) => {
-        if (
-            prevProps.id === nextProps.id &&
-            prevProps.title === nextProps.title &&
-            prevProps.summary === nextProps.summary &&
-            prevProps.thumbnailSrc === nextProps.thumbnailSrc &&
-            prevProps.url === nextProps.url &&
-            prevProps.sourceName === nextProps.sourceName &&
-            prevProps.sourceID === nextProps.sourceID &&
-            prevProps.sourceIcon === nextProps.sourceIcon &&
-            prevProps.publishedTime === nextProps.publishedTime &&
-            prevProps.isRead === nextProps.isRead &&
-            prevProps.isStar === nextProps.isStar &&
-            prevProps.isInnerArticleShow === nextProps.isInnerArticleShow &&
-            prevProps.itemIndex === nextProps.itemIndex &&
-            prevProps.isSelected === nextProps.isSelected &&
-            prevProps.className === nextProps.className &&
-            prevProps.rootClassName === nextProps.rootClassName &&
-            prevProps.itemClassName === nextProps.itemClassName
-        ) {
-            return true;
-        }
-        return false;
-    }
-);
+export default React.memo(FeedItemComponent, (prevProps, props)=>{
+    return (
+        prevProps.id === props.id &&
+        prevProps.title === props.title &&
+        prevProps.summary === props.summary &&
+        prevProps.thumbnailSrc === props.thumbnailSrc &&
+        prevProps.sourceName === props.sourceName &&
+        prevProps.sourceID === props.sourceID &&
+        prevProps.sourceIcon === props.sourceIcon &&
+        prevProps.publishedTime === props.publishedTime &&
+        prevProps.isRead === props.isRead &&
+        prevProps.isStar === props.isStar &&
+        prevProps.itemIndex === props.itemIndex &&
+        prevProps.isSelected === props.isSelected &&
+        prevProps.className === props.className &&
+        prevProps.rootClassName === props.rootClassName &&
+        prevProps.itemClassName === props.itemClassName &&
+        prevProps.onStar === props.onStar &&
+        prevProps.onRead === props.onRead &&
+        prevProps.onClick === props.onClick
+    )
+});

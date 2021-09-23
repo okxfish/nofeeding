@@ -11,7 +11,8 @@ const persistConfig = {
 
 export const store = init<RootModel>({
     models,
-    plugins: [persistPlugin(persistConfig), immerPlugin()],
+    plugins: [immerPlugin()],
+    // plugins: [persistPlugin(persistConfig), immerPlugin()],
 })
 
 export type Store = typeof store

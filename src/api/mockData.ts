@@ -1,7 +1,7 @@
 import Mock from "mockjs";
 import { IdValuePair } from "../api/inoreader";
 import MockAdapter from "axios-mock-adapter";
-import { Sortable } from "../page/feed/overviewPane";
+import { Sortable } from "../page/feed/types";
 import { sample } from "lodash";
 
 const Random = Mock.Random;

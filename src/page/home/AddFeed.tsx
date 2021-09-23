@@ -11,10 +11,10 @@ import {
 import { NormalizedSchema } from "normalizr";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { QueryKey, useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { default as api } from "../../api";
-import { FolderEntity } from "../feed/overviewPane";
-import { getTagNameFromId } from "./../feed/overviewPane";
+import { FolderEntity } from '../feed/types'
+import { getTagNameFromId } from "../feed/SubscriptionsPane/utils";
 
 export interface Props {
   className?: string;
