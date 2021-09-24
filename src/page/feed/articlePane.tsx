@@ -39,9 +39,9 @@ import { Dispatch, RootState } from "../../model";
 import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import { useWindowSize } from "react-use";
 import { LineSpace } from "../../model/userInterface";
-import "./style.css";
 import MenuItem from "../../component/menuItem";
 import { useTranslation } from "react-i18next";
+import "./style.css";
 
 export interface Props {
     className?: string;
@@ -55,33 +55,35 @@ const backIcon: IIconProps = { iconName: "ChevronLeft" };
 
 const ArticlePane = forwardRef(
     ({ className, style, closeModal }: Props, ref) => {
-        const article: FeedItem | null = useContext(ArticleContext);
-        const { t } = useTranslation(["translation", "articleAction"]);
+        const rootNodeRef = useRef<any>(null);
         const scrollParentRef = useRef<any>(null);
-        const { width: windowWidth } = useWindowSize();
+        const mainTitleElemRef = useRef<any>(null);
         const htmlToReactParserRef = useRef(new HtmlToReactParser());
+
         const [contentJSX, setContentJSX] = useState<JSX.Element | null>(null);
         const [isReadSettingPaneOpen, setIsReadSettingPaneOpen] =
             useState<boolean>(false);
-        const rootNodeRef = useRef<any>(null);
-        const { articleText } = useThemeStyles();
-
-        const mainTitleElemRef = useRef<any>(null);
-
         const [titleThreshold, setTitleThreshold] = useState<number>(0);
-        const mainTitleObserverEntry = useIntersectionObserver(mainTitleElemRef, {
-            threshold: titleThreshold,
-        }); // 观察主标题是否可见
-        const rootObserverEntry = useIntersectionObserver(rootNodeRef, {}); // 观察当前组件的根元素是否可见
+
+        const article: FeedItem | null = useContext(ArticleContext);
+        const { t } = useTranslation(["translation", "articleAction"]);
+        const { width: windowWidth } = useWindowSize();
+        const { articleText } = useThemeStyles();
+        
+        const mainTitleObserverEntry = useIntersectionObserver(
+            mainTitleElemRef,
+            {
+                root: rootNodeRef.current,
+                threshold: titleThreshold,
+            }
+        ); // 观察主标题是否可见
 
         const fontSize = useSelector<RootState, any>(
             (state) => state.userInterface.readingPreference.fontSize
         );
-
         const fontFamily = useSelector<RootState, any>(
             (state) => state.userInterface.readingPreference.fontFamily
         );
-
         const lineSpace = useSelector<RootState, any>(
             (state) => state.userInterface.readingPreference.lineSpace
         );
@@ -90,7 +92,6 @@ const ArticlePane = forwardRef(
 
         const getIsHeaderTitleVisible = () => {
             return (
-                rootObserverEntry?.isIntersecting &&
                 mainTitleObserverEntry &&
                 !mainTitleObserverEntry?.isIntersecting
             );
@@ -98,10 +99,7 @@ const ArticlePane = forwardRef(
 
         const isHeaderTitleVisible = getIsHeaderTitleVisible();
 
-        useImperativeHandle(
-            ref,
-            () => rootNodeRef.current
-        );
+        useImperativeHandle(ref, () => rootNodeRef.current);
 
         useEffect(() => {
             if (article !== null) {
