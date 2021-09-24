@@ -382,7 +382,7 @@ const ArticlePane = forwardRef(
 
             return (
                 <div
-                    className="article-wrapper overflow-y-scroll sm:scrollbar flex-1 px-4 sm:px-12 pb-64"
+                    className="scrollbar-none overflow-y-scroll flex-1 px-4 sm:px-12 pb-64"
                     ref={scrollParentRef}
                 >
                     <article

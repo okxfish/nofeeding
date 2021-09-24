@@ -1,55 +1,36 @@
-.scrollbar {
-  --width: 5px;
-  --foreground-color: #c2c3c7;
-  --background-color: transparent;
-}
-
 .scrollbar-none {
-  --width: 0;
-  --foreground-color: #c2c3c7;
-  --background-color: #e5e7eb7a;
+    --width: 0;
+    --foreground-color: #c2c3c7;
+    --background-color: #e5e7eb7a;
 }
 
 .scrollbar-none::-webkit-scrollbar {
-  width:  var(--width);
-}
-
-.scrollbar::-webkit-scrollbar {
-  width:  var(--width);
-}
-
-.scrollbar::-webkit-scrollbar-thumb {
-  border-radius: 9999px;
-  background: var(--foreground-color);
-}
-
-.scrollbar::-webkit-scrollbar-track {
-  background: var(--background-color);
+    width: var(--width);
 }
 
 .fr-spin {
-  animation: spin 1000ms ease-in-out infinite;
+    animation: spin 1000ms ease-in-out infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .truncat-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .truncat-4 {
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }

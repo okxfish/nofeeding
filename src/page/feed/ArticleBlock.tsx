@@ -142,7 +142,7 @@ const ArticleBlock = () => {
                     allowTouchBodyScroll
                 >
                     <ArticlePane
-                        className="article-modal h-screen w-screen"
+                        className="sm:max-w-3xl sm:h-90vh w-screen"
                         closeModal={() => history.goBack()} />
                 </Modal>
             );

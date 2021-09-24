@@ -37,7 +37,7 @@ const FeedBlock = () => {
         feedContainer: [
             "fread-feed-page__main-col",
             "sm:w-112 h-full transition-all",
-            "overflow-y-auto sm:overflow-y-scroll sm:scrollbar sm:flex-shrink",
+            "overflow-y-auto sm:overflow-y-scroll scrollbar-none sm:flex-shrink",
         ],
         screen: ["w-screen flex-shrink-0 sm:flex-shrink"],
         centerScreen: [

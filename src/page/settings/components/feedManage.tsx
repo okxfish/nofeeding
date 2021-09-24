@@ -148,7 +148,7 @@ const FeedManage = () => {
 
   return (
     <Layout title={t("subscription")}>
-      <div className="h-full w-full overflow-y-auto sm:scrollbar">
+      <div className="h-full w-full overflow-y-auto scrollbar">
         <DetailsList items={feeds} columns={columns} />
         <Modal isOpen={isRenameModalOpened}>
           <form onSubmit={onRename}>
