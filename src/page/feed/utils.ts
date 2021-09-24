@@ -185,8 +185,6 @@ export const useStreamContent = ():{
         }
     }, [streamContentQuery.data, subscriptionsList]);
 
-    console.log('streamContentData', streamContentData)
-
     return {
         streamContentData,
         streamContentQuery,
