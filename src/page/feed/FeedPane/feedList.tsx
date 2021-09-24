@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from "react";
-import { FeedItem } from "./types";
-import { default as FeedItemComponent} from "./FeedItem";
+import { FeedItem } from "../types";
+import { default as FeedItemComponent} from "../FeedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
 import {
@@ -11,32 +11,25 @@ import {
     List,
     Text,
 } from "@fluentui/react";
+import api from "../../../api";
 import FeedShimmer from "./feedShimmer";
-import { SetFeedItemContext } from "./../../context";
 import { useMutation } from "react-query";
-import api from "../../api";
 import { useParams, useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { RootState } from "../../model";
+import { RootState } from "../../../model";
+import { SetFeedItemContext, FeedContext } from "../../../context";
 
 export interface Props {
     className?: string;
-    items: FeedItem[];
-    hasNextPage: boolean;
-    isFetching: boolean;
-    fetchNextPage(): any;
     getScrollParent(): any;
 }
 
-const FeedPaneComponent = ({
+const FeedList = ({
     className,
-    items,
-    hasNextPage,
-    isFetching,
-    fetchNextPage,
     getScrollParent,
 }: Props) => {
+    const { streamContentData, streamContentQuery } = useContext(FeedContext);
     const { setArticleDataById } = useContext(SetFeedItemContext);
     const routeParams = useParams<{ streamId: string; articleId: string }>();
     const currenActivedFeedId = routeParams.articleId
@@ -157,23 +150,23 @@ const FeedPaneComponent = ({
         []
     );
 
-    if (!isEmpty(items)) {
+    if (!isEmpty(streamContentData)) {
         return (
             <InfiniteScroll
                 getScrollParent={getScrollParent}
                 className={className}
                 initialLoad={false}
-                loadMore={fetchNextPage}
+                loadMore={streamContentQuery.fetchNextPage}
                 useWindow={false}
-                hasMore={hasNextPage && !isFetching}
+                hasMore={streamContentQuery.hasNextPage && !streamContentQuery.isFetching}
             >
                 <List<FeedItem>
-                    items={items}
+                    items={streamContentData}
                     onRenderCell={onRenderCell}
                     usePageCache
                 />
                 <div>
-                    {isFetching ? (
+                    {streamContentQuery.isFetching ? (
                         <Spinner
                             label={t("loading")}
                             size={SpinnerSize.large}
@@ -184,7 +177,7 @@ const FeedPaneComponent = ({
             </InfiniteScroll>
         );
     } else {
-        if (isFetching) {
+        if (streamContentQuery.isFetching) {
             return (
                 <div className={`${className} h-full`}>
                     <FeedShimmer />
@@ -201,17 +194,4 @@ const FeedPaneComponent = ({
     }
 };
 
-export default React.memo(FeedPaneComponent, (prevProps, nextProps) => {
-    if (
-        prevProps.className !== nextProps.className ||
-        prevProps.items !== nextProps.items ||
-        prevProps.hasNextPage !== nextProps.hasNextPage ||
-        prevProps.isFetching !== nextProps.isFetching ||
-        prevProps.fetchNextPage !== nextProps.fetchNextPage ||
-        prevProps.getScrollParent !== nextProps.getScrollParent
-    ) {
-        return false;
-    } else {
-        return true;
-    }
-});
+export default React.memo(FeedList);

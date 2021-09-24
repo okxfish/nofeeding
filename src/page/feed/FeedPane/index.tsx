@@ -1,14 +1,15 @@
 import React, { useRef, useCallback, useEffect } from "react";
 import classnames from "classnames";
 import { mergeStyleSets } from "@fluentui/react";
-import { useThemeStyles } from "../../theme";
+import { useThemeStyles } from "../../../theme";
 import { useWindowSize } from "react-use";
-import FeedsPane from "./feedsPane";
 import { useSelector } from "react-redux";
-import { RootState } from "../../model";
-import { ViewType } from "../../model/userInterface";
-import { ScreenPosition } from "../../model/app";
-import { useStreamContentQueryKey } from "./utils";
+import { RootState } from "../../../model";
+import { ViewType } from "../../../model/userInterface";
+import { ScreenPosition } from "../../../model/app";
+import { useStreamContentQueryKey } from "../utils";
+import FeedsPaneHeader from "./feedsPaneHeader";
+import FeedList from "./feedList";
 
 const FeedBlock = () => {
     const { contentLayer } = useThemeStyles();
@@ -42,9 +43,11 @@ const FeedBlock = () => {
         screen: ["w-screen flex-shrink-0 sm:flex-shrink"],
         centerScreen: [
             "transform-gpu transition-transform duration-300",
-            `${activedScreen === ScreenPosition.Center
-                ? ""
-                : "scale-90 shadow-xl"}`,
+            `${
+                activedScreen === ScreenPosition.Center
+                    ? ""
+                    : "scale-90 shadow-xl"
+            }`,
         ],
     });
 
@@ -62,13 +65,15 @@ const FeedBlock = () => {
             )}
             data-is-scrollable
         >
-            <FeedsPane
+            <FeedsPaneHeader />
+            <FeedList
                 className={classnames("", {
                     "mx-auto": viewType !== ViewType.list,
                 })}
-                getScrollParent={getScrollParent} />
+                getScrollParent={getScrollParent}
+            />
         </div>
     );
 };
 
-export default FeedBlock
+export default FeedBlock;

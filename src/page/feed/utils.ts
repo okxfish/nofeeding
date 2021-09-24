@@ -60,7 +60,7 @@ export const useStreamContentQueryKey = () => {
     return streamContentQuery
 }
 
-export const useStreamContent = ():{
+export const useStreamContent= ():{
     streamContentData?: any[];
     streamContentQuery?: UseInfiniteQueryResult<InfiniteNormalizedArticles, unknown>;
     setArticleDataById(id:string, updater:any): void;

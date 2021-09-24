@@ -6,20 +6,21 @@ import {
     ReactElement
 } from "react";
 import classnames from "classnames";
-import { FeedItem } from "./types";
+import { FeedItem } from "../types";
 import { Modal, mergeStyleSets } from "@fluentui/react";
-import { ArticleContext, SetFeedItemContext } from "./../../context";
-import { useThemeStyles } from "../../theme";
+import { ArticleContext, SetFeedItemContext } from "../../../context";
+import { useThemeStyles } from "../../../theme";
 import { useParams, useHistory } from "react-router-dom";
 import { usePrevious, useWindowSize } from "react-use";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, Dispatch } from "../../model";
-import { ModalKeys } from "../../model/globalModal";
-import { ViewType } from "../../model/userInterface";
-import { ScreenPosition } from "../../model/app";
-import ArticlePane from "./articlePane";
+import { RootState, Dispatch } from "../../../model";
+import { ModalKeys } from "../../../model/globalModal";
+import { ViewType } from "../../../model/userInterface";
+import { ScreenPosition } from "../../../model/app";
+import ArticlePaneInner from "./articlePaneInner";
+import "./style.css";
 
-const ArticleBlock = () => {
+const ArticlePane = () => {
     const { getArticleDataById } = useContext(SetFeedItemContext);
     const isArticleModalOpen = useSelector<RootState, any>(
         (state) => state.globalModal[ModalKeys.ArticleModal]
@@ -110,7 +111,7 @@ const ArticleBlock = () => {
                     className={classnames("flex-1", contentLayer)}
                     style={{ minWidth: "32rem" }}
                 >
-                    <ArticlePane className="h-full" />
+                    <ArticlePaneInner className="h-full" />
                 </div>
             );
         } else if (windowWidth <= 640) {
@@ -123,7 +124,7 @@ const ArticleBlock = () => {
                         feedClassNames.righttScreen
                     )}
                 >
-                    <ArticlePane
+                    <ArticlePaneInner
                         className="h-full"
                         closeModal={() => history.goBack()}
                     />
@@ -138,7 +139,7 @@ const ArticleBlock = () => {
                     isBlocking={false}
                     allowTouchBodyScroll
                 >
-                    <ArticlePane
+                    <ArticlePaneInner
                         className="sm:max-w-3xl sm:h-90vh w-screen"
                         closeModal={() => history.goBack()}
                     />
@@ -154,4 +155,4 @@ const ArticleBlock = () => {
     );
 };
 
-export default ArticleBlock;
+export default ArticlePane;

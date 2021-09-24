@@ -1,10 +1,8 @@
-import { FeedContext, SetFeedItemContext } from "../../context";
-import { useStreamContent, useStreamContentQueryKey } from "./utils";
-import FeedBlock from "./FeedBlock";
-import ArticleBlock from "./ArticleBlock";
-import "./style.css";
+import { FeedContext, SetFeedItemContext } from "../../../context";
+import { useStreamContent, useStreamContentQueryKey } from "../utils";
+import { ReactNode } from "react";
 
-const FeedContainer = () => {
+const StreamContentContainer = ({children}:{children:ReactNode}) => {
     const streamContentQueryKey = useStreamContentQueryKey();
     const {
         streamContentData,
@@ -27,11 +25,10 @@ const FeedContainer = () => {
                     setArticleDataById,
                 }}
             >
-                <FeedBlock />
-                <ArticleBlock />
+                {children}
             </SetFeedItemContext.Provider>
         </FeedContext.Provider>
     );
 };
 
-export default FeedContainer;
+export default StreamContentContainer;

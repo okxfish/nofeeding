@@ -11,24 +11,24 @@ import {
     Text,
 } from "@fluentui/react";
 import produce from "immer";
-import api from "../../api";
+import api from "../../../api";
 import { useQueryClient, useMutation, useIsFetching } from "react-query";
 import { useHistory, useParams } from "react-router-dom";
 
 import { get } from "lodash";
 import { useWindowSize } from "react-use";
 import { useDispatch, useSelector } from "react-redux";
-import { Dispatch, RootState } from "../../model";
+import { Dispatch, RootState } from "../../../model";
 import {
     FeedThumbnailDisplayType,
     FeedView,
     ViewType,
-} from "../../model/userInterface";
-import { getTagNameFromId } from "./SubscriptionsPane/utils";
-import { ModalKeys } from "../../model/globalModal";
-import { ScreenPosition } from "../../model/app";
-import { Subscription } from "../../api/mockData";
-import MenuItem from "../../component/menuItem";
+} from "../../../model/userInterface";
+import { getTagNameFromId } from "../SubscriptionsPane/utils";
+import { ModalKeys } from "../../../model/globalModal";
+import { ScreenPosition } from "../../../model/app";
+import { Subscription } from "../../../api/mockData";
+import MenuItem from "../../../component/menuItem";
 import { useTranslation } from "react-i18next";
 
 export interface Props {
