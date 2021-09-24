@@ -37,7 +37,7 @@ const FeedPaneComponent = ({
     fetchNextPage,
     getScrollParent,
 }: Props) => {
-    const setArticleDataById = useContext(SetFeedItemContext);
+    const { setArticleDataById } = useContext(SetFeedItemContext);
     const routeParams = useParams<{ streamId: string; articleId: string }>();
     const currenActivedFeedId = routeParams.articleId
         ? decodeURIComponent(routeParams.articleId)

@@ -1,13 +1,14 @@
 import React, {
     useRef,
     useMemo, ReactElement,
-    useEffect
+    useEffect,
+    useContext
 } from "react";
 import { FeedItem } from "./types";
 import classnames from "classnames";
 import { Modal, mergeStyleSets } from "@fluentui/react";
 import { useParams, useHistory } from "react-router-dom";
-import { ArticleContext } from "./../../context";
+import { ArticleContext, SetFeedItemContext } from "./../../context";
 import { useThemeStyles } from "../../theme";
 import { usePrevious, useWindowSize } from "react-use";
 import ArticlePane from "./articlePane";
@@ -19,7 +20,7 @@ import { ScreenPosition } from "../../model/app";
 import { useStreamContent } from "./utils";
 
 const ArticleBlock = () => {
-    const { getArticleDataById } = useStreamContent();
+    const { getArticleDataById } = useContext(SetFeedItemContext);
     const isArticleModalOpen = useSelector<RootState, any>(
         (state) => state.globalModal[ModalKeys.ArticleModal]
     );

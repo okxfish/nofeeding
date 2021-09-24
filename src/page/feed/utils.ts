@@ -125,18 +125,13 @@ export const useStreamContent = ():{
         }
     );
 
-    const getArticleDataById = useCallback((id: string):null | FeedItem => {
-        const { data } = streamContentQuery;
-        if (typeof data === "undefined" || !Array.isArray(data.pages)) {
+    const _getArticleDataById =(id: string, data?:{pages: InfiniteNormalizedArticles[] }):null | FeedItem => {
+        if (typeof data === "undefined") {
             return null;
         }
 
         const pageResult = data.pages.find((page) => {
-            if (page.entities.article) {
-                return id in page.entities.article;
-            } else {
-                return false;
-            }
+            return id in page.entities.article;
         });
 
         if (pageResult) {
@@ -144,14 +139,16 @@ export const useStreamContent = ():{
         } else {
             return null;
         }
-    },[streamContentQuery.data])
+    }
+
+    const getArticleDataById =  useCallback((id:string)=>_getArticleDataById(id, streamContentQuery.data) ,[streamContentQuery.data])
     
     const setArticleDataById = useCallback(
-        (id, updater) => {
+        (id:string, updater:any) => {
             queryClient.setQueryData(
                 streamContentQueryKey,
                 produce((data) => {
-                    const article = getArticleDataById(id);
+                    const article = _getArticleDataById(id, data);
                     if (article) {
                         updater(article);
                     }
@@ -188,6 +185,7 @@ export const useStreamContent = ():{
         }
     }, [streamContentQuery.data, subscriptionsList]);
 
+    console.log('streamContentData', streamContentData)
 
     return {
         streamContentData,
