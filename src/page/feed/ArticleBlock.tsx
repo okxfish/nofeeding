@@ -1,51 +1,45 @@
-import React, {
+import { 
     useRef,
-    useMemo, ReactElement,
+    useMemo,
     useEffect,
-    useContext
+    useContext,
+    ReactElement
 } from "react";
-import { FeedItem } from "./types";
 import classnames from "classnames";
+import { FeedItem } from "./types";
 import { Modal, mergeStyleSets } from "@fluentui/react";
-import { useParams, useHistory } from "react-router-dom";
 import { ArticleContext, SetFeedItemContext } from "./../../context";
 import { useThemeStyles } from "../../theme";
+import { useParams, useHistory } from "react-router-dom";
 import { usePrevious, useWindowSize } from "react-use";
-import ArticlePane from "./articlePane";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, Dispatch } from "../../model";
 import { ModalKeys } from "../../model/globalModal";
 import { ViewType } from "../../model/userInterface";
 import { ScreenPosition } from "../../model/app";
-import { useStreamContent } from "./utils";
+import ArticlePane from "./articlePane";
 
 const ArticleBlock = () => {
     const { getArticleDataById } = useContext(SetFeedItemContext);
     const isArticleModalOpen = useSelector<RootState, any>(
         (state) => state.globalModal[ModalKeys.ArticleModal]
     );
-
     const activedScreen = useSelector<RootState, any>(
         (state) => state.app.activedScreen
     );
-
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
     );
-
     const dispatch = useDispatch<Dispatch>();
     const history = useHistory();
-
-    const notEmptyPrevArticleIdRef = useRef<string>("");
-    const routeParams = useParams<{ streamId: string; articleId: string; }>();
-
+    const { width: windowWidth } = useWindowSize();
+    const { contentLayer } = useThemeStyles();
+    const routeParams = useParams<{ streamId: string; articleId: string }>();
     const articleId = routeParams.articleId
         ? decodeURIComponent(routeParams.articleId)
         : "";
 
-    const { width: windowWidth } = useWindowSize();
-
-    const { contentLayer } = useThemeStyles();
+    const notEmptyPrevArticleIdRef = useRef<string>("");
 
     // 切换订阅源时，将滚动条滚动到最顶部
     useEffect(() => {
@@ -101,9 +95,11 @@ const ArticleBlock = () => {
             "h-screen absolute top-0 z-30",
             "left-full",
             "transform-gpu transition-transform duration-300",
-            `${activedScreen === ScreenPosition.Right
-                ? "-translate-x-full"
-                : ""}`,
+            `${
+                activedScreen === ScreenPosition.Right
+                    ? "-translate-x-full"
+                    : ""
+            }`,
         ],
     });
 
@@ -129,7 +125,8 @@ const ArticleBlock = () => {
                 >
                     <ArticlePane
                         className="h-full"
-                        closeModal={() => history.goBack()} />
+                        closeModal={() => history.goBack()}
+                    />
                 </div>
             );
         } else {
@@ -143,7 +140,8 @@ const ArticleBlock = () => {
                 >
                     <ArticlePane
                         className="sm:max-w-3xl sm:h-90vh w-screen"
-                        closeModal={() => history.goBack()} />
+                        closeModal={() => history.goBack()}
+                    />
                 </Modal>
             );
         }
@@ -156,4 +154,4 @@ const ArticleBlock = () => {
     );
 };
 
-export default ArticleBlock
+export default ArticleBlock;

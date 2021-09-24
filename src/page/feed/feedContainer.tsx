@@ -1,12 +1,10 @@
-import { FeedContext, SetFeedItemContext } from "./../../context";
+import { FeedContext, SetFeedItemContext } from "../../context";
 import { useStreamContent, useStreamContentQueryKey } from "./utils";
 import FeedBlock from "./FeedBlock";
 import ArticleBlock from "./ArticleBlock";
 import "./style.css";
 
-interface Props {}
-
-const FeedContainer = ({}: Props) => {
+const FeedContainer = () => {
     const streamContentQueryKey = useStreamContentQueryKey();
     const {
         streamContentData,

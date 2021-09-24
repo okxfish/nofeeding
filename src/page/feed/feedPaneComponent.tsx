@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from "react";
 import { FeedItem } from "./types";
-import FeedItemComponent from "./feedItem";
+import { default as FeedItemComponent} from "./FeedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
 import {

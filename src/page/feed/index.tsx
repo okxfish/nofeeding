@@ -1,4 +1,4 @@
-import { default as FeedContainer } from "./feed";
+import { default as FeedContainer } from "./feedContainer";
 import SubscriptionsBlock from "./SubscriptionsBlock";
 
 const FeedPage = () => {
