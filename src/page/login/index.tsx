@@ -109,7 +109,7 @@ const Login = () => {
                                 {t("enter mock mode")}
                             </DefaultButton>  
                         </Stack>
-                        <Text className="text-sm">{t('version')}: 0.2.8</Text>
+                        <Text className="text-sm">{t('version')}: 0.2.9</Text>
                     </Stack>
                 </div>
                 {/* <Stack.Item
