@@ -345,7 +345,7 @@ const FeedItemComponent = ({
 
     return (
         <Swipeout
-            className={`relative my-2 mx-0 sm:mx-2 rounded-none sm:rounded-md ${rootClassName}`}
+            className={`relative my-2 mx-0 sm:mx-2 rounded-none sm:rounded-md transition-transform transform-gpu active:scale-95 ${rootClassName}`}
             leftBtnsProps={
                 windowWidth < 640
                     ? [
