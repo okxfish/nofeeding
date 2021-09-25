@@ -1,6 +1,5 @@
 import React, { useCallback, useContext } from "react";
 import { FeedItem } from "../types";
-import { default as FeedItemComponent} from "../FeedItem";
 import InfiniteScroll from "react-infinite-scroller";
 import { isEmpty } from "lodash";
 import {
@@ -14,11 +13,12 @@ import {
 import api from "../../../api";
 import FeedShimmer from "./feedShimmer";
 import { useMutation } from "react-query";
+import { useSelector } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../model";
 import { SetFeedItemContext, FeedContext } from "../../../context";
+import { RootState } from "../../../model";
+import { default as FeedItemComponent} from "../FeedItem";
 
 export interface Props {
     className?: string;

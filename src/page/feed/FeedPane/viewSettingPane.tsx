@@ -8,16 +8,15 @@ import {
     Label,
     Icon,
     IconButton,
-    useTheme,
 } from "@fluentui/react";
-import { Dispatch, RootState } from "../../model";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { Dispatch, RootState } from "../../../model";
 import {
     ViewType,
     FeedThumbnailDisplayType,
     FeedView,
-} from "../../model/userInterface";
-import { useTranslation } from "react-i18next";
+} from "../../../model/userInterface";
 
 const ViewSettingPane = () => {
     const viewType = useSelector<RootState, any>(
@@ -33,7 +32,6 @@ const ViewSettingPane = () => {
         (state) => state.userInterface.feedThumbnailDisplayType
     );
 
-    const { palette } = useTheme();
     const { t } = useTranslation(["translation", "viewSettings"]);
 
     const dispatch = useDispatch<Dispatch>();
@@ -99,20 +97,6 @@ const ViewSettingPane = () => {
     const headerRender = (text: string) => {
         return <Label className="mb-2">{t(text)}</Label>;
     };
-
-    const separatorElem = (
-        <Separator
-            styles={{
-                root: {
-                    selectors: {
-                        "&::before": {
-                            backgroundColor: palette.neutralQuaternary,
-                        },
-                    },
-                },
-            }}
-        />
-    );
 
     return (
         <div>

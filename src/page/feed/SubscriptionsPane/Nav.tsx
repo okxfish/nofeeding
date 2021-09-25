@@ -7,19 +7,19 @@ import {
     IRenderFunction,
     Icon,
 } from "@fluentui/react";
+import { get } from "lodash";
+import { FolderEntity, InoreaderTag } from "../types";
+import { SystemStreamIDs, StreamPreferenceListResponse } from "../../../api/inoreader";
 import { useHistory } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
-import { get } from "lodash";
-import { SystemStreamIDs, StreamPreferenceListResponse } from "../../../api/inoreader";
 import { useWindowSize } from "react-use";
 import { useSelector, useDispatch, shallowEqual } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState, Dispatch } from "../../../model";
 import { ScreenPosition } from "../../../model/app";
-import { useTranslation } from "react-i18next";
 import { getNavLinkGroupProps, createBuildInNavLink } from "./utils";
 import { normalize, NormalizedSchema, schema } from "normalizr";
 import api from "../../../api";
-import { FolderEntity, InoreaderTag } from "../types";
 
 const folder = new schema.Entity("folder");
 

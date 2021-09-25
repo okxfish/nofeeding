@@ -1,12 +1,10 @@
 import api from "../../api";
-import React, { lazy, useEffect, Suspense, useRef } from "react";
+import { lazy, useEffect, Suspense, useRef } from "react";
 import { useWindowSize } from "react-use";
 import { Route, Switch } from "react-router-dom";
 import { Stack, Modal } from "@fluentui/react";
 import { Subscription, SubscriptionEntity } from "../feed/types";
-import ViewSettingPane from "./viewSettingPane";
 import AddFeed from "./AddFeed";
-import HelfScreenPanel from "../../component/halfScreenPanel/halfScreenPanel";
 import { get } from "lodash";
 import { useQuery } from "react-query";
 import { normalize, schema, NormalizedSchema } from "normalizr";
@@ -28,9 +26,7 @@ const Home = () => {
     const isAddFeedModalOpened = useSelector<RootState, any>(
         (state) => state.globalModal[ModalKeys.AddFeedModal]
     );
-    const isViewSettingPaneOpened = useSelector<RootState, any>(
-        (state) => state.globalModal[ModalKeys.ViewSettingPane]
-    );
+
     const dispatch = useDispatch<Dispatch>();
     const scrollArea = useRef<HTMLDivElement>(null);
     const { height: windowHeight, width } = useWindowSize();
@@ -61,40 +57,19 @@ const Home = () => {
 
     const onModalsRender = () => {
         return (
-            <>
-                <Modal
-                    isOpen={isAddFeedModalOpened}
-                    isBlocking={false}
-                    onDismiss={() =>
+            <Modal
+                isOpen={isAddFeedModalOpened}
+                isBlocking={false}
+                onDismiss={() =>
+                    dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
+                }
+            >
+                <AddFeed
+                    onCancel={() =>
                         dispatch.globalModal.closeModal(ModalKeys.AddFeedModal)
                     }
-                >
-                    <AddFeed
-                        onCancel={() =>
-                            dispatch.globalModal.closeModal(
-                                ModalKeys.AddFeedModal
-                            )
-                        }
-                    />
-                </Modal>
-                <HelfScreenPanel
-                    isOpen={isViewSettingPaneOpened}
-                    isLightDismiss
-                    hasCloseButton={false}
-                    onDismiss={() =>
-                        dispatch.globalModal.closeModal(
-                            ModalKeys.ViewSettingPane
-                        )
-                    }
-                    onLightDismissClick={() =>
-                        dispatch.globalModal.closeModal(
-                            ModalKeys.ViewSettingPane
-                        )
-                    }
-                >
-                    <ViewSettingPane />
-                </HelfScreenPanel>
-            </>
+                />
+            </Modal>
         );
     };
 

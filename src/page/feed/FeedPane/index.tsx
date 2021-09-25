@@ -1,30 +1,41 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useContext } from "react";
 import classnames from "classnames";
 import { mergeStyleSets } from "@fluentui/react";
 import { useThemeStyles } from "../../../theme";
 import { useWindowSize } from "react-use";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../model";
+import { useDispatch, useSelector } from "react-redux";
+import { FeedContext } from "../../../context";
+import { Dispatch, RootState } from "../../../model";
 import { ViewType } from "../../../model/userInterface";
 import { ScreenPosition } from "../../../model/app";
-import { useStreamContentQueryKey } from "../utils";
 import FeedsPaneHeader from "./feedsPaneHeader";
 import FeedList from "./feedList";
+import ViewSettingPane from "./viewSettingPane";
+import HelfScreenPanel from "../../../component/halfScreenPanel/halfScreenPanel";
+import { ModalKeys } from "../../../model/globalModal";
 
-const FeedBlock = () => {
+const FeedPane = () => {
     const { contentLayer } = useThemeStyles();
-    const centerScreenRef = useRef<HTMLDivElement>(null);
+    const scrollableAreaRef = useRef<HTMLDivElement>(null);
     const activedScreen = useSelector<RootState, any>(
         (state) => state.app.activedScreen
     );
 
+    const dispatch = useDispatch<Dispatch>();
+
     const { width: windowWidth } = useWindowSize();
+
     const viewType = useSelector<RootState, any>(
         (state) => state.userInterface.viewType
     );
 
-    const streamContentQueryKey = useStreamContentQueryKey();
-    const getScrollParent = useCallback(() => centerScreenRef.current, []);
+    const isViewSettingPaneOpened = useSelector<RootState, any>(
+        (state) => state.globalModal[ModalKeys.ViewSettingPane]
+    );
+
+    const { streamContentQueryKey } = useContext(FeedContext);
+
+    const getScrollParent = useCallback(() => scrollableAreaRef.current, []);
 
     // 切换订阅源时，将滚动条滚动到最顶部
     useEffect(() => {
@@ -53,7 +64,7 @@ const FeedBlock = () => {
 
     return (
         <div
-            ref={centerScreenRef}
+            ref={scrollableAreaRef}
             className={classnames(
                 contentLayer,
                 feedClassNames.feedContainer,
@@ -72,8 +83,21 @@ const FeedBlock = () => {
                 })}
                 getScrollParent={getScrollParent}
             />
+            <HelfScreenPanel
+                isOpen={isViewSettingPaneOpened}
+                isLightDismiss
+                hasCloseButton={false}
+                onDismiss={() =>
+                    dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
+                }
+                onLightDismissClick={() =>
+                    dispatch.globalModal.closeModal(ModalKeys.ViewSettingPane)
+                }
+            >
+                <ViewSettingPane />
+            </HelfScreenPanel>
         </div>
     );
 };
 
-export default FeedBlock;
+export default FeedPane;
