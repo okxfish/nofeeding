@@ -12,7 +12,7 @@ const About = () => {
         <Layout title={t("about")}>
             <Stack className="text-base space-y-2">
                 <Image src="/images/app-icon.svg" className="w-24 h-24"  maximizeFrame/>
-                <Text className="font-semibold text-lg" block>NoFeeding 0.3.0</Text>
+                <Text className="font-semibold text-lg" block>NoFeeding 0.4.0</Text>
                 <Text className="text-base" block>© {new Date().getFullYear()} 要没时间了。</Text>
                 <a className="text-blue-600 hover:underline" href="https://github.com/okxfish/nofeeding" target="_blank">项目仓库</a>
                 <a className="text-blue-600 hover:underline" title="">使用条款</a>
